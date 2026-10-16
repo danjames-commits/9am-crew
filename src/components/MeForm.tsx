@@ -26,6 +26,9 @@ export function MeForm({
   const [displayName, setDisplayName] = useState(name);
   const [lvl, setLvl] = useState(level);
   const [pick, setPick] = useState<string | null>(customVersion(animal) ? 'custom' : animal);
+  const [mode, setMode] = useState<'pick' | 'draw'>(customVersion(animal) ? 'draw' : 'pick');
+  // The ready-made animal to go back to when they switch from Claude's drawing to picking.
+  const [lastPreset, setLastPreset] = useState<string | null>(customVersion(animal) ? null : animal);
   const [idea, setIdea] = useState('');
   const [fresh, setFresh] = useState<Drawing | null>(null);
   const [drawNote, setDrawNote] = useState<{ ok?: string; error?: string } | null>(null);
@@ -35,6 +38,17 @@ export function MeForm({
   const savedSrc = drawn ? `/avatar/${id}?v=${drawn.version}` : null;
   const customSrc = freshSrc ?? savedSrc;
   const customName = fresh?.name ?? drawn?.name ?? 'Your own';
+
+  function choose(p: string | null) {
+    setPick(p);
+    setLastPreset(p);
+  }
+
+  function switchMode(m: 'pick' | 'draw') {
+    setMode(m);
+    if (m === 'pick') setPick(lastPreset);
+    else if (customSrc) setPick('custom');
+  }
 
   function draw() {
     setDrawNote(null);
@@ -96,52 +110,66 @@ export function MeForm({
                 ? `Drawn by Claude: “${fresh?.prompt ?? drawn?.prompt ?? ''}”`
                 : chosen
                   ? chosen.vibe
-                  : 'Pick an animal below or describe your own. Your initials stay on it so the crew knows it’s you.'}
+                  : mode === 'draw'
+                    ? 'Describe your animal below and Claude will draw it.'
+                    : 'Just your initials for now. Pick an animal below.'}
             </div>
           </div>
         </div>
-        <p className="muted small">Mid-energy animals only. No lions, no bears. We’re here at 9am, not 5am.</p>
-        <div className="card stack">
-          <label className="field" style={{ margin: 0 }}>
-            Describe your own and Claude draws it
-            <input
-              type="text"
-              value={idea}
-              maxLength={120}
-              placeholder="a grumpy beaver with a coffee"
-              onChange={(e) => setIdea(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  if (idea.trim() && !drawing) draw();
-                }
-              }}
-            />
-          </label>
-          <button type="button" className="btn" disabled={drawing || !idea.trim()} onClick={draw}>
-            {drawing ? 'Drawing… (about 20 seconds)' : fresh ? 'Draw it again' : 'Draw it'}
+        <p className="muted small">Two ways to get one. Your initials always go on it so the crew knows it’s you. Mid-energy animals only: no lions, no bears. We’re here at 9am, not 5am.</p>
+        <div className="segmented" style={{ gridTemplateColumns: '1fr 1fr' }} role="group" aria-label="How to get your spirit animal">
+          <button type="button" aria-pressed={mode === 'pick'} onClick={() => switchMode('pick')}>
+            Pick one
+            <small>From 22 ready-made</small>
           </button>
-          {drawNote?.ok && <p className="small" role="status">{drawNote.ok}</p>}
-          {drawNote?.error && <p className="small" role="alert">{drawNote.error}</p>}
-        </div>
-        <div className="animal-grid" role="radiogroup" aria-label="Spirit animal">
-          <button type="button" role="radio" aria-checked={pick === null} className={pick === null ? 'on' : ''} onClick={() => setPick(null)}>
-            <span className="animal-none">AB</span>
-            <span>None</span>
+          <button type="button" aria-pressed={mode === 'draw'} onClick={() => switchMode('draw')}>
+            Claude draws one
+            <small>Describe it, any mood</small>
           </button>
-          {customSrc && (
-            <button type="button" role="radio" aria-checked={pick === 'custom'} className={pick === 'custom' ? 'on' : ''} onClick={() => setPick('custom')} title={customName}>
-              <img src={customSrc} alt="" width={36} height={36} />
-              <span>Yours</span>
-            </button>
-          )}
-          {ANIMALS.map((a) => (
-            <button key={a.id} type="button" role="radio" aria-checked={pick === a.id} className={pick === a.id ? 'on' : ''} onClick={() => setPick(a.id)} title={a.vibe}>
-              <img src={`/animals/${a.id}.svg`} alt="" width={36} height={36} />
-              <span>{a.name}</span>
-            </button>
-          ))}
         </div>
+
+        {mode === 'pick' ? (
+          <div className="animal-grid" role="radiogroup" aria-label="Pick a spirit animal">
+            <button type="button" role="radio" aria-checked={pick === null} className={pick === null ? 'on' : ''} onClick={() => choose(null)}>
+              <span className="animal-none">AB</span>
+              <span>None</span>
+            </button>
+            {ANIMALS.map((a) => (
+              <button key={a.id} type="button" role="radio" aria-checked={pick === a.id} className={pick === a.id ? 'on' : ''} onClick={() => choose(a.id)} title={a.vibe}>
+                <img src={`/animals/${a.id}.svg`} alt="" width={36} height={36} />
+                <span>{a.name}</span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="card stack">
+            <label className="field" style={{ margin: 0 }}>
+              Describe your spirit animal
+              <input
+                type="text"
+                value={idea}
+                maxLength={120}
+                placeholder="a grumpy beaver with a coffee"
+                onChange={(e) => setIdea(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (idea.trim() && !drawing) draw();
+                  }
+                }}
+              />
+            </label>
+            <p className="muted small" style={{ margin: 0 }}>
+              Add a mood or a prop: sleepy otter, smug raccoon, moose in a sweatband.
+            </p>
+            <button type="button" className="btn primary" disabled={drawing || !idea.trim()} onClick={draw}>
+              {drawing ? 'Claude is drawing… (about 20 seconds)' : customSrc ? 'Draw a new one' : 'Draw it'}
+            </button>
+            {drawNote?.ok && <p className="small" role="status">{drawNote.ok}</p>}
+            {drawNote?.error && <p className="small" role="alert">{drawNote.error}</p>}
+            {!fresh && drawn && !customVersion(animal) && <p className="muted small" style={{ margin: 0 }}>Your current drawing is shown above. Press Save to use it.</p>}
+          </div>
+        )}
       </fieldset>
       <fieldset className="stack" style={{ border: 'none', padding: 0, margin: 0 }}>
         <legend className="eyebrow" style={{ marginBottom: 10 }}>
