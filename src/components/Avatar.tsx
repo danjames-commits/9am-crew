@@ -1,5 +1,5 @@
 import { avatarColor, initials } from '@/lib/ui';
-import { animalName, isAnimal } from '@/lib/animals';
+import { animalName, customVersion, isAnimal } from '@/lib/animals';
 
 const SIZES = { sm: 34, md: 40, lg: 72 } as const;
 
@@ -11,6 +11,7 @@ export function Avatar({
   size = 'md',
   ring,
   hidden,
+  picture,
 }: {
   id: string;
   name: string;
@@ -20,6 +21,8 @@ export function Avatar({
   ring?: string;
   /** Keeps the space but hides it (for runs of chat messages). */
   hidden?: boolean;
+  /** Show this picture instead (an unsaved drawing on the Me page). */
+  picture?: string;
 }) {
   const px = SIZES[size];
   const label = animal && isAnimal(animal) ? `${name} (${animalName(animal)})` : name;
@@ -33,7 +36,9 @@ export function Avatar({
     fontSize: size === 'lg' ? 24 : size === 'sm' ? 12 : 14,
   };
 
-  if (!animal || !isAnimal(animal)) {
+  const custom = customVersion(animal);
+  const src = picture ? picture : custom ? `/avatar/${id}?v=${custom}` : animal && isAnimal(animal) ? `/animals/${animal}.svg` : null;
+  if (!src) {
     return (
       <span className="avatar" style={base} title={name} aria-label={name} role="img">
         {initials(name)}
@@ -45,7 +50,7 @@ export function Avatar({
   return (
     <span className="avatar" style={{ ...base, overflow: 'visible' }} title={label} aria-label={label} role="img">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={`/animals/${animal}.svg`} alt="" width={Math.round(px * 0.68)} height={Math.round(px * 0.68)} style={{ display: 'block' }} />
+      <img src={src} alt="" width={Math.round(px * (custom || picture ? 0.84 : 0.68))} height={Math.round(px * (custom || picture ? 0.84 : 0.68))} style={{ display: 'block' }} />
       <span
         aria-hidden="true"
         style={{

@@ -25,6 +25,7 @@ await db.exec(readFileSync(new URL('../supabase/schema.sql', import.meta.url), '
 await db.exec(readFileSync(new URL('../supabase/migration-003-claude.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-004-cycles.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-006-animals.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-007-custom-avatars.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -88,6 +89,16 @@ await as(B, `update public.profiles set animal = 'sloth' where id = '${A}'`);
 r = await db.query(`select id, animal from public.profiles where id in ('${A}', '${B}') order by id`);
 assert.deepEqual(r.rows.map((x) => x.animal), [null, 'raccoon']);
 ok('members pick their own spirit animal (mid-energy only)');
+
+const pic = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40"/></svg>`;
+await as(B, `insert into public.avatars (user_id, prompt, name, svg) values ('${B}', 'grumpy beaver', 'Grumpy beaver', '${pic}')`);
+await as(B, `update public.profiles set animal = 'custom:a1b2' where id = '${B}'`);
+await fails(B, `insert into public.avatars (user_id, prompt, name, svg) values ('${A}', 'x', 'x', '${pic}')`, 'draw for someone else');
+await fails(B, `update public.avatars set svg = '<svg><script>alert(1)</script></svg>' where user_id = '${B}'`, 'script in svg');
+await fails(B, `update public.profiles set animal = 'custom:../../x' where id = '${B}'`, 'bad custom id');
+r = await as(C, `select name from public.avatars`);
+assert.deepEqual(r.rows.map((x) => x.name), ['Grumpy beaver']);
+ok('custom drawn avatars: own only, no scripts, crew can see them');
 
 // Workouts: drafts hidden from members.
 await as(A, `insert into public.workouts (class_date, title, parts, status) values ('2026-10-16', 'Friday Grinder', '[]', 'draft')`);

@@ -1,21 +1,55 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { updateMe } from '@/app/actions';
+import { drawAvatar, updateMe } from '@/app/actions';
 import { LEVELS } from '@/lib/types';
-import { ANIMALS } from '@/lib/animals';
+import { ANIMALS, customVersion } from '@/lib/animals';
 import { Avatar } from './Avatar';
 
-export function MeForm({ id, name, level, animal }: { id: string; name: string; level: number; animal: string | null }) {
+type Drawing = { prompt: string; name: string; svg: string };
+
+export function MeForm({
+  id,
+  name,
+  level,
+  animal,
+  drawn,
+}: {
+  id: string;
+  name: string;
+  level: number;
+  animal: string | null;
+  /** Their saved drawing, if they have one. */
+  drawn: { name: string; prompt: string; version: string } | null;
+}) {
   const [displayName, setDisplayName] = useState(name);
   const [lvl, setLvl] = useState(level);
-  const [pick, setPick] = useState<string | null>(animal);
+  const [pick, setPick] = useState<string | null>(customVersion(animal) ? 'custom' : animal);
+  const [idea, setIdea] = useState('');
+  const [fresh, setFresh] = useState<Drawing | null>(null);
+  const [drawNote, setDrawNote] = useState<{ ok?: string; error?: string } | null>(null);
+  const [drawing, startDraw] = useTransition();
   const chosen = ANIMALS.find((a) => a.id === pick);
+  const freshSrc = fresh ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(fresh.svg)}` : null;
+  const savedSrc = drawn ? `/avatar/${id}?v=${drawn.version}` : null;
+  const customSrc = freshSrc ?? savedSrc;
+  const customName = fresh?.name ?? drawn?.name ?? 'Your own';
+
+  function draw() {
+    setDrawNote(null);
+    startDraw(async () => {
+      const r = await drawAvatar(idea);
+      if ('error' in r) return setDrawNote({ error: r.error });
+      setFresh(r.drawing);
+      setPick('custom');
+      setDrawNote({ ok: `${r.message} Press Save to keep it.` });
+    });
+  }
   const [msg, setMsg] = useState<{ ok?: boolean; error?: string } | null>(null);
   const [pending, start] = useTransition();
 
   function save(e: React.FormEvent) {
     e.preventDefault();
-    start(async () => setMsg(await updateMe({ display_name: displayName, level: lvl, animal: pick })));
+    start(async () => setMsg(await updateMe({ display_name: displayName, level: lvl, animal: pick, drawing: pick === 'custom' ? fresh : null })));
   }
 
   return (
@@ -29,18 +63,61 @@ export function MeForm({ id, name, level, animal }: { id: string; name: string; 
           My spirit animal
         </legend>
         <div className="card row">
-          <Avatar id={id} name={displayName || name} animal={pick} size="lg" />
+          <Avatar
+            id={id}
+            name={displayName || name}
+            animal={pick === 'custom' ? null : pick}
+            picture={pick === 'custom' && customSrc ? customSrc : undefined}
+            size="lg"
+          />
           <div className="grow">
-            <div style={{ fontFamily: 'var(--display)', fontWeight: 800, fontSize: 19 }}>{chosen ? chosen.name : 'Just initials'}</div>
-            <div className="muted">{chosen ? chosen.vibe : 'Pick an animal below. Your initials stay on it so the crew knows it’s you.'}</div>
+            <div style={{ fontFamily: 'var(--display)', fontWeight: 800, fontSize: 19 }}>
+              {pick === 'custom' ? customName : chosen ? chosen.name : 'Just initials'}
+            </div>
+            <div className="muted">
+              {pick === 'custom'
+                ? `Drawn by Claude: “${fresh?.prompt ?? drawn?.prompt ?? ''}”`
+                : chosen
+                  ? chosen.vibe
+                  : 'Pick an animal below or describe your own. Your initials stay on it so the crew knows it’s you.'}
+            </div>
           </div>
         </div>
         <p className="muted small">Mid-energy animals only. No lions, no bears. We’re here at 9am, not 5am.</p>
+        <div className="card stack">
+          <label className="field" style={{ margin: 0 }}>
+            Describe your own and Claude draws it
+            <input
+              type="text"
+              value={idea}
+              maxLength={120}
+              placeholder="a grumpy beaver with a coffee"
+              onChange={(e) => setIdea(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (idea.trim() && !drawing) draw();
+                }
+              }}
+            />
+          </label>
+          <button type="button" className="btn" disabled={drawing || !idea.trim()} onClick={draw}>
+            {drawing ? 'Drawing… (about 20 seconds)' : fresh ? 'Draw it again' : 'Draw it'}
+          </button>
+          {drawNote?.ok && <p className="small" role="status">{drawNote.ok}</p>}
+          {drawNote?.error && <p className="small" role="alert">{drawNote.error}</p>}
+        </div>
         <div className="animal-grid" role="radiogroup" aria-label="Spirit animal">
           <button type="button" role="radio" aria-checked={pick === null} className={pick === null ? 'on' : ''} onClick={() => setPick(null)}>
             <span className="animal-none">AB</span>
             <span>None</span>
           </button>
+          {customSrc && (
+            <button type="button" role="radio" aria-checked={pick === 'custom'} className={pick === 'custom' ? 'on' : ''} onClick={() => setPick('custom')} title={customName}>
+              <img src={customSrc} alt="" width={36} height={36} />
+              <span>Yours</span>
+            </button>
+          )}
           {ANIMALS.map((a) => (
             <button key={a.id} type="button" role="radio" aria-checked={pick === a.id} className={pick === a.id ? 'on' : ''} onClick={() => setPick(a.id)} title={a.vibe}>
               <img src={`/animals/${a.id}.svg`} alt="" width={36} height={36} />

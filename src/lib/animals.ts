@@ -28,3 +28,9 @@ export type AnimalId = (typeof ANIMALS)[number]['id'];
 
 export const isAnimal = (a: unknown): a is AnimalId => typeof a === 'string' && ANIMALS.some((x) => x.id === a);
 export const animalName = (a: string | null | undefined) => ANIMALS.find((x) => x.id === a)?.name ?? null;
+
+/** A drawn avatar is stored as 'custom:<version>' in profiles.animal. */
+export const customVersion = (animal?: string | null) => {
+  const m = animal ? /^custom:([a-z0-9]{1,16})$/.exec(animal) : null;
+  return m ? m[1] : null;
+};

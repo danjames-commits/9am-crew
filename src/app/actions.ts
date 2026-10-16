@@ -3,7 +3,8 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireMember, supabaseServer } from '@/lib/supabase/server';
 import type { LevelPct, Part, PartKind, WorkoutDraft } from '@/lib/types';
-import { aiEnabled, draftWorkout, planCycle, scaleAdvice, takeAllowance } from '@/lib/ai';
+import { aiEnabled, draftWorkout, drawAnimal, planCycle, scaleAdvice, takeAllowance } from '@/lib/ai';
+import { cleanSvg, svgVersion } from '@/lib/svg-clean';
 import { cleanPlan, type PlanDraft } from '@/lib/programming/plan';
 import { isWeekday, todayLocal } from '@/lib/dates';
 import { getBests, getSchedule } from '@/lib/data';
@@ -20,16 +21,57 @@ export async function signOut() {
   redirect('/login');
 }
 
-export async function updateMe(input: { display_name: string; level: number; animal?: string | null }) {
+export async function updateMe(input: {
+  display_name: string;
+  level: number;
+  /** A preset animal id, 'custom' for a drawn one, or null for initials. */
+  animal?: string | null;
+  /** A new drawing to keep (when animal is 'custom'). */
+  drawing?: { prompt: string; name: string; svg: string } | null;
+}) {
   const { supabase, me } = await requireMember();
   const display_name = input.display_name.trim().slice(0, 40);
   const level = Math.round(input.level);
   if (!display_name || level < 1 || level > 4) return { error: 'Please add a name and pick a level.' };
-  const animal = input.animal && isAnimal(input.animal) ? input.animal : null;
+  let animal: string | null = input.animal && isAnimal(input.animal) ? input.animal : null;
+  if (input.animal === 'custom') {
+    if (input.drawing) {
+      const svg = cleanSvg(input.drawing.svg);
+      if (!svg) return { error: 'That drawing didn’t pass the safety check. Try drawing it again.' };
+      const { error: saveError } = await supabase.from('avatars').upsert({
+        user_id: me.id,
+        prompt: input.drawing.prompt.trim().slice(0, 120) || 'spirit animal',
+        name: input.drawing.name.trim().slice(0, 60) || 'Spirit animal',
+        svg,
+        updated_at: new Date().toISOString(),
+      });
+      if (saveError) return { error: saveError.message };
+      animal = `custom:${svgVersion(svg)}`;
+    } else {
+      const { data: saved } = await supabase.from('avatars').select('svg').eq('user_id', me.id).maybeSingle();
+      if (!saved) return { error: 'Draw your animal first.' };
+      animal = `custom:${svgVersion(saved.svg)}`;
+    }
+  }
   const { error } = await supabase.from('profiles').update({ display_name, level, animal }).eq('id', me.id);
   if (error) return { error: error.message };
   revalidatePath('/', 'layout');
   return { ok: true };
+}
+
+/** Claude draws a spirit animal from a description. Nothing is saved until they press Save. */
+export async function drawAvatar(prompt: string) {
+  const { supabase, me } = await requireMember();
+  const ask = prompt.trim().replace(/\s+/g, ' ').slice(0, 120);
+  if (!ask) return { error: 'Describe your animal first, like “a grumpy beaver”.' };
+  if (!aiEnabled()) return { error: 'Claude isn’t set up yet.' };
+  if (!(await takeAllowance(supabase, me.id, 'avatar'))) return { error: 'That’s plenty of drawing for today. Pick one and try more tomorrow.' };
+  try {
+    const r = await drawAnimal(ask);
+    return r.ok ? { ok: true as const, message: r.message, drawing: { prompt: ask, name: r.name, svg: r.svg } } : { error: r.message };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Claude couldn’t draw that. Try again.' };
+  }
 }
 
 // ---------------- Check-in ----------------

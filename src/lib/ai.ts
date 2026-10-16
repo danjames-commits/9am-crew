@@ -6,6 +6,7 @@ import { cleanPlan, KIND_NAMES, WEEKDAYS, type PlanDraft } from './programming/p
 import { LEVELS, type LevelText, type LiftSpec, type Part, type WorkoutDraft } from './types';
 import { addDays, longDate, shortDate, todayLocal, weekday } from './dates';
 import type { WeatherCall } from './weather-rules';
+import { cleanSvg } from './svg-clean';
 
 // Sonnet writes workouts; Haiku handles the quick, short jobs.
 const BUILD_MODEL = 'claude-sonnet-5-5';
@@ -21,7 +22,7 @@ function client() {
 // ---------------------------------------------------------------
 // Daily limits, so nobody runs up the bill by accident.
 // ---------------------------------------------------------------
-export const DAILY_LIMIT = { build: 60, scale: 8, recap: 5, plan: 20 } as const;
+export const DAILY_LIMIT = { build: 60, scale: 8, recap: 5, plan: 20, avatar: 12 } as const;
 
 export async function takeAllowance(supabase: SupabaseClient, userId: string, kind: keyof typeof DAILY_LIMIT) {
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
@@ -503,4 +504,57 @@ The admin's brief for this cycle: "${brief.trim() || 'No special requests. Plan 
     messages.push({ role: 'user', content: 'That includes partner or team work. Rewrite it so everyone works on their own, no partners at all.' });
   }
   throw new Error('Claude kept adding partner work. Try again or edit the plan by hand.');
+}
+
+// ---------------------------------------------------------------
+// Spirit animal drawings ("a grumpy beaver")
+// ---------------------------------------------------------------
+const ARTIST = `You draw spirit-animal avatars for "9AM Crew", a small, friendly weekday 9 AM workout group (mostly retirees and moms) in Charlottetown, PEI. The group's whole identity is MID-LEVEL ENERGY: they show up, they work, nobody is a beast. Each person describes the animal they want and you draw it as a tiny cartoon avatar.
+
+Who is allowed:
+- Mid-energy animals only: raccoons, beavers, deer, otters, sloths, hedgehogs, ducks, geese, moose, capybaras, lobsters, puffins, groundhogs, foxes, possums, pigeons and the like. Mood words and props are welcome and are the fun part: grumpy, sleepy, smug, over-caffeinated, wearing a headband, holding a coffee, sweatband, tiny kettlebell.
+- Turn DOWN apex predators and anything that reads as intense or intimidating: bears, lions, tigers, wolves, sharks, eagles, gorillas, crocodiles, dragons, and "beast mode" versions of anything. Saying "a calm lion" doesn't make it mid; a lion is still a lion.
+- Turn down people, real or famous, and any known character, mascot, team or brand animal (cartoon, movie, game, sports or product). Draw only your own original animal.
+- Turn down anything rude, gross or mean: it is shown to the whole group.
+When you turn one down, set ok to false and write a short, playful one-line message suggesting a mid alternative (e.g. "Lions are 5 AM crew. How about a smug raccoon?"). Leave svg empty.
+
+How to draw (when ok is true):
+- One SVG, viewBox="0 0 100 100", with xmlns="http://www.w3.org/2000/svg". Double quotes on every attribute.
+- Only these elements: svg, g, defs, circle, ellipse, rect, path, polygon, polyline, line, linearGradient, radialGradient, stop. Only presentation attributes (fill, stroke, stroke-width, stroke-linecap, stroke-linejoin, opacity, transform and shape geometry). No style attributes, no text, no images, no links, no comments, no CSS.
+- No background: the app puts a coloured circle behind it. The animal's head (or head and shoulders) fills most of the frame and is centred, a little toward the top, because the bottom-right corner gets a small initials badge.
+- Friendly flat cartoon style like an emoji: bold simple shapes, a few clear colours, a dark outline or none, big readable face. It must read clearly at 34 pixels wide. Make the mood obvious from the eyebrows, eyes and mouth.
+- Keep it under about 5000 characters.`;
+
+export async function drawAnimal(prompt: string) {
+  const schema = {
+    type: 'object',
+    properties: {
+      ok: { type: 'boolean', description: 'false if this request breaks the rules' },
+      message: { type: 'string', description: 'If ok: a short playful line about the drawing. If not: the playful one-line turn-down.' },
+      name: { type: 'string', description: 'Short name for the animal, e.g. "Grumpy beaver" (empty if not ok)' },
+      svg: { type: 'string', description: 'The SVG drawing (empty if not ok)' },
+    },
+    required: ['ok', 'message', 'name', 'svg'],
+    additionalProperties: false,
+  };
+  const messages: Anthropic.MessageParam[] = [{ role: 'user', content: `Draw: "${prompt}"` }];
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await client().messages.create({
+      model: BUILD_MODEL,
+      max_tokens: 5000,
+      system: ARTIST,
+      messages,
+      output_config: { format: { type: 'json_schema', schema } },
+    });
+    if (res.stop_reason === 'refusal') return { ok: false as const, message: 'Claude passed on that one. Try a different animal.' };
+    const block = res.content.find((b) => b.type === 'text');
+    if (!block || block.type !== 'text' || res.stop_reason === 'max_tokens') continue;
+    const out = JSON.parse(block.text) as { ok: boolean; message: string; name: string; svg: string };
+    if (!out.ok) return { ok: false as const, message: out.message.slice(0, 200) || 'That one’s a bit much for 9 AM. Try something more mid.' };
+    const svg = cleanSvg(out.svg);
+    if (svg) return { ok: true as const, message: out.message.slice(0, 200), name: (out.name || prompt).slice(0, 60), svg };
+    messages.push({ role: 'assistant', content: block.text });
+    messages.push({ role: 'user', content: 'That SVG used something that isn’t allowed. Redraw it with only the allowed elements and attributes, double quotes, no style attributes, comments or text.' });
+  }
+  return { ok: false as const, message: 'The drawing came out wonky. Give it another go.' };
 }
