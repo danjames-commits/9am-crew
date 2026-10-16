@@ -2,7 +2,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { saveWorkout, deleteWorkout } from '@/app/actions';
-import { suggestWorkout, conditioningOptions, liftPart, liftPct } from '@/lib/programming/engine';
+import { suggestWorkout, conditioningOptions, liftPart, liftPct, type Schedule } from '@/lib/programming/engine';
 import { LiftEditor } from './LiftEditor';
 import { AskClaude } from './AskClaude';
 import { LEVELS, type Level, type Part, type WorkoutDraft, type LevelText, type LiftSpec } from '@/lib/types';
@@ -22,23 +22,21 @@ const BLANK: Part[] = [
 
 export function Builder({
   date,
-  cycleStart,
-  cycleWeeks,
+  schedule,
   saved,
   weather,
   movements,
   aiOn,
 }: {
   date: string;
-  cycleStart: string;
-  cycleWeeks: number;
+  schedule: Schedule;
   saved: Saved | null;
   weather: WeatherCall | null;
   movements: string[];
   aiOn: boolean;
 }) {
   const router = useRouter();
-  const suggest = (swap: number, adjust: number) => suggestWorkout({ date, cycleStart, cycleWeeks, swap, adjust });
+  const suggest = (swap: number, adjust: number) => suggestWorkout({ date, schedule, swap, adjust });
 
   const [swap, setSwap] = useState(0);
   const [draft, setDraft] = useState<WorkoutDraft>(() => saved ?? suggest(0, 0));
@@ -50,7 +48,7 @@ export function Builder({
   const [pending, run] = useTransition();
   const [dirty, setDirty] = useState(false);
 
-  const optionCount = conditioningOptions(date).length;
+  const optionCount = conditioningOptions(date, schedule).length;
   const update = (d: WorkoutDraft) => {
     setDraft(d);
     setDirty(true);

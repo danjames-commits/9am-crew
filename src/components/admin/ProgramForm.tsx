@@ -16,7 +16,7 @@ export function ProgramForm({ cycleStart, cycleWeeks, goals }: { cycleStart: str
 
   return (
     <form onSubmit={save} className="card stack loose">
-      <h2>Settings</h2>
+      <h2>Usual pattern settings</h2>
       <div className="row fields">
         <label className="field grow">
           Cycle starts
@@ -33,7 +33,7 @@ export function ProgramForm({ cycleStart, cycleWeeks, goals }: { cycleStart: str
           </select>
         </label>
       </div>
-      <p className="muted small">After the last week, the next cycle starts on its own with the same pattern.</p>
+      <p className="muted small">Cycle 1 starts on this date. Any cycle you haven’t planned in the Cycle planner uses this length, the usual pattern and these goals.</p>
       <fieldset className="stack tight" style={{ border: 'none', padding: 0, margin: 0 }}>
         <legend className="field" style={{ fontSize: 14, fontWeight: 700, color: 'var(--ink-2)', marginBottom: 6 }}>
           Crew goals

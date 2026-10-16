@@ -1,9 +1,9 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { addDays, mondayOf, todayLocal, weekday, TIME_ZONE, shortDate } from './dates';
-import { cyclePosition } from './programming/engine';
+import { positionOn } from './programming/engine';
 import { aiEnabled, writeRecap } from './ai';
-import { getProgram } from './data';
+import { getSchedule } from './data';
 import { firstName } from './ui';
 
 /** Hour of the day in the gym's time zone. */
@@ -27,11 +27,11 @@ export async function maybePostRecap(supabase: SupabaseClient) {
   const friday = addDays(monday, 4);
   // Close enough to midnight Monday in Atlantic time for filtering messages.
   const since = `${monday}T03:00:00Z`;
-  const [{ data: attendance }, { data: prs }, { data: people }, program] = await Promise.all([
+  const [{ data: attendance }, { data: prs }, { data: people }, schedule] = await Promise.all([
     supabase.from('attendance').select('user_id, class_date').gte('class_date', monday).lte('class_date', friday),
     supabase.from('messages').select('user_id, body').eq('kind', 'pr').gte('created_at', since),
     supabase.from('profiles').select('id, display_name').eq('approved', true),
-    getProgram(supabase),
+    getSchedule(supabase),
   ]);
   const name = new Map((people ?? []).map((p) => [p.id, firstName(p.display_name)]));
   const checkIns = attendance?.length ?? 0;
@@ -40,21 +40,23 @@ export async function maybePostRecap(supabase: SupabaseClient) {
   const prLines = (prs ?? []).map((p) => `${name.get(p.user_id) ?? 'Someone'}: ${p.body}`);
 
   const nextMonday = addDays(monday, 7);
-  const next = cyclePosition(nextMonday, program.cycle_start, program.cycle_weeks);
+  const next = positionOn(nextMonday, schedule);
+  const cyc = next.resolved;
   const nextWeek =
     next.week.kind === 'test'
       ? 'Test week: everyone goes for a new best.'
       : next.week.kind === 'deload'
         ? 'An ease-off week: lighter weights so everyone recovers.'
-        : `Week ${next.week.index + 1} of ${program.cycle_weeks}: ${next.week.label.toLowerCase()} week, main lifts around ${next.week.pct}%.`;
-  const testMonday = addDays(mondayOf(program.cycle_start), (next.cycle - 1) * program.cycle_weeks * 7 + (program.cycle_weeks - 1) * 7);
+        : `${next.week.index === 0 ? `A new cycle starts${cyc.name ? ` (${cyc.name})` : ''}. ` : ''}Week ${next.week.index + 1} of ${next.totalWeeks}: ${next.week.label.toLowerCase()} week, main lifts around ${next.week.pct}%.`;
+  const testIndex = cyc.weeks.findIndex((w) => w.kind === 'test');
+  const testLine = testIndex >= 0 ? `Test week starts ${shortDate(addDays(cyc.start, testIndex * 7))}.` : '';
 
   const facts = `Week of ${shortDate(monday)}.
 Check-ins: ${checkIns} across ${days} class days, ${regulars} different people.
 New personal bests this week: ${prLines.length ? prLines.join('; ') : 'none logged this week'}.
-Crew goals this cycle: ${program.goals.length ? program.goals.join('; ') : 'none set'}.
+Crew goals this cycle: ${cyc.goals.length ? cyc.goals.join('; ') : 'none set'}.
 Next week: ${nextWeek}
-Test week starts ${shortDate(testMonday)}.`;
+${testLine}`;
 
   try {
     const body = await writeRecap(facts);

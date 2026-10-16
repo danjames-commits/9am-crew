@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { after } from 'next/server';
 import { requireMember } from '@/lib/supabase/server';
 import { maybePostRecap } from '@/lib/recap';
-import { getNames, recentPrs } from '@/lib/data';
+import { getNames, getSchedule, recentPrs } from '@/lib/data';
+import { daysBetween } from '@/lib/dates';
+import { nextCycle, positionOn } from '@/lib/programming/engine';
 import { nextClassDate, relativeDay, longDate, timeAgo, todayLocal } from '@/lib/dates';
 import { firstName } from '@/lib/ui';
 import { levelName } from '@/lib/types';
@@ -32,6 +34,11 @@ export default async function TodayPage() {
   ]);
   const hasOutdoor = Boolean(workout && (workout.parts as Part[] | null)?.some((p) => p.outdoor));
 
+  let planNext = false;
+  if (me.is_admin) {
+    const schedule = await getSchedule(supabase);
+    planNext = daysBetween(classDate, positionOn(classDate, schedule).resolved.end) <= 14 && !nextCycle(classDate, schedule).saved;
+  }
   const going = (attendance ?? []).some((a) => a.user_id === me.id);
   const others = (attendance ?? [])
     .filter((a) => a.user_id !== me.id)
@@ -53,7 +60,10 @@ export default async function TodayPage() {
       {me.is_admin && (
         <Link href="/admin" className="card row" style={{ textDecoration: 'none', color: 'inherit' }}>
           <span className="badge">ADMIN</span>
-          <span className="grow">Program and workout builder{pending ? ` · ${pending} waiting for approval` : ''}</span>
+          <span className="grow">
+            Program and workout builder{pending ? ` · ${pending} waiting for approval` : ''}
+            {planNext ? ' · time to plan the next cycle' : ''}
+          </span>
           <Icon name="next" />
         </Link>
       )}

@@ -1,10 +1,10 @@
 import 'server-only';
 import Anthropic from '@anthropic-ai/sdk';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { cyclePosition, liftPart, liftPct, suggestWorkout, DAY_PLAN, weightFor } from './programming/engine';
+import { liftPart, liftPct, positionOn, suggestWorkout, weightFor, STYLES, STYLE_NAMES, type Schedule } from './programming/engine';
+import { cleanPlan, KIND_NAMES, WEEKDAYS, type PlanDraft } from './programming/plan';
 import { LEVELS, type LevelText, type LiftSpec, type Part, type WorkoutDraft } from './types';
-import { addDays, longDate, weekday } from './dates';
-import type { Program } from './data';
+import { addDays, longDate, shortDate, todayLocal, weekday } from './dates';
 import type { WeatherCall } from './weather-rules';
 
 // Sonnet writes workouts; Haiku handles the quick, short jobs.
@@ -21,7 +21,7 @@ function client() {
 // ---------------------------------------------------------------
 // Daily limits, so nobody runs up the bill by accident.
 // ---------------------------------------------------------------
-export const DAILY_LIMIT = { build: 60, scale: 8, recap: 5 } as const;
+export const DAILY_LIMIT = { build: 60, scale: 8, recap: 5, plan: 20 } as const;
 
 export async function takeAllowance(supabase: SupabaseClient, userId: string, kind: keyof typeof DAILY_LIMIT) {
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
@@ -186,13 +186,13 @@ function describeDraft(d: WorkoutDraft) {
 
 export async function draftWorkout(opts: {
   supabase: SupabaseClient;
-  program: Program;
+  schedule: Schedule;
   date: string;
   request: string;
   current?: WorkoutDraft | null;
   weather?: WeatherCall | null;
 }): Promise<WorkoutDraft> {
-  const { supabase, program, date, request, current, weather } = opts;
+  const { supabase, schedule, date, request, current, weather } = opts;
   const [{ data: movementRows }, { data: recent }] = await Promise.all([
     supabase.from('movements').select('name').order('sort'),
     supabase
@@ -204,9 +204,10 @@ export async function draftWorkout(opts: {
       .order('class_date'),
   ]);
   const movements = (movementRows ?? []).map((m) => m.name as string);
-  const pos = cyclePosition(date, program.cycle_start, program.cycle_weeks);
-  const plan = DAY_PLAN[weekday(date)];
-  const reference = suggestWorkout({ date, cycleStart: program.cycle_start, cycleWeeks: program.cycle_weeks });
+  const pos = positionOn(date, schedule);
+  const cycle = pos.resolved;
+  const plan = cycle.days[weekday(date)];
+  const reference = suggestWorkout({ date, schedule });
 
   const recentLines = (recent ?? []).map((r) => {
     const cond = (r.parts as Part[]).find((p) => p.kind === 'conditioning');
@@ -214,9 +215,9 @@ export async function draftWorkout(opts: {
   });
 
   const context = `Workout for ${longDate(date)}.
-Day focus: ${plan.focus}.
-Cycle ${pos.cycle}, week ${pos.week.index + 1} of ${program.cycle_weeks}: ${pos.week.label}${pos.week.kind === 'build' ? ` (main lift ${pos.week.sets}×${pos.week.reps} at ${pos.week.pct}% for Strong)` : pos.week.kind === 'deload' ? ' (ease-off week, about 60%, lighter conditioning)' : ' (test week: build to a new best)'}${pos.started ? '' : ' — the cycle has not started yet'}.
-Crew goals this cycle: ${program.goals.length ? program.goals.join('; ') : 'none set'}.
+Day focus: ${plan.focus}. Main lift: ${plan.lift ? `${plan.lift.name} (Gentle does ${plan.lift.gentle})` : 'none today'}.${plan.skill === 'pullup' ? ' Include pull-up skill practice.' : ''} Conditioning style: ${STYLE_NAMES[plan.style]}.${plan.notes ? `\nThe cycle plan's note for this day: ${plan.notes}` : ''}
+Cycle ${pos.cycle}${cycle.name ? ` ("${cycle.name}")` : ''}, week ${pos.week.index + 1} of ${pos.totalWeeks}: ${pos.week.label}${pos.week.kind === 'build' ? ` (main lift ${pos.week.sets}×${pos.week.reps} at ${pos.week.pct}% for Strong)` : pos.week.kind === 'deload' ? ` (ease-off week, about ${pos.week.pct || 60}%, lighter conditioning)` : ' (test week: build to a new best)'}${pos.started ? '' : ' — the cycle has not started yet'}.${cycle.why ? `\nWhy this cycle is planned this way: ${cycle.why}` : ''}
+Crew goals this cycle: ${cycle.goals.length ? cycle.goals.join('; ') : 'none set'}.
 Lifts the app tracks (use only these for lift settings): ${movements.join(', ')}.
 ${weather ? `9 AM forecast: ${weather.headline}. ${weather.detail}.` : 'No forecast yet.'}
 
@@ -302,4 +303,204 @@ export async function writeRecap(facts: string) {
   const block = res.content.find((b) => b.type === 'text');
   if (!block || block.type !== 'text') throw new Error('No recap');
   return block.text.trim();
+}
+
+// ---------------------------------------------------------------
+// Planning a whole cycle
+// ---------------------------------------------------------------
+const PLANNER = `You plan training cycles for "9AM Crew": about 8 people (mostly retirees and moms, relaxed and friendly, all ages and abilities) who train together every weekday at 9 AM in a small rented gym space in Charlottetown, PEI, Canada. Each member picks a level (Gentle, Steady, Strong, Full); percentages you set are for Strong, and the app makes Steady 10% lighter and Full 5% heavier. Gentle uses lighter tools. Weights are in pounds.
+
+A cycle is a run of weeks (usually 4–8) with a weekly split. You decide:
+- The weeks: each is "build" (sets × reps at a percentage of each person's best), "deload" (an easier week so bodies recover), or "test" (everyone builds to a new best). Strong percentages should climb gradually, roughly 60–85%, with a deload every 3–4 weeks and usually a test week at the end. Sets and reps should fit the percentage (lighter = more reps, e.g. 3×8 at 65%, 5×5 at ~75%, 5×3 at ~82%). Give each week a short label like "Base", "Build", "Heavy", "Ease off", "Holidays", "Test".
+- The weekday split, Monday to Friday: a short focus line, the main lift for the day (or none), whether to include pull-up skill practice, a conditioning style, and an optional note for whoever writes that day's workouts. Keep Thursday an easy, low-intensity day unless the admin says otherwise. Spread the main lifts so the same muscles aren't hammered on back-to-back days. Lifts can repeat across cycles but vary them sensibly.
+- A short, friendly name for the cycle, 1–4 crew goals, and a few sentences on why it's planned this way (written for the admins, plain language).
+
+Hard rules: never plan partner or team work of any kind. Keep it safe and sensible for older adults. Respect what the admin asks for (dates away, injuries, focus lifts, number of weeks, outdoor work, holidays). Plain language, no emoji.
+
+Conditioning styles you can choose from:
+${STYLES.map((s) => `- ${s}: ${STYLE_NAMES[s]}`).join('\n')}`;
+
+interface AiPlanDay {
+  focus: string;
+  lift: string;
+  gentle: string;
+  skill: 'none' | 'pullup';
+  conditioning: string;
+  notes: string;
+}
+interface AiPlan {
+  name: string;
+  why: string;
+  goals: string[];
+  weeks: { kind: 'build' | 'deload' | 'test'; label: string; strong_pct: number; sets: number; reps: number }[];
+  days: { mon: AiPlanDay; tue: AiPlanDay; wed: AiPlanDay; thu: AiPlanDay; fri: AiPlanDay };
+}
+
+function planSchema(movements: string[]) {
+  const lifts = [...movements, 'none'];
+  const day = {
+    type: 'object',
+    properties: {
+      focus: { type: 'string', description: 'Short focus line, e.g. "Deadlift · intervals"' },
+      lift: { type: 'string', enum: lifts, description: 'Main lift for the day, or "none"' },
+      gentle: { type: 'string', enum: lifts, description: 'What Gentle does instead (an easier movement), or "none" if no lift' },
+      skill: { type: 'string', enum: ['none', 'pullup'] },
+      conditioning: { type: 'string', enum: STYLES },
+      notes: { type: 'string', description: 'Optional guidance for the workout writer, or empty' },
+    },
+    required: ['focus', 'lift', 'gentle', 'skill', 'conditioning', 'notes'],
+    additionalProperties: false,
+  };
+  return {
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      why: { type: 'string' },
+      goals: { type: 'array', items: { type: 'string' } },
+      weeks: {
+        type: 'array',
+        description: 'One entry per week, in order. Usually 4–8 weeks.',
+        items: {
+          type: 'object',
+          properties: {
+            kind: { type: 'string', enum: ['build', 'deload', 'test'] },
+            label: { type: 'string' },
+            strong_pct: { type: 'integer', description: 'Strong-level percent of best. Use 0 for test weeks.' },
+            sets: { type: 'integer' },
+            reps: { type: 'integer' },
+          },
+          required: ['kind', 'label', 'strong_pct', 'sets', 'reps'],
+          additionalProperties: false,
+        },
+      },
+      days: {
+        type: 'object',
+        properties: { mon: day, tue: day, wed: day, thu: day, fri: day },
+        required: ['mon', 'tue', 'wed', 'thu', 'fri'],
+        additionalProperties: false,
+      },
+    },
+    required: ['name', 'why', 'goals', 'weeks', 'days'],
+    additionalProperties: false,
+  };
+}
+
+const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri'] as const;
+
+function describePlan(p: PlanDraft) {
+  const weeks = p.weeks
+    .map((w, i) => `  Week ${i + 1} (${shortDate(addDays(p.start_date, i * 7))}): ${KIND_NAMES[w.kind]} "${w.label}"${w.kind === 'test' ? '' : `, ${w.sets}×${w.reps} at ${w.pct}%`}`)
+    .join('\n');
+  const days = WEEKDAYS.map(({ n, short }) => {
+    const d = p.days[n];
+    return `  ${short}: ${d.focus} | lift: ${d.lift ?? 'none'}${d.lift ? ` (Gentle: ${d.gentle ?? d.lift})` : ''} | pull-ups: ${d.skill ? 'yes' : 'no'} | conditioning: ${d.style}${d.notes ? ` | note: ${d.notes}` : ''}`;
+  }).join('\n');
+  return `Name: ${p.name || '(none)'}\nGoals: ${p.goals.join('; ') || 'none'}\nWhy: ${p.why || '(none)'}\nWeeks:\n${weeks}\nWeekday split:\n${days}`;
+}
+
+export async function planCycle(opts: {
+  supabase: SupabaseClient;
+  schedule: Schedule;
+  start: string;
+  brief: string;
+  current?: PlanDraft | null;
+  request?: string;
+}): Promise<PlanDraft> {
+  const { supabase, schedule, start, brief, current, request } = opts;
+  const [{ data: movementRows }, { data: people }, { data: logs }] = await Promise.all([
+    supabase.from('movements').select('id, name').order('sort'),
+    supabase.from('profiles').select('level').eq('approved', true),
+    supabase.from('lift_logs').select('movement_id, user_id'),
+  ]);
+  const movements = (movementRows ?? []).map((m) => m.name as string);
+  const nameOf = new Map((movementRows ?? []).map((m) => [m.id, m.name as string]));
+  const withNumbers = new Map<string, Set<string>>();
+  for (const l of logs ?? []) {
+    const n = nameOf.get(l.movement_id);
+    if (!n) continue;
+    if (!withNumbers.has(n)) withNumbers.set(n, new Set());
+    withNumbers.get(n)!.add(l.user_id);
+  }
+  const levelCounts = LEVELS.map((l) => `${(people ?? []).filter((p) => p.level === l.n).length} ${l.name}`).join(', ');
+
+  // The cycle that ends as this one starts, for continuity.
+  const before = positionOn(addDays(start, -3), schedule);
+  const prev = before.resolved;
+  const prevPlan: PlanDraft = {
+    start_date: prev.start,
+    name: prev.name ?? '',
+    why: prev.why ?? '',
+    brief: '',
+    goals: prev.goals,
+    weeks: prev.weeks.map(({ kind, label, pct, sets, reps }) => ({ kind, label, pct, sets, reps })),
+    days: Object.fromEntries(
+      WEEKDAYS.map(({ n }) => {
+        const d = prev.days[Number(n)];
+        return [n, { focus: d.focus, style: d.style, lift: d.lift?.name ?? null, gentle: d.lift?.gentle ?? null, skill: d.skill ?? null, notes: d.notes ?? '' }];
+      }),
+    ),
+  };
+  const calendar = Array.from({ length: 12 }, (_, i) => `week ${i + 1} starts Mon ${shortDate(addDays(start, i * 7)).split(' · ')[1]}`).join('; ');
+
+  const context = `Today is ${longDate(todayLocal())}.
+Plan cycle ${positionOn(start, schedule).cycle}, starting Monday ${shortDate(start).split(' · ')[1]}. Calendar: ${calendar}.
+Crew: ${(people ?? []).length} members (${levelCounts}).
+Lifts the app tracks (use only these): ${movements.join(', ')}.
+Lifts people have logged numbers for: ${[...withNumbers].map(([n, u]) => `${n} (${u.size})`).join(', ') || 'none yet'}.
+
+The previous cycle (cycle ${before.cycle}, ${prev.start} to ${addDays(prev.end, -3)}):
+${describePlan(prevPlan)}
+
+The admin's brief for this cycle: "${brief.trim() || 'No special requests. Plan a sensible next cycle.'}"`;
+
+  const ask = current && request?.trim()
+    ? `\n\nThe plan so far:\n${describePlan(current)}\n\nThe admin now asks: "${request.trim()}"\nChange only what they asked for and keep the rest.`
+    : '\n\nPlan this cycle.';
+
+  const schema = planSchema(movements);
+  const messages: Anthropic.MessageParam[] = [{ role: 'user', content: context + ask }];
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await client().messages.create({
+      model: BUILD_MODEL,
+      max_tokens: 4000,
+      system: PLANNER,
+      messages,
+      output_config: { format: { type: 'json_schema', schema } },
+    });
+    if (res.stop_reason === 'refusal') throw new Error('Claude couldn’t plan that one. Try wording it differently.');
+    if (res.stop_reason === 'max_tokens') throw new Error('The plan came out too long. Try a shorter brief.');
+    const block = res.content.find((b) => b.type === 'text');
+    if (!block || block.type !== 'text') throw new Error('Claude didn’t send a plan back. Try again.');
+    const ai = JSON.parse(block.text) as AiPlan;
+    const draft: PlanDraft = {
+      start_date: start,
+      name: ai.name,
+      why: ai.why,
+      brief: brief,
+      goals: ai.goals,
+      weeks: ai.weeks.map((w) => ({ kind: w.kind, label: w.label, pct: w.strong_pct, sets: w.sets, reps: w.reps })),
+      days: Object.fromEntries(
+        DAY_KEYS.map((k, i) => {
+          const d = ai.days[k];
+          return [
+            String(i + 1),
+            {
+              focus: d.focus,
+              lift: d.lift === 'none' ? null : d.lift,
+              gentle: d.gentle === 'none' ? null : d.gentle,
+              skill: d.skill === 'pullup' ? 'pullup' : null,
+              style: d.conditioning as PlanDraft['days'][string]['style'],
+              notes: d.notes,
+            },
+          ];
+        }),
+      ),
+    };
+    const { plan, error } = cleanPlan(draft, movements);
+    if (!plan) throw new Error(error ?? 'Claude’s plan didn’t fit. Try again.');
+    if (!PARTNER.test(JSON.stringify(plan))) return plan;
+    messages.push({ role: 'assistant', content: block.text });
+    messages.push({ role: 'user', content: 'That includes partner or team work. Rewrite it so everyone works on their own, no partners at all.' });
+  }
+  throw new Error('Claude kept adding partner work. Try again or edit the plan by hand.');
 }

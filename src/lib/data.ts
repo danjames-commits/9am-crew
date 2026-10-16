@@ -1,6 +1,7 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { estimateMax } from './programming/engine';
+import { estimateMax, type SavedCycle, type Schedule } from './programming/engine';
+import { classDays, daysBetween } from './dates';
 
 export interface Program {
   cycle_start: string;
@@ -11,6 +12,20 @@ export interface Program {
 export async function getProgram(supabase: SupabaseClient): Promise<Program> {
   const { data } = await supabase.from('program').select('cycle_start, cycle_weeks, goals').eq('id', 1).single();
   return data ?? { cycle_start: new Date().toISOString().slice(0, 10), cycle_weeks: 6, goals: [] };
+}
+
+/** The built-in program plus every planned cycle: everything needed to work out any day's plan. */
+export async function getSchedule(supabase: SupabaseClient): Promise<Schedule> {
+  const [program, { data: cycles }] = await Promise.all([
+    getProgram(supabase),
+    supabase.from('cycles').select('id, start_date, name, why, brief, goals, weeks, days').order('start_date'),
+  ]);
+  return {
+    cycleStart: program.cycle_start,
+    cycleWeeks: program.cycle_weeks,
+    goals: program.goals,
+    cycles: (cycles ?? []) as SavedCycle[],
+  };
 }
 
 export interface LiftLog {
@@ -106,4 +121,14 @@ export async function recentPrs(supabase: SupabaseClient, meId: string, sinceDay
     const mine = (cheers ?? []).filter((c) => c.lift_log_id === p.lift_log_id);
     return { ...p, cheers: mine.length, cheeredByMe: mine.some((c) => c.user_id === meId) };
   });
+}
+
+/** Weekdays between two dates (inclusive) that don't have a workout yet. */
+export async function emptyDays(supabase: SupabaseClient, from: string, to: string) {
+  if (to < from) return [];
+  const all = classDays(from, Math.ceil((daysBetween(from, to) + 1) * (5 / 7)) + 2).filter((d) => d <= to);
+  if (!all.length) return [];
+  const { data } = await supabase.from('workouts').select('class_date').gte('class_date', all[0]).lte('class_date', all[all.length - 1]);
+  const taken = new Set((data ?? []).map((w) => w.class_date as string));
+  return all.filter((d) => !taken.has(d));
 }

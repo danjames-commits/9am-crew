@@ -27,7 +27,7 @@ You need two free accounts: **Supabase** (the database and sign-in) and **Vercel
 ### 1. Supabase
 
 1. Go to supabase.com, create a new project. Pick a region near you (Canada Central or US East).
-2. Open **SQL Editor**, paste the whole of `supabase/schema.sql`, and press **Run**. Then do the same with `supabase/migration-003-claude.sql`.
+2. Open **SQL Editor**, paste the whole of `supabase/schema.sql`, and press **Run**. Then do the same with `supabase/migration-003-claude.sql` and `supabase/migration-004-cycles.sql`.
 3. Open **Authentication → Sign In / Providers → Email** and turn off **Confirm email** (admin approval already keeps strangers out).
 4. Under **Authentication → URL Configuration**, set **Site URL** to your Vercel address once you have it.
 5. Open **Project Settings → API** and copy the **Project URL** and the **anon public** key.
@@ -69,6 +69,12 @@ Add your Claude API key in Vercel as a **Secret** named `ANTHROPIC_API_KEY`. Tha
 - **Need to adjust today?** on each upcoming workout: swaps for a sore knee, low energy or missing equipment.
 - **Friday recap** in the chat, written once per week after Friday's class.
 Daily limits per person keep the cost down; set a monthly spending limit in the Claude Console too.
+
+### Cycle planner
+
+**Admin → Cycle planner** lists the current cycle and the next three. Plan any future cycle with Claude (write a brief: focus lifts, dates away, number of weeks) or by hand from the usual pattern. A planned cycle sets its weeks (percentages, sets × reps, ease-off and test weeks), the weekday split and the goals; every suggestion, Claude draft and the cycle chart follow it. Unplanned cycles use the usual pattern. Two weeks before a cycle ends, admins get a nudge to plan the next one.
+
+With Claude on, opening the Program page drafts any empty days in the coming week, and each planned cycle has **Draft the rest of the cycle**. Drafts always wait for an admin to publish.
 
 ### Ideas for later
 

@@ -23,6 +23,7 @@ await db.exec(`
 
 await db.exec(readFileSync(new URL('../supabase/schema.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-003-claude.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-004-cycles.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -142,6 +143,24 @@ await fails(B, `insert into public.ai_requests (kind, user_id) values ('scale', 
 r = await as(C, `select count(*)::int as n from public.ai_requests`);
 assert.equal(r.rows[0].n, 0);
 ok('Claude usage log is private to each person');
+
+// Planned cycles: admins only, Mondays only, no overlaps.
+const wk = (n) => JSON.stringify(Array.from({ length: n }, () => ({ kind: 'build', label: 'Build', pct: 70, sets: 5, reps: 5 })));
+const cyc = (start, n) => `insert into public.cycles (start_date, week_count, name, weeks, days) values ('${start}', ${n}, 'Test', '${wk(n)}', '{}') returning end_date::text`;
+r = await as(A, cyc('2026-11-30', 6));
+assert.equal(r.rows[0].end_date, '2027-01-11');
+await fails(B, cyc('2027-01-11', 4), 'member plans a cycle');
+await fails(A, cyc('2026-12-14', 4), 'overlapping cycle');
+await fails(A, cyc('2027-01-12', 4), 'cycle not on a Monday');
+await fails(A, `insert into public.cycles (start_date, week_count, weeks, days) values ('2027-01-11', 4, '${wk(3)}', '{}')`, 'week count mismatch');
+await as(A, cyc('2027-01-11', 4));
+r = await as(B, `select count(*)::int as n from public.cycles`);
+assert.equal(r.rows[0].n, 2);
+await as(B, `delete from public.cycles`);
+r = await as(B, `select count(*)::int as n from public.cycles`);
+assert.equal(r.rows[0].n, 2);
+await as(A, `insert into public.ai_requests (kind) values ('plan')`);
+ok('planned cycles: admins only, start on Mondays, never overlap');
 
 await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);

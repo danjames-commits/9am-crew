@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { requireMember } from '@/lib/supabase/server';
-import { getProgram } from '@/lib/data';
-import { addDays, classDays, mondayOf, nextClassDate, shortDate } from '@/lib/dates';
+import { emptyDays, getSchedule } from '@/lib/data';
+import { addDays, classDays, daysBetween, mondayOf, nextClassDate, shortDate } from '@/lib/dates';
 import { aiEnabled } from '@/lib/ai';
 import { DraftWeek } from '@/components/admin/DraftWeek';
-import { DAY_PLAN } from '@/lib/programming/engine';
+import { nextCycle, positionOn, STYLE_NAMES } from '@/lib/programming/engine';
+import { AutoDraft } from '@/components/admin/DraftRun';
 import { ProgramForm } from '@/components/admin/ProgramForm';
 import { CycleCard } from '@/components/CycleCard';
 import { Icon } from '@/components/Icon';
@@ -14,8 +15,14 @@ export const maxDuration = 60;
 
 export default async function AdminPage() {
   const { supabase } = await requireMember({ admin: true });
-  const program = await getProgram(supabase);
+  const schedule = await getSchedule(supabase);
   const today = nextClassDate();
+  const pos = positionOn(today, schedule);
+  const following = nextCycle(today, schedule);
+  const planSoon = daysBetween(today, pos.resolved.end) <= 14 && !following.saved;
+  const ai = aiEnabled();
+  // Claude keeps about a week of drafts ready.
+  const autoDates = ai ? await emptyDays(supabase, today, addDays(today, 6)) : [];
 
   const days = classDays(today, 10);
   const [{ data: workouts }, { count: pending }] = await Promise.all([
@@ -39,18 +46,42 @@ export default async function AdminPage() {
         <span className="badge">ADMIN</span>
       </div>
 
-      <CycleCard program={program} />
-      {aiEnabled() && <DraftWeek weeks={draftWeeks} />}
+      {planSoon && (
+        <Link href={`/admin/cycles/new?start=${following.start}`} className="card gold row" style={{ textDecoration: 'none' }}>
+          <span className="grow">
+            <b>Time to plan cycle {following.number}.</b> It starts {shortDate(following.start).replace(' · ', ' ')}. Until it’s planned, it uses the usual pattern.
+          </span>
+          <Icon name="next" />
+        </Link>
+      )}
+      {autoDates.length > 0 && <AutoDraft dates={autoDates} />}
 
-      <section className="card flush list">
-        {[1, 2, 3, 4, 5].map((d) => (
-          <div key={d} className="list-item">
-            <b style={{ width: 44 }}>{['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'][d]}</b>
-            <span className="grow" style={{ color: d === 4 ? 'var(--teal)' : 'var(--ink-2)', fontWeight: d === 4 ? 600 : 400 }}>
-              {DAY_PLAN[d].focus}
-            </span>
-          </div>
-        ))}
+      <CycleCard schedule={schedule} />
+      <Link href="/admin/cycles" className="btn outline">
+        Cycle planner{ai ? ': plan cycles with Claude' : ''}
+      </Link>
+      {ai && <DraftWeek weeks={draftWeeks} />}
+
+      <section className="card flush list" aria-label="This cycle's weekday split">
+        {[1, 2, 3, 4, 5].map((d) => {
+          const day = pos.resolved.days[d];
+          const easy = day.style === 'easy' && !day.lift;
+          return (
+            <div key={d} className="list-item" style={{ alignItems: 'flex-start' }}>
+              <b style={{ width: 44 }}>{['', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'][d]}</b>
+              <span className="grow" style={{ color: easy ? 'var(--teal)' : 'var(--ink-2)', fontWeight: easy ? 600 : 400 }}>
+                {day.focus}
+                {pos.resolved.saved && (
+                  <span className="muted small" style={{ display: 'block' }}>
+                    {day.lift ? day.lift.name : 'No main lift'}
+                    {day.skill ? ' · pull-ups' : ''} · {STYLE_NAMES[day.style].toLowerCase()}
+                    {day.notes ? ` · ${day.notes}` : ''}
+                  </span>
+                )}
+              </span>
+            </div>
+          );
+        })}
       </section>
 
       <section className="stack">
@@ -89,7 +120,7 @@ export default async function AdminPage() {
         <Icon name="next" />
       </Link>
 
-      <ProgramForm cycleStart={program.cycle_start} cycleWeeks={program.cycle_weeks} goals={program.goals} />
+      <ProgramForm cycleStart={schedule.cycleStart} cycleWeeks={schedule.cycleWeeks} goals={schedule.goals} />
     </main>
   );
 }

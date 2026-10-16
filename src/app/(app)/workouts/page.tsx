@@ -3,16 +3,16 @@ import { requireMember } from '@/lib/supabase/server';
 import { classDays, nextClassDate, shortDate, relativeDay } from '@/lib/dates';
 import { Icon } from '@/components/Icon';
 import { CycleCard } from '@/components/CycleCard';
-import { getProgram } from '@/lib/data';
+import { getSchedule } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
 export default async function WorkoutsPage() {
   const { supabase, me } = await requireMember();
   const days = classDays(nextClassDate(), 15);
-  const [{ data: workouts }, program] = await Promise.all([
+  const [{ data: workouts }, schedule] = await Promise.all([
     supabase.from('workouts').select('id, class_date, title, focus, status').gte('class_date', days[0]).lte('class_date', days[days.length - 1]),
-    getProgram(supabase),
+    getSchedule(supabase),
   ]);
   const byDate = new Map((workouts ?? []).map((w) => [w.class_date, w]));
 
@@ -26,7 +26,7 @@ export default async function WorkoutsPage() {
   return (
     <main className="screen">
       <h1>Workouts</h1>
-      <CycleCard program={program} />
+      <CycleCard schedule={schedule} />
       {weeks.map((week, i) => (
         <section key={week[0]} className="stack">
           <div className="eyebrow">{i === 0 ? 'This week' : i === 1 ? 'Next week' : `Week of ${shortDate(week[0]).split(' · ')[1]}`}</div>

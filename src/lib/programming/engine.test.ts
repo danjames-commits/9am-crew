@@ -152,3 +152,64 @@ describe('lift settings write the words', () => {
     expect(s.lift!.mode).toBe('percent');
   });
 });
+
+import { positionOn, nextCycle, builtInDays, type SavedCycle, type Schedule } from './engine';
+
+describe('planned cycles', () => {
+  const planned: SavedCycle = {
+    id: 1,
+    start_date: '2026-11-30',
+    name: 'Deadlift and pull-ups',
+    why: 'Goal lifts get more attention.',
+    goals: ['First strict pull-up'],
+    weeks: [
+      { kind: 'build', label: 'Base', pct: 68, sets: 4, reps: 6 },
+      { kind: 'build', label: 'Build', pct: 74, sets: 5, reps: 5 },
+      { kind: 'deload', label: 'Holidays', pct: 60, sets: 3, reps: 5 },
+      { kind: 'build', label: 'Heavy', pct: 80, sets: 5, reps: 3 },
+      { kind: 'test', label: 'Test', pct: 0, sets: 0, reps: 3 },
+    ],
+    days: { ...builtInDays(), 1: { focus: 'Front squat · steady', style: 'amrap', lift: 'Front squat', gentle: null, skill: 'pullup', notes: 'Add a carry' } },
+  };
+  const schedule: Schedule = { cycleStart: '2026-10-19', cycleWeeks: 6, goals: ['Row 2 km'], cycles: [planned] };
+
+  it('built-in cycle 1 runs until the planned cycle starts', () => {
+    const p = positionOn('2026-11-27', schedule);
+    expect(p).toMatchObject({ cycle: 1, totalWeeks: 6, week: { index: 5, kind: 'test' } });
+    expect(p.resolved.saved).toBeNull();
+    expect(p.resolved.goals).toEqual(['Row 2 km']);
+  });
+
+  it('the planned cycle takes over with its own weeks, days and goals', () => {
+    const p = positionOn('2026-12-16', schedule);
+    expect(p).toMatchObject({ cycle: 2, totalWeeks: 5, week: { index: 2, kind: 'deload', label: 'Holidays' } });
+    expect(p.resolved.name).toBe('Deadlift and pull-ups');
+    expect(p.resolved.goals).toEqual(['First strict pull-up']);
+    expect(p.resolved.end).toBe('2027-01-04');
+  });
+
+  it('after a planned cycle, the built-in pattern carries on', () => {
+    const p = positionOn('2027-01-04', schedule);
+    expect(p).toMatchObject({ cycle: 3, totalWeeks: 6, week: { index: 0 } });
+    expect(p.resolved.start).toBe('2027-01-04');
+    expect(nextCycle('2026-11-02', schedule).name).toBe('Deadlift and pull-ups');
+  });
+
+  it('a planned cycle starting mid-way cuts the built-in one short', () => {
+    const early = { ...schedule, cycles: [{ ...planned, start_date: '2026-11-16' }] };
+    expect(positionOn('2026-11-13', early)).toMatchObject({ cycle: 1, totalWeeks: 4 });
+    expect(positionOn('2026-11-16', early).resolved.saved?.id).toBe(1);
+  });
+
+  it('suggestions follow the planned cycle', () => {
+    const mon = suggestWorkout({ date: '2026-12-07', schedule });
+    const s = mon.parts.find((p) => p.kind === 'strength')!;
+    expect(s.lift).toMatchObject({ movement: 'Front squat', gentleMovement: 'Goblet squat', sets: 5, reps: 5, pct: [null, 64, 74, 79] });
+    expect(mon.parts.some((p) => p.kind === 'skill')).toBe(true);
+    expect(mon.parts[0].versions[0]).toMatch(/goblet squats/);
+    expect(mon.focus).toBe('Front squat · steady');
+    expect(mon.why).toMatch(/Deadlift and pull-ups.*week 2 of 5.*Add a carry/);
+    const test = suggestWorkout({ date: '2026-12-28', schedule }).parts.find((p) => p.kind === 'strength')!;
+    expect(test.lift!.mode).toBe('build');
+  });
+});

@@ -3,8 +3,10 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { requireMember, supabaseServer } from '@/lib/supabase/server';
 import type { LevelPct, Part, PartKind, WorkoutDraft } from '@/lib/types';
-import { aiEnabled, draftWorkout, scaleAdvice, takeAllowance } from '@/lib/ai';
-import { getBests, getProgram } from '@/lib/data';
+import { aiEnabled, draftWorkout, planCycle, scaleAdvice, takeAllowance } from '@/lib/ai';
+import { cleanPlan, type PlanDraft } from '@/lib/programming/plan';
+import { isWeekday, todayLocal } from '@/lib/dates';
+import { getBests, getSchedule } from '@/lib/data';
 import { classWeather } from '@/lib/weather';
 
 const isDate = (s: unknown): s is string => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
@@ -207,8 +209,8 @@ export async function aiDraft(date: string, request: string, current: WorkoutDra
   if (!aiEnabled()) return { error: 'Claude isn’t set up yet.' };
   if (!(await takeAllowance(supabase, me.id, 'build'))) return { error: 'That’s a lot of drafts for one day. Try again tomorrow.' };
   try {
-    const [program, weather] = await Promise.all([getProgram(supabase), classWeather(date)]);
-    const draft = await draftWorkout({ supabase, program, date, request: request.slice(0, 500), current, weather });
+    const [schedule, weather] = await Promise.all([getSchedule(supabase), classWeather(date)]);
+    const draft = await draftWorkout({ supabase, schedule, date, request: request.slice(0, 500), current, weather });
     return { draft };
   } catch (e) {
     return { error: e instanceof Error ? e.message : 'Claude didn’t answer. Try again.' };
@@ -217,15 +219,16 @@ export async function aiDraft(date: string, request: string, current: WorkoutDra
 
 /** Drafts one empty day and saves it as a draft (used for "draft the week"). */
 export async function aiDraftDay(date: string) {
-  if (!isDate(date)) return { error: 'Bad date' };
+  if (!isDate(date) || !isWeekday(date)) return { error: 'Bad date' };
+  if (date < todayLocal()) return { skipped: true };
   const { supabase, me } = await requireMember({ admin: true });
   if (!aiEnabled()) return { error: 'Claude isn’t set up yet.' };
   const { data: existing } = await supabase.from('workouts').select('id').eq('class_date', date).maybeSingle();
   if (existing) return { skipped: true };
   if (!(await takeAllowance(supabase, me.id, 'build'))) return { error: 'Daily limit reached. Try again tomorrow.' };
   try {
-    const [program, weather] = await Promise.all([getProgram(supabase), classWeather(date)]);
-    const draft = await draftWorkout({ supabase, program, date, request: '', weather });
+    const [schedule, weather] = await Promise.all([getSchedule(supabase), classWeather(date)]);
+    const draft = await draftWorkout({ supabase, schedule, date, request: '', weather });
     const parts = cleanParts(draft.parts);
     if (!parts) return { error: 'Claude’s draft didn’t fit. Try again.' };
     const { error } = await supabase.from('workouts').insert({
@@ -236,6 +239,8 @@ export async function aiDraftDay(date: string) {
       parts,
       status: 'draft',
     });
+    // Someone saved this day while Claude was writing: keep theirs.
+    if (error?.code === '23505') return { skipped: true };
     if (error) return { error: error.message };
     revalidatePath('/admin');
     revalidatePath('/workouts');
@@ -261,4 +266,60 @@ export async function aiScale(date: string, message: string, outside: boolean) {
   } catch (e) {
     return { error: e instanceof Error ? e.message : 'Claude didn’t answer. Try again.' };
   }
+}
+
+// ---------------- Admin: cycle planner ----------------
+
+async function movementNames(supabase: Awaited<ReturnType<typeof requireMember>>['supabase']) {
+  const { data } = await supabase.from('movements').select('name').order('sort');
+  return (data ?? []).map((m) => m.name as string);
+}
+
+export async function aiPlanCycle(start: string, brief: string, current: PlanDraft | null, request: string, editingId: number | null) {
+  if (!isDate(start)) return { error: 'Pick a start date.' };
+  const { supabase, me } = await requireMember({ admin: true });
+  if (!aiEnabled()) return { error: 'Claude isn’t set up yet.' };
+  if (!(await takeAllowance(supabase, me.id, 'plan'))) return { error: 'That’s a lot of planning for one day. Try again tomorrow.' };
+  try {
+    const schedule = await getSchedule(supabase);
+    // Plan around every other planned cycle, not the one being edited.
+    const others = { ...schedule, cycles: schedule.cycles.filter((c) => c.id !== editingId) };
+    const plan = await planCycle({ supabase, schedule: others, start, brief: brief.slice(0, 1500), current, request: request.slice(0, 800) });
+    return { plan };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Claude didn’t answer. Try again.' };
+  }
+}
+
+export async function saveCycle(id: number | null, input: PlanDraft) {
+  const { supabase } = await requireMember({ admin: true });
+  const { plan, error } = cleanPlan(input, await movementNames(supabase));
+  if (!plan) return { error };
+  const row = {
+    start_date: plan.start_date,
+    week_count: plan.weeks.length,
+    name: plan.name,
+    why: plan.why,
+    brief: plan.brief,
+    goals: plan.goals,
+    weeks: plan.weeks,
+    days: plan.days,
+    updated_at: new Date().toISOString(),
+  };
+  const res = id
+    ? await supabase.from('cycles').update(row).eq('id', id).select('id').single()
+    : await supabase.from('cycles').insert(row).select('id').single();
+  if (res.error) {
+    if (res.error.code === '23P01') return { error: 'Those dates overlap another planned cycle. Change the start date or the number of weeks.' };
+    return { error: res.error.message };
+  }
+  revalidatePath('/', 'layout');
+  return { id: res.data.id as number };
+}
+
+export async function deleteCycle(id: number) {
+  const { supabase } = await requireMember({ admin: true });
+  await supabase.from('cycles').delete().eq('id', id);
+  revalidatePath('/', 'layout');
+  redirect('/admin/cycles');
 }

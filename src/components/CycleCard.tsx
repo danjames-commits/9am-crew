@@ -1,86 +1,73 @@
-import { addDays, mondayOf, nextClassDate, shortDate } from '@/lib/dates';
-import { cyclePlan, cyclePosition, type WeekPlan } from '@/lib/programming/engine';
-import type { Program } from '@/lib/data';
+import { addDays, nextClassDate, shortDate } from '@/lib/dates';
+import { nextCycle, positionOn, type Schedule, type WeekPlan } from '@/lib/programming/engine';
+import { CycleChart } from './CycleChart';
 
 const monthDay = (d: string) => shortDate(d).split(' · ')[1];
 
 function describe(w: WeekPlan) {
-  if (w.kind === 'test') return 'Test week';
-  if (w.kind === 'deload') return 'Ease off';
-  return `${w.label} · ${w.pct}%`;
+  if (w.kind === 'test') return 'test week';
+  if (w.kind === 'deload') return `${w.label.toLowerCase()}, lighter`;
+  return `${w.label.toLowerCase()} · ${w.pct}%`;
 }
 
 /** The cycle at a glance: where we are, what's next, when test week is. Shared by members and admins. */
-export function CycleCard({ program, showGoals = true, showExplainer = true }: { program: Program; showGoals?: boolean; showExplainer?: boolean }) {
+export function CycleCard({ schedule, showGoals = true, showExplainer = true }: { schedule: Schedule; showGoals?: boolean; showExplainer?: boolean }) {
   const today = nextClassDate();
-  const pos = cyclePosition(today, program.cycle_start, program.cycle_weeks);
-  const plan = cyclePlan(program.cycle_weeks);
-  const firstMonday = addDays(mondayOf(program.cycle_start), (pos.cycle - 1) * program.cycle_weeks * 7);
-  const lastFriday = addDays(firstMonday, program.cycle_weeks * 7 - 3);
-  const testMonday = addDays(firstMonday, (program.cycle_weeks - 1) * 7);
-  const next = pos.started ? plan[pos.week.index + 1] : plan[0];
+  const pos = positionOn(today, schedule);
+  const c = pos.resolved;
+  const lastFriday = addDays(c.end, -3);
+  const testIndex = c.weeks.findIndex((w) => w.kind === 'test');
+  const testMonday = testIndex >= 0 ? addDays(c.start, testIndex * 7) : null;
+  const next = pos.started ? c.weeks[pos.week.index + 1] : c.weeks[0];
+  const following = nextCycle(today, schedule);
 
   return (
     <section className="card stack" aria-labelledby="cycle-title">
-      <div className="row between">
-        <h2 id="cycle-title">
-          Cycle {pos.cycle} · {program.cycle_weeks} weeks
-        </h2>
-        <span className="muted small">
-          {monthDay(firstMonday)} – {monthDay(lastFriday)}
+      <div className="row between top">
+        <div>
+          <h2 id="cycle-title">
+            Cycle {pos.cycle} · {c.weeks.length} weeks
+          </h2>
+          {c.name && <p className="small" style={{ fontWeight: 700, color: 'var(--teal)' }}>{c.name}</p>}
+        </div>
+        <span className="muted small" style={{ whiteSpace: 'nowrap' }}>
+          {monthDay(c.start)} – {monthDay(lastFriday)}
         </span>
       </div>
 
-      <div className="cycle" style={{ gridTemplateColumns: `repeat(${plan.length}, minmax(0, 1fr))` }} aria-hidden="true">
-        {plan.map((w) => {
-          const now = pos.started && w.index === pos.week.index;
-          const h = w.kind === 'test' ? 92 : Math.round((w.pct - 50) * 1.9 + 10);
-          return (
-            <div key={w.index} className="col">
-              {w.kind === 'test' ? 'PR' : `${w.pct}%`}
-              <div className={`bar ${w.kind === 'deload' ? 'deload' : ''} ${w.kind === 'test' ? 'test' : ''} ${now ? 'now' : ''}`} style={{ height: h }} />
-            </div>
-          );
-        })}
-      </div>
-      <div className="cycle" style={{ gridTemplateColumns: `repeat(${plan.length}, minmax(0, 1fr))` }} aria-hidden="true">
-        {plan.map((w) => {
-          const now = pos.started && w.index === pos.week.index;
-          return (
-            <div key={w.index} className="lab" style={now ? { color: 'var(--ink)', fontWeight: 800 } : undefined}>
-              {now ? 'Now' : `Wk ${w.index + 1}`}
-              <br />
-              {w.label}
-            </div>
-          );
-        })}
-      </div>
+      <CycleChart weeks={c.weeks} nowIndex={pos.started ? pos.week.index : null} />
 
       <div className="stack tight" style={{ background: 'var(--ground)', borderRadius: 12, padding: '10px 12px' }}>
         {pos.started ? (
           <p className="small">
-            <b>This week:</b> week {pos.week.index + 1} of {program.cycle_weeks}, {describe(pos.week).toLowerCase()}
+            <b>This week:</b> week {pos.week.index + 1} of {c.weeks.length}, {describe(pos.week)}
           </p>
         ) : (
           <p className="small">
-            <b>Starts {shortDate(program.cycle_start).replace(' · ', ' ')}</b>
+            <b>Starts {shortDate(c.start).replace(' · ', ' ')}</b>
           </p>
         )}
         {next && (
           <p className="small">
-            <b>{pos.started ? 'Next week' : 'First week'}:</b> {describe(next).toLowerCase()}
+            <b>{pos.started ? 'Next week' : 'First week'}:</b> {describe(next)}
+          </p>
+        )}
+        {testMonday && (
+          <p className="small">
+            <b>Test week:</b> {monthDay(testMonday)} – {monthDay(addDays(testMonday, 4))}. Everyone tries for a new best.
           </p>
         )}
         <p className="small">
-          <b>Test week:</b> {monthDay(testMonday)} – {monthDay(lastFriday)}. Everyone tries for a new best.
+          <b>After that:</b> cycle {following.number}
+          {following.name ? `, ${following.name},` : ''} starts {monthDay(following.start)}.
         </p>
       </div>
 
-      {showGoals && program.goals.length > 0 && (
+      {showGoals && c.goals.length > 0 && (
         <div className="stack tight">
           <div className="eyebrow">Crew goals this cycle</div>
           <div className="row wrap" style={{ gap: 8 }}>
-            {program.goals.map((g) => (
+            {c.goals.map((g) => (
               <span key={g} className="pill">
                 {g}
               </span>
@@ -91,8 +78,9 @@ export function CycleCard({ program, showGoals = true, showExplainer = true }: {
 
       {showExplainer && (
         <p className="muted small">
-          Weights climb, ease off every fourth week so bodies recover, then the last week is test week. Percentages are for the Strong level; Steady is
-          10% lighter, Full is 5% heavier, Gentle uses lighter tools. Your own weights show on each workout.
+          {c.why ? `${c.why} ` : 'Weights climb, ease off every fourth week so bodies recover, then the last week is test week. '}
+          Percentages are for the Strong level; Steady is 10% lighter, Full is 5% heavier, Gentle uses lighter tools. Your own weights show on each
+          workout.
         </p>
       )}
     </section>

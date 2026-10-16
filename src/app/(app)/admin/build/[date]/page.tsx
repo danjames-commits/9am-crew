@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireMember } from '@/lib/supabase/server';
-import { getProgram } from '@/lib/data';
+import { getSchedule } from '@/lib/data';
 import { isWeekday, longDate } from '@/lib/dates';
 import { Builder } from '@/components/admin/Builder';
 import { Icon } from '@/components/Icon';
@@ -16,8 +16,8 @@ export default async function BuildPage({ params }: { params: Promise<{ date: st
   const { date } = await params;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !isWeekday(date)) notFound();
   const { supabase } = await requireMember({ admin: true });
-  const [program, { data: existing }, weather, { data: movementRows }] = await Promise.all([
-    getProgram(supabase),
+  const [schedule, { data: existing }, weather, { data: movementRows }] = await Promise.all([
+    getSchedule(supabase),
     supabase.from('workouts').select('class_date, title, focus, why, parts, status').eq('class_date', date).maybeSingle(),
     classWeather(date),
     supabase.from('movements').select('name').order('sort'),
@@ -38,8 +38,7 @@ export default async function BuildPage({ params }: { params: Promise<{ date: st
       <Builder
         key={date}
         date={date}
-        cycleStart={program.cycle_start}
-        cycleWeeks={program.cycle_weeks}
+        schedule={schedule}
         saved={existing ? { ...existing, parts: existing.parts as Part[] } : null}
         weather={weather}
         movements={(movementRows ?? []).map((m) => m.name)}
