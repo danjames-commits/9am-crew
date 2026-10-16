@@ -1,0 +1,40 @@
+"""Writes supabase/kickoff.sql: Friday Oct 16, 2026, the day before cycle 1 starts.
+A light technique day on the three big lifts so everyone is ready for next week's
+"find your 5" days, then a short finisher with an outside version. No partner work."""
+import json
+from pathlib import Path
+
+same = lambda t: [t] * 4
+
+parts = [
+    {"kind": "warmup", "label": "Warm-up", "title": "Warm-up", "minutes": 10,
+     "versions": same("2 rounds: 200 m row or easy jog · 10 goblet squats · 10 band pull-aparts · 10 hip hinges with a dowel")},
+    {"kind": "skill", "label": "Technique · light", "title": "Movement tour", "minutes": 20, "versions": [
+        "Light and easy, 2 sets of 8 of each:\nGoblet squat · kettlebell deadlift · dumbbell press\nNo heavy weights today. Focus on how each one should feel.",
+        "Light, 3 sets of 5 of each with an empty bar or a light weight:\nBack squat · deadlift · strict press\nAsk for a form check on any you're unsure of.",
+        "Light, 3 sets of 5 of each, about half of what feels heavy:\nBack squat · deadlift · strict press\nGrooving good positions for next week.",
+        "3 sets of 5 of each at a comfortable working weight:\nBack squat · deadlift · strict press\nCrisp reps only. Save the heavy stuff for next week.",
+    ]},
+    {"kind": "conditioning", "label": "Conditioning", "title": "Sprint Sandwich", "minutes": 12, "versions": [
+        "For time:\n6 min easy bike\n15 sit-to-stands from a box\n6 min easy bike",
+        "For time:\n12 cal bike\n30 air squats\n12 cal bike",
+        "For time:\n20 cal bike\n40 wall balls (10/14 lb)\n20 cal bike",
+        "For time:\n30 cal bike\n50 wall balls (14/20 lb)\n30 cal bike",
+    ], "outdoor": {"title": "Run Sandwich", "versions": [
+        "For time:\n400 m brisk walk\n15 sit-to-stands from a box\n400 m brisk walk",
+        "For time:\n400 m jog\n30 air squats\n400 m jog",
+        "For time:\n600 m run\n40 wall balls (10/14 lb)\n600 m run",
+        "For time:\n800 m run\n50 wall balls (14/20 lb)\n800 m run",
+    ]}},
+    {"kind": "cooldown", "label": "Cool-down", "title": "Cool-down", "minutes": 5,
+     "versions": same("Hip, hamstring and shoulder stretch, 5 min")},
+]
+why = ("Kickoff before cycle 1 starts Monday. A light technique day on the three big lifts so next week's "
+       "“find your 5” days feel familiar, then a short finisher. Nothing heavy today.")
+q = lambda s: "'" + s.replace("'", "''") + "'"
+sql = ("insert into public.workouts (class_date, title, focus, why, parts, status, created_by) values ("
+       f"'2026-10-16', 'Kickoff Friday', 'Technique · short and spicy', {q(why)}, {q(json.dumps(parts, ensure_ascii=False))}::jsonb, 'published', null)\n"
+       "on conflict (class_date) do update set title = excluded.title, focus = excluded.focus, why = excluded.why, "
+       "parts = excluded.parts, status = excluded.status, updated_at = now();\n")
+Path(__file__).with_name("kickoff.sql").write_text(sql)
+print(json.dumps(sql))
