@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireMember } from '@/lib/supabase/server';
-import { getBests, getNames } from '@/lib/data';
+import { getBests, getPeople } from '@/lib/data';
 import { longDate, todayLocal } from '@/lib/dates';
 import { CheckIn } from '@/components/CheckIn';
 import type { Part } from '@/lib/types';
@@ -25,15 +25,15 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
     .maybeSingle();
   if (!w) notFound();
 
-  const [names, { bests }, weather, { data: attendance }] = await Promise.all([
-    getNames(supabase),
+  const [{ names, animals }, { bests }, weather, { data: attendance }] = await Promise.all([
+    getPeople(supabase),
     getBests(supabase, me.id),
     (w.parts as Part[]).some((p) => p.outdoor) ? classWeather(w.class_date) : Promise.resolve(null),
     supabase.from('attendance').select('user_id').eq('class_date', w.class_date).order('created_at'),
   ]);
   const upcoming = w.class_date >= todayLocal();
   const going = (attendance ?? []).some((a) => a.user_id === me.id);
-  const others = (attendance ?? []).filter((a) => a.user_id !== me.id).map((a) => ({ id: a.user_id, name: names[a.user_id] ?? 'Member' }));
+  const others = (attendance ?? []).filter((a) => a.user_id !== me.id).map((a) => ({ id: a.user_id, name: names[a.user_id] ?? 'Member', animal: animals[a.user_id] }));
   const maxes = Object.fromEntries(bests.map((b) => [b.movement, b.estMax]));
 
   return (
@@ -56,7 +56,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
       <p className="muted">{w.focus}</p>
       {upcoming && (
         <section className="card" style={{ padding: '10px 14px' }} aria-label="Who's coming">
-          <CheckIn compact classDate={w.class_date} me={{ id: me.id, name: me.display_name }} others={others} going={going} />
+          <CheckIn compact classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />
         </section>
       )}
 

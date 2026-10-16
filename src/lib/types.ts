@@ -54,4 +54,5 @@ export interface Profile {
   level: number;
   is_admin: boolean;
   approved: boolean;
+  animal?: string | null;
 }

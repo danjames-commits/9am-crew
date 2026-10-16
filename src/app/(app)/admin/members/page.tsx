@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function MembersPage() {
   const { supabase, me } = await requireMember({ admin: true });
-  const { data } = await supabase.from('profiles').select('id, display_name, level, is_admin, approved').order('display_name');
+  const { data } = await supabase.from('profiles').select('id, display_name, level, is_admin, approved, animal').order('display_name');
   const members = data ?? [];
   const waiting = members.filter((m) => !m.approved);
   const crew = members.filter((m) => m.approved);

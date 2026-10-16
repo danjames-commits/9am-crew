@@ -30,7 +30,7 @@ export const requireMember = cache(async (opts: { admin?: boolean } = {}) => {
   if (!userId) redirect('/login');
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, display_name, level, is_admin, approved')
+    .select('id, display_name, level, is_admin, approved, animal')
     .eq('id', userId)
     .single<Profile>();
   if (!profile) redirect('/login');

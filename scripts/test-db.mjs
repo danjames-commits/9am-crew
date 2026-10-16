@@ -24,6 +24,7 @@ await db.exec(`
 await db.exec(readFileSync(new URL('../supabase/schema.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-003-claude.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-004-cycles.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-006-animals.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -81,6 +82,12 @@ await as(B, `update public.profiles set level = 3, display_name = 'Marie' where 
 r = await db.query(`select level, display_name from public.profiles where id = '${B}'`);
 assert.deepEqual([r.rows[0].level, r.rows[0].display_name], [3, 'Marie']);
 ok('members set their own name and level');
+await as(B, `update public.profiles set animal = 'raccoon' where id = '${B}'`);
+await fails(B, `update public.profiles set animal = 'lion' where id = '${B}'`, 'too much energy');
+await as(B, `update public.profiles set animal = 'sloth' where id = '${A}'`);
+r = await db.query(`select id, animal from public.profiles where id in ('${A}', '${B}') order by id`);
+assert.deepEqual(r.rows.map((x) => x.animal), [null, 'raccoon']);
+ok('members pick their own spirit animal (mid-energy only)');
 
 // Workouts: drafts hidden from members.
 await as(A, `insert into public.workouts (class_date, title, parts, status) values ('2026-10-16', 'Friday Grinder', '[]', 'draft')`);

@@ -8,6 +8,7 @@ import { cleanPlan, type PlanDraft } from '@/lib/programming/plan';
 import { isWeekday, todayLocal } from '@/lib/dates';
 import { getBests, getSchedule } from '@/lib/data';
 import { classWeather } from '@/lib/weather';
+import { isAnimal } from '@/lib/animals';
 
 const isDate = (s: unknown): s is string => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
 
@@ -19,12 +20,13 @@ export async function signOut() {
   redirect('/login');
 }
 
-export async function updateMe(input: { display_name: string; level: number }) {
+export async function updateMe(input: { display_name: string; level: number; animal?: string | null }) {
   const { supabase, me } = await requireMember();
   const display_name = input.display_name.trim().slice(0, 40);
   const level = Math.round(input.level);
   if (!display_name || level < 1 || level > 4) return { error: 'Please add a name and pick a level.' };
-  const { error } = await supabase.from('profiles').update({ display_name, level }).eq('id', me.id);
+  const animal = input.animal && isAnimal(input.animal) ? input.animal : null;
+  const { error } = await supabase.from('profiles').update({ display_name, level, animal }).eq('id', me.id);
   if (error) return { error: error.message };
   revalidatePath('/', 'layout');
   return { ok: true };

@@ -1,7 +1,7 @@
 import { after } from 'next/server';
 import { requireMember } from '@/lib/supabase/server';
 import { maybePostRecap } from '@/lib/recap';
-import { getNames } from '@/lib/data';
+import { getPeople } from '@/lib/data';
 import { ChatRoom, type ChatMessage } from '@/components/ChatRoom';
 
 export const dynamic = 'force-dynamic';
@@ -9,9 +9,9 @@ export const dynamic = 'force-dynamic';
 export default async function ChatPage() {
   const { supabase, me } = await requireMember();
   after(() => maybePostRecap(supabase));
-  const [{ data: recent }, names, { count }] = await Promise.all([
+  const [{ data: recent }, { names, animals }, { count }] = await Promise.all([
     supabase.from('messages').select('id, user_id, body, kind, lift_log_id, created_at').order('id', { ascending: false }).limit(150),
-    getNames(supabase),
+    getPeople(supabase),
     supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', true),
   ]);
   const messages = ((recent ?? []) as ChatMessage[]).reverse();
@@ -26,7 +26,7 @@ export default async function ChatPage() {
         <h1>9AM Crew</h1>
         <p className="muted">{count ?? 0} members</p>
       </header>
-      <ChatRoom initial={messages} initialCheers={cheers ?? []} initialNames={names} meId={me.id} />
+      <ChatRoom initial={messages} initialCheers={cheers ?? []} initialNames={names} initialAnimals={animals} meId={me.id} />
     </main>
   );
 }

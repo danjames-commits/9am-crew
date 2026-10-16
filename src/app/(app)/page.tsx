@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { after } from 'next/server';
 import { requireMember } from '@/lib/supabase/server';
 import { maybePostRecap } from '@/lib/recap';
-import { getNames, getSchedule, recentPrs } from '@/lib/data';
+import { getPeople, getSchedule, recentPrs } from '@/lib/data';
 import { daysBetween } from '@/lib/dates';
 import { nextCycle, positionOn } from '@/lib/programming/engine';
 import { nextClassDate, relativeDay, longDate, timeAgo, todayLocal } from '@/lib/dates';
@@ -22,10 +22,10 @@ export default async function TodayPage() {
   after(() => maybePostRecap(supabase));
   const classDate = nextClassDate();
 
-  const [{ data: workout }, { data: attendance }, names, prs, { count: pending }, weather] = await Promise.all([
+  const [{ data: workout }, { data: attendance }, { names, animals }, prs, { count: pending }, weather] = await Promise.all([
     supabase.from('workouts').select('id, title, focus, status, parts').eq('class_date', classDate).maybeSingle(),
     supabase.from('attendance').select('user_id').eq('class_date', classDate).order('created_at'),
-    getNames(supabase),
+    getPeople(supabase),
     recentPrs(supabase, me.id),
     me.is_admin
       ? supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false)
@@ -42,7 +42,7 @@ export default async function TodayPage() {
   const going = (attendance ?? []).some((a) => a.user_id === me.id);
   const others = (attendance ?? [])
     .filter((a) => a.user_id !== me.id)
-    .map((a) => ({ id: a.user_id, name: names[a.user_id] ?? 'Member' }));
+    .map((a) => ({ id: a.user_id, name: names[a.user_id] ?? 'Member', animal: animals[a.user_id] }));
   const visibleWorkout = workout && (workout.status === 'published' || me.is_admin) ? workout : null;
 
   return (
@@ -53,7 +53,7 @@ export default async function TodayPage() {
           <h1 style={{ marginTop: 4 }}>Hi, {firstName(me.display_name)}</h1>
         </div>
         <Link href="/me" aria-label="My settings">
-          <Avatar id={me.id} name={me.display_name} />
+          <Avatar id={me.id} name={me.display_name} animal={me.animal} />
         </Link>
       </header>
 
@@ -97,7 +97,7 @@ export default async function TodayPage() {
             <p className="muted">It hasn’t been posted yet.</p>
           </div>
         )}
-        <CheckIn classDate={classDate} me={{ id: me.id, name: me.display_name }} others={others} going={going} />
+        <CheckIn classDate={classDate} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />
       </section>
 
       <section className="stack">

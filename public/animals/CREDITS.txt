@@ -1,0 +1,3 @@
+Animal drawings: Twemoji (https://github.com/jdecked/twemoji), graphics licensed under CC-BY 4.0
+(https://creativecommons.org/licenses/by/4.0/). Copyright Twitter, Inc and other contributors.
+Packaged by @twemoji/svg (MIT, see LICENSE-package.txt).

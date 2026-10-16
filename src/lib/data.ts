@@ -92,6 +92,18 @@ export async function getNames(supabase: SupabaseClient) {
   return Object.fromEntries((data ?? []).map((p) => [p.id, p.display_name])) as Record<string, string>;
 }
 
+/** Everyone's name and spirit animal, by id. */
+export async function getPeople(supabase: SupabaseClient) {
+  const { data } = await supabase.from('profiles').select('id, display_name, animal').eq('approved', true);
+  const names: Record<string, string> = {};
+  const animals: Record<string, string | null> = {};
+  for (const p of data ?? []) {
+    names[p.id] = p.display_name;
+    animals[p.id] = p.animal ?? null;
+  }
+  return { names, animals };
+}
+
 export interface PrPost {
   id: number;
   user_id: string;

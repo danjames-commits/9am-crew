@@ -1,11 +1,12 @@
 'use client';
 import { useOptimistic, useTransition, useState } from 'react';
 import { setAttendance } from '@/app/actions';
-import { avatarColor, initials } from '@/lib/ui';
+import { Avatar } from './Avatar';
 
 interface Person {
   id: string;
   name: string;
+  animal?: string | null;
 }
 
 export function CheckIn({
@@ -66,9 +67,7 @@ export function CheckIn({
       <div className="row between">
         <div className="avatars" aria-label={`${crew.length} going`}>
           {crew.map((p) => (
-            <span key={p.id} className="avatar sm" style={{ background: avatarColor(p.id) }} title={p.name}>
-              {initials(p.name)}
-            </span>
+            <Avatar key={p.id} id={p.id} name={p.name} animal={p.animal} size="sm" />
           ))}
           {crew.length === 0 && <span className="muted">Nobody yet. Be the first!</span>}
         </div>

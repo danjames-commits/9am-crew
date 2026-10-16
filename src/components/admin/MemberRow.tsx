@@ -1,7 +1,7 @@
 'use client';
 import { useState, useTransition } from 'react';
 import { setMember, removeMember } from '@/app/actions';
-import { avatarColor, initials } from '@/lib/ui';
+import { Avatar } from '../Avatar';
 import { levelName } from '@/lib/types';
 
 interface Member {
@@ -10,6 +10,7 @@ interface Member {
   level: number;
   is_admin: boolean;
   approved: boolean;
+  animal?: string | null;
 }
 
 export function MemberRow({ m, isMe }: { m: Member; isMe: boolean }) {
@@ -24,9 +25,7 @@ export function MemberRow({ m, isMe }: { m: Member; isMe: boolean }) {
 
   return (
     <div className="list-item" style={{ flexWrap: 'wrap' }}>
-      <span className="avatar sm" style={{ background: avatarColor(m.id) }} aria-hidden="true">
-        {initials(m.display_name)}
-      </span>
+      <Avatar id={m.id} name={m.display_name} animal={m.animal} size="sm" />
       <div className="grow">
         <div style={{ fontWeight: 700 }}>
           {m.display_name}

@@ -14,7 +14,7 @@ export default async function MePage() {
         </Link>
         <h1 style={{ fontSize: 28 }}>Me</h1>
       </div>
-      <MeForm name={me.display_name} level={me.level} />
+      <MeForm id={me.id} name={me.display_name} level={me.level} animal={me.animal ?? null} />
       <div className="card stack">
         <h2>Put it on your home screen</h2>
         <p className="muted">
@@ -22,6 +22,9 @@ export default async function MePage() {
           screen” or “Install app”.
         </p>
       </div>
+      <p className="muted small" style={{ textAlign: 'center' }}>
+        Animal art from <a href="https://github.com/jdecked/twemoji">Twemoji</a>, CC-BY 4.0.
+      </p>
       <form action={signOut}>
         <button className="btn ghost block">Sign out</button>
       </form>

@@ -1,7 +1,8 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase/client';
-import { avatarColor, initials, firstName } from '@/lib/ui';
+import { firstName } from '@/lib/ui';
+import { Avatar } from './Avatar';
 import { timeAgo } from '@/lib/dates';
 import { Icon } from './Icon';
 
@@ -22,17 +23,20 @@ export function ChatRoom({
   initial,
   initialCheers,
   initialNames,
+  initialAnimals,
   meId,
 }: {
   initial: ChatMessage[];
   initialCheers: Cheer[];
   initialNames: Record<string, string>;
+  initialAnimals: Record<string, string | null>;
   meId: string;
 }) {
   const supabase = useMemo(() => supabaseBrowser(), []);
   const [messages, setMessages] = useState(initial);
   const [cheers, setCheers] = useState(initialCheers);
   const [names, setNames] = useState(initialNames);
+  const [animals, setAnimals] = useState(initialAnimals);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
@@ -68,10 +72,13 @@ export function ChatRoom({
     if (!missing.length) return;
     supabase
       .from('profiles')
-      .select('id, display_name')
+      .select('id, display_name, animal')
       .in('id', missing)
       .then(({ data }) => {
-        if (data?.length) setNames((n) => ({ ...n, ...Object.fromEntries(data.map((p) => [p.id, p.display_name])) }));
+        if (data?.length) {
+          setNames((n) => ({ ...n, ...Object.fromEntries(data.map((p) => [p.id, p.display_name])) }));
+          setAnimals((a) => ({ ...a, ...Object.fromEntries(data.map((p) => [p.id, p.animal ?? null])) }));
+        }
       });
   }, [messages, names, supabase]);
 
@@ -147,9 +154,7 @@ export function ChatRoom({
           return (
             <div key={m.id} className="row top" style={{ justifyContent: mine ? 'flex-end' : 'flex-start' }}>
               {!mine && (
-                <span className="avatar sm" style={{ background: avatarColor(m.user_id ?? ''), visibility: showName ? 'visible' : 'hidden' }} aria-hidden="true">
-                  {initials(name)}
-                </span>
+                <Avatar id={m.user_id ?? ''} name={name} animal={animals[m.user_id ?? '']} size="sm" hidden={!showName} />
               )}
               <div className={`bubble ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)}>
                 {showName && <div className="who">{firstName(name)}</div>}
