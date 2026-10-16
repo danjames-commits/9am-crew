@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { builtInPlan, cleanPlan, asWeekPlans } from './plan';
 import { positionOn, suggestWorkout, type SavedCycle } from './engine';
 
-const MOVES = ['Back squat', 'Front squat', 'Deadlift', 'Strict press', 'Goblet squat', 'Kettlebell deadlift', 'Dumbbell press'];
+const MOVES = ['Back squat', 'Front squat', 'Deadlift', 'Bench press', 'Strict press', 'Push press', 'Power clean', 'Snatch', 'Squat clean & jerk'];
 
 describe('cycle plans', () => {
   it('a hand-made plan starts from the usual pattern', () => {
@@ -27,7 +27,7 @@ describe('cycle plans', () => {
         { kind: 'deload' as const, label: 'Holidays', pct: 30, sets: 3, reps: 5 },
         { kind: 'test' as const, label: 'Test', pct: 85, sets: 5, reps: 1 },
       ],
-      days: { ...p.days, '2': { ...p.days['2'], lift: 'Snatch', style: 'yoga' as never }, '5': undefined as never },
+      days: { ...p.days, '2': { ...p.days['2'], lift: 'Turkish get-up', style: 'yoga' as never }, '5': undefined as never },
       goals: ['  First pull-up  ', '', 'x'.repeat(100)],
     };
     const { plan } = cleanPlan(messy, MOVES);
@@ -49,5 +49,14 @@ describe('cycle plans', () => {
     const fri = suggestWorkout({ date: '2026-12-04', schedule }).parts.find((p) => p.kind === 'strength')!;
     expect(fri.lift).toMatchObject({ movement: 'Front squat', gentleMovement: 'Goblet squat' });
     expect(positionOn('2026-12-04', schedule).resolved.name).toBe('Front squat focus');
+  });
+});
+
+describe('Gentle movements are not tracked lifts', () => {
+  it('Gentle can still do an easier movement that isn’t on the lift list', () => {
+    const p = builtInPlan('2026-11-30');
+    const { plan } = cleanPlan({ ...p, days: { ...p.days, '3': { focus: 'Snatch', style: 'short', lift: 'Snatch', gentle: null, skill: null } } }, MOVES);
+    expect(plan!.days['1'].gentle).toBe('Dumbbell press');
+    expect(plan!.days['3']).toMatchObject({ lift: 'Snatch', gentle: 'Dumbbell snatch' });
   });
 });

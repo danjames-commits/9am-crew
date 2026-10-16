@@ -151,8 +151,8 @@ create table public.movements (
 );
 insert into public.movements (name, sort) values
   ('Back squat', 10), ('Front squat', 20), ('Deadlift', 30), ('Bench press', 40),
-  ('Strict press', 50), ('Push press', 60), ('Power clean', 70), ('Goblet squat', 80),
-  ('Kettlebell deadlift', 90), ('Dumbbell press', 100), ('Kettlebell swing', 110);
+  ('Strict press', 50), ('Push press', 60), ('Power clean', 70), ('Snatch', 80),
+  ('Squat clean & jerk', 90);
 
 create table public.lift_logs (
   id bigint generated always as identity primary key,

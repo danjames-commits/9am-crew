@@ -19,6 +19,15 @@ export function YourNumbers({ part, level, maxes, bar = 45 }: { part: Part; leve
 
   const box: React.CSSProperties = { background: 'var(--teal-soft)', color: 'var(--teal-ink)', borderRadius: 12, padding: '10px 12px' };
 
+  // Gentle does an easier movement nobody logs weights for.
+  if (i === 0 && lift.gentleMovement && lift.gentleMovement !== lift.movement) {
+    return (
+      <div className="small" style={box}>
+        Pick a {lift.gentleMovement.toLowerCase()} weight you could lift about 12 times with good form. If the last set feels easy, go up next time.
+      </div>
+    );
+  }
+
   if (!est) {
     return (
       <div className="small" style={box}>

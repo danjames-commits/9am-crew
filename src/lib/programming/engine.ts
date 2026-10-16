@@ -308,7 +308,17 @@ export const GENTLE_FOR: Record<string, string> = {
   'Push press': 'Dumbbell press',
   'Bench press': 'Dumbbell press',
   'Power clean': 'Kettlebell swing',
+  Snatch: 'Dumbbell snatch',
+  'Squat clean & jerk': 'Dumbbell clean & press',
 };
+
+/** Easier movements Gentle does instead. Nobody logs weights for these. */
+export const GENTLE_OPTIONS = ['Goblet squat', 'Kettlebell deadlift', 'Dumbbell press', 'Kettlebell swing', 'Dumbbell snatch', 'Dumbbell clean & press'];
+
+/** Choices for "Gentle does this instead": the easier movements first, then any tracked lift. */
+export function gentleChoices(movements: string[]) {
+  return [...new Set([...GENTLE_OPTIONS, ...movements])];
+}
 
 function pullupSkill(week: WeekPlan): Part {
   if (week.kind === 'test') {

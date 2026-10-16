@@ -1,7 +1,7 @@
 import 'server-only';
 import Anthropic from '@anthropic-ai/sdk';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { liftPart, liftPct, positionOn, suggestWorkout, weightFor, STYLES, STYLE_NAMES, type Schedule } from './programming/engine';
+import { GENTLE_FOR, gentleChoices, liftPart, liftPct, positionOn, suggestWorkout, weightFor, STYLES, STYLE_NAMES, type Schedule } from './programming/engine';
 import { cleanPlan, KIND_NAMES, WEEKDAYS, type PlanDraft } from './programming/plan';
 import { LEVELS, type LevelText, type LiftSpec, type Part, type WorkoutDraft } from './types';
 import { addDays, longDate, shortDate, todayLocal, weekday } from './dates';
@@ -103,7 +103,7 @@ function workoutSchema(movements: string[]) {
                   type: 'object',
                   properties: {
                     movement: { type: 'string', enum: movements },
-                    gentle_movement: { type: 'string', enum: movements },
+                    gentle_movement: { type: 'string', enum: gentleChoices(movements) },
                     mode: { type: 'string', enum: ['percent', 'build'] },
                     sets: { type: 'integer' },
                     reps: { type: 'integer' },
@@ -160,7 +160,7 @@ function toDraft(date: string, w: AiWorkout, movements: string[]): WorkoutDraft 
       const mode = p.lift.mode === 'build' ? 'build' : 'percent';
       const spec: LiftSpec = {
         movement: p.lift.movement,
-        gentleMovement: movements.includes(p.lift.gentle_movement) ? p.lift.gentle_movement : p.lift.movement,
+        gentleMovement: gentleChoices(movements).includes(p.lift.gentle_movement) ? p.lift.gentle_movement : GENTLE_FOR[p.lift.movement] ?? p.lift.movement,
         mode,
         sets: clampInt(p.lift.sets, 1, 10, 5),
         reps: clampInt(p.lift.reps, 1, 15, 5),
@@ -343,7 +343,7 @@ function planSchema(movements: string[]) {
     properties: {
       focus: { type: 'string', description: 'Short focus line, e.g. "Deadlift · intervals"' },
       lift: { type: 'string', enum: lifts, description: 'Main lift for the day, or "none"' },
-      gentle: { type: 'string', enum: lifts, description: 'What Gentle does instead (an easier movement), or "none" if no lift' },
+      gentle: { type: 'string', enum: [...gentleChoices(movements), 'none'], description: 'What Gentle does instead (an easier movement), or "none" if no lift' },
       skill: { type: 'string', enum: ['none', 'pullup'] },
       conditioning: { type: 'string', enum: STYLES },
       notes: { type: 'string', description: 'Optional guidance for the workout writer, or empty' },

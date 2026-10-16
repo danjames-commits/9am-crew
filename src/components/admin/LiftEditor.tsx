@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import type { LiftSpec } from '@/lib/types';
-import { GENTLE_FOR, liftPct } from '@/lib/programming/engine';
+import { GENTLE_FOR, gentleChoices, liftPct } from '@/lib/programming/engine';
 
 /** The settings behind a lifting part. The words members see are written from these. */
 export function LiftEditor({ spec, movements, onChange }: { spec: LiftSpec; movements: string[]; onChange: (s: LiftSpec) => void }) {
@@ -14,7 +14,7 @@ export function LiftEditor({ spec, movements, onChange }: { spec: LiftSpec; move
     return Number.isFinite(n) && n >= lo && n <= hi ? n : fallback;
   };
   const options = movements.includes(spec.movement) ? movements : [spec.movement, ...movements];
-  const gentleOptions = spec.gentleMovement && !options.includes(spec.gentleMovement) ? [spec.gentleMovement, ...options] : options;
+  const gentleOptions = gentleChoices(spec.gentleMovement && !gentleChoices(options).includes(spec.gentleMovement) ? [spec.gentleMovement, ...options] : options);
 
   return (
     <div className="stack">

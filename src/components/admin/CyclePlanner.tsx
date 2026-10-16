@@ -3,7 +3,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { aiPlanCycle, deleteCycle, saveCycle } from '@/app/actions';
 import { addDays, shortDate, weekday } from '@/lib/dates';
-import { GENTLE_FOR, STYLES, STYLE_NAMES, type CycleDay, type CycleWeek } from '@/lib/programming/engine';
+import { GENTLE_FOR, gentleChoices, STYLES, STYLE_NAMES, type CycleDay, type CycleWeek } from '@/lib/programming/engine';
 import { asWeekPlans, cleanWeek, KIND_NAMES, WEEKDAYS, type PlanDraft } from '@/lib/programming/plan';
 import { CycleChart } from '../CycleChart';
 
@@ -294,7 +294,7 @@ export function CyclePlanner({
                       <label className="field grow">
                         Gentle does
                         <select value={d.gentle ?? d.lift} onChange={(e) => setDay(n, { gentle: e.target.value })}>
-                          {movements.map((m) => (
+                          {gentleChoices(movements).map((m) => (
                             <option key={m}>{m}</option>
                           ))}
                         </select>
