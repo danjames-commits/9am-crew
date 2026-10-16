@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Check in, see the workouts, track your lifts.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#fefbef',
+    background_color: '#0e202c',
     theme_color: '#f4f3ee',
     icons: [
       { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
