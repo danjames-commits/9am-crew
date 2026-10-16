@@ -1,5 +1,7 @@
 'use client';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
+import Link from 'next/link';
+import { Icon } from './Icon';
 import { drawAvatar, updateMe } from '@/app/actions';
 import { LEVELS } from '@/lib/types';
 import { ANIMALS, customVersion } from '@/lib/animals';
@@ -52,8 +54,23 @@ export function MeForm({
     start(async () => setMsg(await updateMe({ display_name: displayName, level: lvl, animal: pick, drawing: pick === 'custom' ? fresh : null })));
   }
 
+  // A fresh edit clears the old "Saved" message.
+  useEffect(() => setMsg(null), [displayName, lvl, pick, fresh]);
+
   return (
     <form onSubmit={save} className="stack loose">
+      <div className="row between">
+        <div className="row">
+          <Link href="/" className="avatar" style={{ background: '#fff', color: 'var(--ink)' }} aria-label="Back">
+            <Icon name="back" />
+          </Link>
+          <h1 style={{ fontSize: 28 }}>Me</h1>
+        </div>
+        <button className="btn primary" disabled={pending}>
+          {pending ? 'Saving…' : msg?.ok ? 'Saved ✓' : 'Save'}
+        </button>
+      </div>
+      {msg?.error && <div className="notice bad" role="alert">{msg.error}</div>}
       <label className="field">
         Name the crew sees
         <input type="text" value={displayName} maxLength={40} required onChange={(e) => setDisplayName(e.target.value)} />
