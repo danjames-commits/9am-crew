@@ -7,12 +7,12 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Check in, see the workouts, track your lifts.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f4f3ee',
+    background_color: '#0f3557',
     theme_color: '#f4f3ee',
     icons: [
       { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       { src: '/icon-512.png', sizes: '512x512', type: 'image/png' },
-      { src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
   };
 }
