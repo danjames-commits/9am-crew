@@ -17,9 +17,11 @@ A program's `coach_notes` (from each workout in the program JSON) go into `publi
 
 ## Loading Court6 Cycle 1
 
+The member-facing text is the short version: the full coaching detail (RPE targets, scaling for masters and newer lifters, load formulas, pace aims, no-machine swaps) lives in each day's coach notes. The original long-form text is in git history (PR #4).
+
 `supabase/cycle1.py` turns `court6-cycle1-app.json` into two files you paste into the Supabase SQL editor:
 
-- `supabase/cycle1.sql` adds the cycle (Oct 19 – Dec 18), upserts all 45 workouts as published (Week 1 replaces the `week1.sql` version), and adds each day's coach note. It runs as one transaction. If a cycle already covers those weeks, it fails and changes nothing.
+- `supabase/cycle1.sql` adds the cycle (Oct 19 – Dec 18), upserts all 45 workouts as published (Week 1 replaces the `week1.sql` version), and adds each day's coach note. It runs as one transaction and is safe to run again: it updates the cycle and overwrites those days in place (comments stay). If a different cycle covers those weeks, it fails and changes nothing.
 - `supabase/cycle1-undo.sql` removes it again: the cycle row, the coach notes and the Oct 26 – Dec 18 workouts, and it puts the original Week 1 back. Deleting a workout also deletes its comments. Attendance and lift logs are kept.
 
 Only run it once the program is approved and the cycle-card fix (test week + 90% deload cap) is merged.
