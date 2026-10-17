@@ -37,6 +37,12 @@ export interface WeekPlan {
   reps: number;
 }
 
+/** The next test week at or after week `from`, or -1. A cycle can test more than once (test, then retest). */
+export function nextTestIndex(weeks: { kind: WeekKind }[], from: number) {
+  for (let i = Math.max(0, from); i < weeks.length; i++) if (weeks[i].kind === 'test') return i;
+  return -1;
+}
+
 const LOW = 65;
 const HIGH = 82;
 

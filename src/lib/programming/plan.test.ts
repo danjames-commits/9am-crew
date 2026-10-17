@@ -60,3 +60,16 @@ describe('Gentle movements are not tracked lifts', () => {
     expect(plan!.days['3']).toMatchObject({ lift: 'Snatch', gentle: 'Dumbbell snatch' });
   });
 });
+
+describe('lighter weeks', () => {
+  it('keep a primer week’s heavy single, capped at 90%', () => {
+    const p = builtInPlan('2026-11-30');
+    const weeks = [
+      { kind: 'deload' as const, label: 'Primer', pct: 85, sets: 1, reps: 2 },
+      { kind: 'deload' as const, label: 'Flex', pct: 95, sets: 3, reps: 5 },
+      { kind: 'test' as const, label: 'Retest', pct: 0, sets: 0, reps: 3 },
+    ];
+    const clean = cleanPlan({ ...p, weeks }, MOVES).plan!;
+    expect(clean.weeks.map((w) => w.pct)).toEqual([85, 90, 0]);
+  });
+});

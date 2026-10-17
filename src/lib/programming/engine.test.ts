@@ -213,3 +213,21 @@ describe('planned cycles', () => {
     expect(test.lift!.mode).toBe('build');
   });
 });
+
+import { nextTestIndex } from './engine';
+
+describe('next test week', () => {
+  const kinds = ['test', 'build', 'build', 'build', 'build', 'build', 'deload', 'test', 'deload'] as const;
+  const weeks = kinds.map((kind) => ({ kind }));
+
+  it('finds the test week coming up, not the first one', () => {
+    expect(nextTestIndex(weeks, 0)).toBe(0);
+    expect(nextTestIndex(weeks, 1)).toBe(7);
+    expect(nextTestIndex(weeks, 7)).toBe(7);
+  });
+
+  it('returns -1 once the last test week has passed', () => {
+    expect(nextTestIndex(weeks, 8)).toBe(-1);
+    expect(nextTestIndex([{ kind: 'build' }], 0)).toBe(-1);
+  });
+});

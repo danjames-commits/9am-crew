@@ -50,7 +50,7 @@ const text = (v: unknown, max: number) => String(v ?? '').trim().slice(0, max);
 export function cleanWeek(w: Partial<CycleWeek>): CycleWeek {
   const kind: WeekKind = w.kind === 'deload' || w.kind === 'test' ? w.kind : 'build';
   if (kind === 'test') return { kind, label: text(w.label, 20) || 'Test', pct: 0, sets: 0, reps: int(w.reps, 1, 5, 3) };
-  if (kind === 'deload') return { kind, label: text(w.label, 20) || 'Ease off', pct: int(w.pct, 50, 75, 60), sets: int(w.sets, 1, 8, 3), reps: int(w.reps, 1, 12, 5) };
+  if (kind === 'deload') return { kind, label: text(w.label, 20) || 'Ease off', pct: int(w.pct, 50, 90, 60), sets: int(w.sets, 1, 8, 3), reps: int(w.reps, 1, 12, 5) };
   return { kind, label: text(w.label, 20) || 'Build', pct: int(w.pct, 50, 90, 70), sets: int(w.sets, 1, 8, 5), reps: int(w.reps, 1, 12, 5) };
 }
 
