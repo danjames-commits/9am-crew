@@ -10,6 +10,7 @@ import { isWeekday, todayLocal } from '@/lib/dates';
 import { getBests, getSchedule } from '@/lib/data';
 import { classWeather } from '@/lib/weather';
 import { isAnimal } from '@/lib/animals';
+import { cleanCoachNotes } from '@/lib/coach-notes';
 
 const isDate = (s: unknown): s is string => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
 
@@ -203,6 +204,7 @@ export async function saveWorkout(input: {
   why: string;
   parts: Part[];
   status: 'draft' | 'published';
+  coach_notes?: string; // undefined = leave the notes untouched
 }) {
   const { supabase } = await requireMember({ admin: true });
   if (!isDate(input.class_date)) return { error: 'Bad date' };
@@ -223,10 +225,24 @@ export async function saveWorkout(input: {
     { onConflict: 'class_date' },
   );
   if (error) return { error: error.message };
+  // Order matters: the notes row has a foreign key to workouts.class_date, so the
+  // workout upsert above must succeed first. Only then do we write or clear the notes.
+  let notesError: { message: string } | null = null;
+  if (input.coach_notes !== undefined) {
+    const body = cleanCoachNotes(input.coach_notes);
+    const result = body
+      ? await supabase
+          .from('workout_coach_notes')
+          .upsert({ class_date: input.class_date, body, updated_at: new Date().toISOString() }, { onConflict: 'class_date' })
+      : await supabase.from('workout_coach_notes').delete().eq('class_date', input.class_date);
+    notesError = result.error;
+  }
+  // The workout is saved by now, so refresh pages even if the notes write failed.
   revalidatePath('/workouts');
   revalidatePath(`/workouts/${input.class_date}`);
   revalidatePath('/admin');
   revalidatePath('/');
+  if (notesError) return { error: 'Workout saved, but the coach notes didn’t save: ' + notesError.message, saved: true };
   return { ok: true };
 }
 

@@ -18,11 +18,14 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) notFound();
   const { supabase, me } = await requireMember();
 
-  const [{ data: w }, { names, animals }, { bests }, { data: attendance }] = await Promise.all([
+  const [{ data: w }, { names, animals }, { bests }, { data: attendance }, { data: coachNote }] = await Promise.all([
     supabase.from('workouts').select('id, class_date, title, focus, why, parts, status').eq('class_date', date).maybeSingle(),
     getPeople(supabase),
     getBests(supabase, me.id),
     supabase.from('attendance').select('user_id').eq('class_date', date).order('created_at'),
+    me.is_admin
+      ? supabase.from('workout_coach_notes').select('body').eq('class_date', date).maybeSingle()
+      : Promise.resolve({ data: null as { body: string } | null }),
   ]);
   if (!w) notFound();
   const weather = (w.parts as Part[]).some((p) => p.outdoor) ? await classWeather(w.class_date) : null;
@@ -49,6 +52,12 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
       </div>
       {w.status === 'draft' && <div className="notice bad">Draft. Only admins can see this until it’s published.</div>}
       <p className="muted">{w.focus}</p>
+      {coachNote?.body && (
+        <section className="card stack tight">
+          <div className="eyebrow">Coach notes · admins only</div>
+          <p className="pre">{coachNote.body}</p>
+        </section>
+      )}
       {upcoming && (
         <section className="card" style={{ padding: '10px 14px' }} aria-label="Who's coming">
           <CheckIn compact classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />

@@ -26,6 +26,7 @@ await db.exec(readFileSync(new URL('../supabase/migration-003-claude.sql', impor
 await db.exec(readFileSync(new URL('../supabase/migration-004-cycles.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-006-animals.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-007-custom-avatars.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-008-coach-notes.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -179,6 +180,28 @@ r = await as(B, `select count(*)::int as n from public.cycles`);
 assert.equal(r.rows[0].n, 2);
 await as(A, `insert into public.ai_requests (kind) values ('plan')`);
 ok('planned cycles: admins only, start on Mondays, never overlap');
+
+await as(A, `insert into public.workouts (class_date, title) values ('2026-11-02', 'Test day')`);
+await as(A, `insert into public.workouts (class_date, title) values ('2026-11-04', 'Test day 2')`);
+await as(A, `insert into public.workout_coach_notes (class_date, body) values ('2026-11-02', 'Run in two waves')`);
+r = await as(C, `select body from public.workout_coach_notes`);
+assert.deepEqual(r.rows.map((x) => x.body), ['Run in two waves']);
+r = await as(B, `select count(*)::int as n from public.workout_coach_notes`);
+assert.equal(r.rows[0].n, 0);
+await fails(B, `insert into public.workout_coach_notes (class_date, body) values ('2026-11-04', 'x')`, 'member writes coach notes');
+await as(B, `update public.workout_coach_notes set body = 'hacked'`);
+r = await db.query(`select body from public.workout_coach_notes`);
+assert.equal(r.rows[0].body, 'Run in two waves');
+await fails(A, `insert into public.workout_coach_notes (class_date, body) values ('2026-11-03', 'no workout')`, 'notes without a workout');
+await fails(A, `insert into public.workout_coach_notes (class_date, body) values ('2026-11-04', '')`, 'empty note');
+await as(B, `delete from public.workout_coach_notes`);
+r = await db.query(`select body from public.workout_coach_notes where class_date = '2026-11-02'`);
+assert.equal(r.rows.length, 1);
+await as(A, `delete from public.workouts where class_date = '2026-11-02'`);
+r = await db.query(`select count(*)::int as n from public.workout_coach_notes`);
+assert.equal(r.rows[0].n, 0);
+await as(A, `delete from public.workouts where class_date = '2026-11-04'`);
+ok('coach notes: admins only, need a workout, go when the workout goes');
 
 await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);
