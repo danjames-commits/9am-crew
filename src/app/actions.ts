@@ -242,7 +242,7 @@ export async function saveWorkout(input: {
   revalidatePath(`/workouts/${input.class_date}`);
   revalidatePath('/admin');
   revalidatePath('/');
-  if (notesError) return { error: 'Workout saved, but the coach notes didn’t save: ' + notesError.message };
+  if (notesError) return { error: 'Workout saved, but the coach notes didn’t save: ' + notesError.message, saved: true };
   return { ok: true };
 }
 

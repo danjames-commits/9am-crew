@@ -12,4 +12,5 @@ A program's `coach_notes` (from each workout in the program JSON) go into `publi
   ```
 
 - Empty notes are skipped. Do not write a blank row.
+- Clean each note the same way the app does before inserting: `\r\n` to `\n`, trim, at most 2000 characters, skip if empty. A note over 2000 characters makes the whole SQL batch fail.
 - Run the insert after the workout row for the same date is written. The notes table references `workouts.class_date`, so the insert fails if the workout is missing.

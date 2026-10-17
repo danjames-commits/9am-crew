@@ -51,6 +51,7 @@ export function Builder({
   const [pending, run] = useTransition();
   const [dirty, setDirty] = useState(false);
   const [notes, setNotes] = useState(savedNotes);
+  const [lastSavedNotes, setLastSavedNotes] = useState(savedNotes);
 
   const optionCount = conditioningOptions(date, schedule).length;
   const update = (d: WorkoutDraft) => {
@@ -85,10 +86,22 @@ export function Builder({
 
   function save(next: 'draft' | 'published') {
     run(async () => {
-      const r = await saveWorkout({ ...draft, class_date: date, status: next, coach_notes: notes });
-      if (r?.error) setMsg({ error: r.error });
-      else {
+      const r = await saveWorkout({
+        ...draft,
+        class_date: date,
+        status: next,
+        coach_notes: notes !== lastSavedNotes ? notes : undefined,
+      });
+      if (r?.error) {
+        setMsg({ error: r.error });
+        if (r.saved) {
+          // The workout is saved; only the notes failed, so keep dirty on.
+          setStatus(next);
+          router.refresh();
+        }
+      } else {
         setStatus(next);
+        setLastSavedNotes(notes);
         setDirty(false);
         setMsg({ ok: next === 'published' ? 'Published. The crew can see it now.' : 'Saved as a draft. Only admins can see it.' });
         router.refresh();
