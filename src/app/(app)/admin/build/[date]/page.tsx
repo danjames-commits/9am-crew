@@ -16,11 +16,12 @@ export default async function BuildPage({ params }: { params: Promise<{ date: st
   const { date } = await params;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !isWeekday(date)) notFound();
   const { supabase } = await requireMember({ admin: true });
-  const [schedule, { data: existing }, weather, { data: movementRows }] = await Promise.all([
+  const [schedule, { data: existing }, weather, { data: movementRows }, { data: notes }] = await Promise.all([
     getSchedule(supabase),
     supabase.from('workouts').select('class_date, title, focus, why, parts, status').eq('class_date', date).maybeSingle(),
     classWeather(date),
     supabase.from('movements').select('name').order('sort'),
+    supabase.from('workout_coach_notes').select('body').eq('class_date', date).maybeSingle(),
   ]);
 
   return (
@@ -43,6 +44,7 @@ export default async function BuildPage({ params }: { params: Promise<{ date: st
         weather={weather}
         movements={(movementRows ?? []).map((m) => m.name)}
         aiOn={aiEnabled()}
+        savedNotes={notes?.body ?? ''}
       />
     </main>
   );

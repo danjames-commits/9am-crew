@@ -7,6 +7,7 @@ import { LiftEditor } from './LiftEditor';
 import { AskClaude } from './AskClaude';
 import { LEVELS, type Level, type Part, type WorkoutDraft, type LevelText, type LiftSpec } from '@/lib/types';
 import { Icon } from '../Icon';
+import { COACH_NOTES_MAX } from '@/lib/coach-notes';
 import type { WeatherCall } from '@/lib/weather-rules';
 
 interface Saved extends WorkoutDraft {
@@ -27,6 +28,7 @@ export function Builder({
   weather,
   movements,
   aiOn,
+  savedNotes,
 }: {
   date: string;
   schedule: Schedule;
@@ -34,6 +36,7 @@ export function Builder({
   weather: WeatherCall | null;
   movements: string[];
   aiOn: boolean;
+  savedNotes: string;
 }) {
   const router = useRouter();
   const suggest = (swap: number, adjust: number) => suggestWorkout({ date, schedule, swap, adjust });
@@ -47,6 +50,7 @@ export function Builder({
   const [msg, setMsg] = useState<{ ok?: string; error?: string } | null>(null);
   const [pending, run] = useTransition();
   const [dirty, setDirty] = useState(false);
+  const [notes, setNotes] = useState(savedNotes);
 
   const optionCount = conditioningOptions(date, schedule).length;
   const update = (d: WorkoutDraft) => {
@@ -81,7 +85,7 @@ export function Builder({
 
   function save(next: 'draft' | 'published') {
     run(async () => {
-      const r = await saveWorkout({ ...draft, class_date: date, status: next });
+      const r = await saveWorkout({ ...draft, class_date: date, status: next, coach_notes: notes });
       if (r?.error) setMsg({ error: r.error });
       else {
         setStatus(next);
@@ -115,6 +119,22 @@ export function Builder({
         />
       )}
       {draft.why && <div className="card teal small">{draft.why}</div>}
+
+      <div className="card stack tight">
+        <div className="eyebrow">Coach notes · admins only</div>
+        <textarea
+          value={notes}
+          rows={4}
+          maxLength={COACH_NOTES_MAX}
+          placeholder="Class logistics for coaches: waves, set-up, who records what."
+          onChange={(e) => {
+            setNotes(e.target.value);
+            setDirty(true);
+            setMsg(null);
+          }}
+        />
+        <div className="muted small">Members never see these.</div>
+      </div>
 
       <div className={`card small stack tight ${weather?.outside ? 'gold' : ''}`}>
         <b>Weather at 9 AM</b>
