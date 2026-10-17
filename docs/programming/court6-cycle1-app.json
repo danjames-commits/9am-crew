@@ -586,10 +586,10 @@
           "title": "Cool-down",
           "minutes": 5,
           "versions": [
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
           ]
         }
       ]
@@ -683,7 +683,7 @@
           "kind": "strength",
           "label": "Strength",
           "title": "Deadlift 3 × 8",
-          "minutes": 16,
+          "minutes": 15,
           "lift": {
             "movement": "Deadlift",
             "gentleMovement": "Kettlebell deadlift",
@@ -709,7 +709,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Station rounds",
-          "minutes": 22,
+          "minutes": 21,
           "versions": [
             "As many rounds as you can in 20 min, about 7/10 effort: breathing hard but controlled.\n6/8 cal row · 8 wall balls (4/6 lb) to a low target · 20 m farmers carry (2 × 13/18 lb) · 8 step-ups to a low step (total)\nNo rower free? 30 s step-jacks.",
             "As many rounds as you can in 20 min, about 7/10 effort: breathing hard but controlled.\n8/10 cal row · 10 wall balls (6/10 lb) · 20 m farmers carry (2 × 18/26 lb) · 10 bodyweight lunges (total)\nNo rower free? 35 jumping jacks.",
@@ -733,7 +733,7 @@
           "kind": "cooldown",
           "label": "Cool-down",
           "title": "Cool-down",
-          "minutes": 4,
+          "minutes": 6,
           "versions": [
             "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
             "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
@@ -958,10 +958,10 @@
           "title": "Cool-down",
           "minutes": 5,
           "versions": [
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
           ]
         }
       ]
@@ -989,7 +989,7 @@
           "kind": "skill",
           "label": "Skill",
           "title": "Toes-to-bar level 2: kip swing",
-          "minutes": 13,
+          "minutes": 12,
           "versions": [
             "Toes-to-bar practice: every 2 min × 5\n15 s tuck hollow hold · 5 lying bent-knee raises · 4 ring rows on a high bar, body nearly upright",
             "Toes-to-bar practice: every 2 min × 5\n10 s tight hollow hang · 5 lying leg raises · 3–5 ring rows",
@@ -1001,7 +1001,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Bike/snatch/row intervals",
-          "minutes": 28,
+          "minutes": 29,
           "versions": [
             "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n12/15 cal air bike · 12 alternating dumbbell hang snatches (10/15 lb) · easy row until time's up\nNo bike free? 55 s step-jacks or marching. No rower free? March.",
             "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n20/25 cal air bike · 20 alternating dumbbell hang snatches (10/15 lb) · easy row until time's up\nNo bike free? 90 jumping jacks. No rower free? Step-ups or jumping jacks.",
@@ -1043,7 +1043,7 @@
           "kind": "warmup",
           "label": "Warm-up",
           "title": "Warm-up",
-          "minutes": 11,
+          "minutes": 10,
           "versions": [
             "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
             "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
@@ -1055,7 +1055,7 @@
           "kind": "strength",
           "label": "Strength",
           "title": "Deadlift 4 × 6",
-          "minutes": 16,
+          "minutes": 15,
           "lift": {
             "movement": "Deadlift",
             "gentleMovement": "Kettlebell deadlift",
@@ -1081,7 +1081,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Station rounds 3 × 7",
-          "minutes": 22,
+          "minutes": 23,
           "versions": [
             "3 × 7 min, as many rounds as you can, 1 min rest between. Hard but smooth (about 7/10):\n150 m row · 8 step-ups to a low step (total) · 4 incline step-back burpees (hands on a box), 2 long strides after each\nNo rower free? 40 s step-jacks or marching.",
             "3 × 7 min, as many rounds as you can, 1 min rest between. Hard but smooth (about 7/10):\n200 m row · 12 lunges total, bodyweight or sandbag (13/22 lb) · 6 step-back burpees, broad jump after each\nNo rower free? 50 jumping jacks.",
@@ -1105,12 +1105,12 @@
           "kind": "cooldown",
           "label": "Cool-down",
           "title": "Cool-down",
-          "minutes": 4,
+          "minutes": 5,
           "versions": [
-            "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
-            "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
-            "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
-            "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s"
+            "2 min easy row · pigeon stretch 1 min each side",
+            "2 min easy row · pigeon stretch 1 min each side",
+            "2 min easy row · pigeon stretch 1 min each side",
+            "2 min easy row · pigeon stretch 1 min each side"
           ]
         }
       ]
@@ -1195,7 +1195,7 @@
           "kind": "strength",
           "label": "Skill",
           "title": "Power clean practice",
-          "minutes": 8,
+          "minutes": 10,
           "versions": [
             "Dumbbell clean: every minute for 10 min\nOne light dumbbell or kettlebell: 2 hang cleans to the shoulder + 1 goblet squat. Easy, smooth reps.",
             "Power clean: every minute for 10 min\n2 hang power cleans + 1 front squat. Empty bar or light plates; start above the knee if the floor feels rushed. Fast, crisp reps.",
@@ -1233,7 +1233,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Dumbbell, core and row rounds",
-          "minutes": 19,
+          "minutes": 17,
           "versions": [
             "As many rounds as you can in 10 min:\n4 alternating dumbbell hang clean & presses (10/15 lb) · 6 lying bent-knee raises · 5/6 cal row\nBreak up the core work early; aim for under 1 min a round.\nNo rower free? 20 s step-jacks or marching.",
             "As many rounds as you can in 10 min:\n6 alternating dumbbell hang clean & jerks (15/20 lb) · 8 lying leg raises · 6/8 cal row\nBreak up the core work early; aim for under 1 min a round.\nNo rower free? 30 jumping jacks.",
@@ -1330,10 +1330,10 @@
           "title": "Cool-down",
           "minutes": 5,
           "versions": [
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
           ]
         }
       ]
@@ -1349,7 +1349,7 @@
           "kind": "warmup",
           "label": "Warm-up",
           "title": "Warm-up",
-          "minutes": 11,
+          "minutes": 9,
           "versions": [
             "2 min easy jump rope · 200 m jog · high knees and butt kicks\nThen: 10 scap pull-ups · 2 × 10 hollow-to-arch swings on the bar · 5 kipping knee raises · 2 × 100 m strides",
             "2 min easy jump rope · 200 m jog · high knees and butt kicks\nThen: 10 scap pull-ups · 2 × 10 hollow-to-arch swings on the bar · 5 kipping knee raises · 2 × 100 m strides",
@@ -1361,7 +1361,7 @@
           "kind": "skill",
           "label": "Skill",
           "title": "Toes-to-bar: kipping knee raise",
-          "minutes": 13,
+          "minutes": 11,
           "versions": [
             "Toes-to-bar level 3: every minute × 10\nOdd minutes: 6 lying bent-knee raises\nEven minutes: 15 s tuck hollow hold",
             "Toes-to-bar level 3: every minute × 10\nOdd minutes: 5 hanging knee raises (any height)\nEven minutes: 8 lying leg raises",
@@ -1373,7 +1373,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Row every 8 min",
-          "minutes": 28,
+          "minutes": 32,
           "versions": [
             "Every 8 min × 4, talk-able pace:\n400 m row · 8 wall balls (4/6 lb) to a low target · 5/6 cal air bike, easy\nRest until the next 8 min starts.\nNo rower free? 1:40 marching or step-jacks. No bike free? 20 s.",
             "Every 8 min × 4, talk-able pace:\n500 m row · 10 wall balls (6/10 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo rower free? 125 jumping jacks. No bike free? 35 jumping jacks.",
@@ -1415,7 +1415,7 @@
           "kind": "warmup",
           "label": "Warm-up",
           "title": "Warm-up",
-          "minutes": 11,
+          "minutes": 10,
           "versions": [
             "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow Romanian deadlifts · 3 deadlifts at 40–50% · warm-up sets",
             "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow Romanian deadlifts · 3 deadlifts at 40–50% · warm-up sets",
@@ -1427,7 +1427,7 @@
           "kind": "strength",
           "label": "Strength",
           "title": "Deadlift 4 × 5",
-          "minutes": 15,
+          "minutes": 14,
           "lift": {
             "movement": "Deadlift",
             "gentleMovement": "Kettlebell deadlift",
@@ -1465,7 +1465,7 @@
           "kind": "skill",
           "label": "Accessory",
           "title": "Accessory superset",
-          "minutes": 2,
+          "minutes": 3,
           "versions": [
             "2 rounds: 8 light chest-supported dumbbell rows · 15 m light kettlebell suitcase carry each side\nLeave 3–4 reps in the tank.",
             "2 rounds: 10 light chest-supported dumbbell rows · 20 m kettlebell suitcase carry each side\nLeave 2–3 reps in the tank.",
@@ -1477,12 +1477,12 @@
           "kind": "cooldown",
           "label": "Cool-down",
           "title": "Cool-down",
-          "minutes": 3,
+          "minutes": 4,
           "versions": [
-            "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
-            "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
-            "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
-            "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s"
+            "2 min easy row · pigeon stretch 1 min each side",
+            "2 min easy row · pigeon stretch 1 min each side",
+            "2 min easy row · pigeon stretch 1 min each side",
+            "2 min easy row · pigeon stretch 1 min each side"
           ]
         }
       ]
@@ -1702,10 +1702,10 @@
           "title": "Cool-down",
           "minutes": 5,
           "versions": [
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
           ]
         }
       ]
@@ -1825,7 +1825,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Bike + station rounds",
-          "minutes": 26,
+          "minutes": 23,
           "versions": [
             "5 rounds. Each round: 5/6 cal bike, steady, then the next station:\n1. 150 m row\n2. 25 m sled push (empty or 1 light plate)\n3. 10 wall balls (4/6 lb), low target\n4. 50 m carry (2 × 13/18 lb)\n5. 10 low step-ups\nNo rower free? March 40 s. No bike free? March 20 s.",
             "5 rounds. Each round: 6/8 cal bike, hard pace, then the next station:\n1. 200 m row\n2. 25 m sled push (light plates)\n3. 15 wall balls (6/10 lb)\n4. 50 m carry (2 × 18/26 lb)\n5. 16 lunges, sandbag 13/22 lb or none\nNo rower free? 50 jumping jacks. No bike free? 30 jumping jacks.",
@@ -1858,7 +1858,7 @@
           "kind": "cooldown",
           "label": "Cool-down",
           "title": "Cool-down",
-          "minutes": 3,
+          "minutes": 6,
           "versions": [
             "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
             "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
@@ -1948,7 +1948,7 @@
           "kind": "strength",
           "label": "Skill",
           "title": "Power clean practice",
-          "minutes": 8,
+          "minutes": 12,
           "versions": [
             "Dumbbell clean: every 2 min × 6\nOne light dumbbell or kettlebell: 2 hang cleans to the shoulder. Smooth reps only.",
             "Power clean: every 2 min × 6, 2 reps\nStay light: empty bar or light plates. Start from above the knee if the floor feels rushed. Fast, crisp reps.",
@@ -1986,7 +1986,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Row/snatch/burpee, 3 rounds",
-          "minutes": 19,
+          "minutes": 15,
           "versions": [
             "3 rounds for time (12 min cap), rest when you need to:\n150 m row · 8 alternating dumbbell hang snatches (10/15 lb) · 6 incline step-back burpees (hands on a box)\nNo rower free? 40 s step-jacks or marching.",
             "3 rounds for time (12 min cap):\n200 m row · 12 alternating dumbbell snatches (15/20 lb) · 9 step-back burpees\nNo rower free? 50 jumping jacks.",
@@ -2109,10 +2109,10 @@
           "title": "Cool-down",
           "minutes": 5,
           "versions": [
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
           ]
         }
       ]
@@ -2258,7 +2258,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Bike + station doubles",
-          "minutes": 24,
+          "minutes": 21,
           "versions": [
             "4 rounds: 5/6 cal bike, then 2 stations:\nRound 1: 25 m sled push + 10 wall balls 4/6 lb, low target\nRound 2: 150 m row + 4 incline step-back burpees\nRound 3: 50 m farmer carry 2 × 13/18 lb + 10 low step-ups\nRound 4: 25 m sled pull + same wall balls\nSled: empty or 1 light plate.\nNo rower free? 40 s step-jacks. No bike free? 20 s step-jacks.",
             "4 rounds: 6/8 cal bike, then 2 stations:\nRound 1: 25 m sled push + 15 wall balls 6/10 lb\nRound 2: 200 m row + 6 step-back burpee broad jumps\nRound 3: 50 m farmer carry 2 × 18/26 lb + 16 lunges (13/22 lb sandbag optional)\nRound 4: 25 m sled pull + same wall balls\nSled: light plates.\nNo rower free? 50 jumping jacks. No bike free? 30 jumping jacks.",
@@ -2291,7 +2291,7 @@
           "kind": "cooldown",
           "label": "Cool-down",
           "title": "Cool-down",
-          "minutes": 3,
+          "minutes": 6,
           "versions": [
             "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
             "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
@@ -2381,7 +2381,7 @@
           "kind": "strength",
           "label": "Skill",
           "title": "Power clean practice",
-          "minutes": 8,
+          "minutes": 10,
           "versions": [
             "Dumbbell clean: every 2 min × 5\nOne light dumbbell or kettlebell: 1 hang clean to the shoulder + 2 goblet squats. Easy, smooth reps.",
             "Power clean: every 2 min × 5\n1 power clean + 2 front squats. Stay light: empty bar or light plates; start from the hang if the floor feels rushed. Fast, crisp reps.",
@@ -2445,7 +2445,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Row/swing/thruster, 2 rounds",
-          "minutes": 19,
+          "minutes": 17,
           "versions": [
             "2 rounds for time, 14 min cap:\n250 m row · 12 Russian kettlebell swings to chest height (13/18 lb) · 10 wall push-ups · 8 dumbbell thrusters (2 × 5 lb)\nNo rower free? 1 min step-jacks or marching.",
             "2 rounds for time, 14 min cap:\n400 m row · 20 kettlebell swings (18/26 lb) · 15 incline push-ups · 10 dumbbell thrusters (2 × 10 lb)\nNo rower free? 100 jumping jacks.",
@@ -2577,10 +2577,10 @@
           "title": "Cool-down",
           "minutes": 5,
           "versions": [
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
           ]
         }
       ]
@@ -2726,7 +2726,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Station blocks",
-          "minutes": 22,
+          "minutes": 20,
           "versions": [
             "2 × 8 min: as many rounds as you can, rest 2 min between\n5/6 cal row · 8 wall balls (4/6 lb) to a low target · 20 m farmers carry (2 × 13/18 lb)\nHard but smooth, about 7/10.\nNo rower free? 20 s step-jacks or marching.",
             "2 × 8 min: as many rounds as you can, rest 2 min between\n6/8 cal row · 10 wall balls (6/10 lb) · 20 m farmers carry (2 × 18/26 lb)\nHard but smooth, about 7/10.\nNo rower free? 30 jumping jacks.",
@@ -2750,7 +2750,7 @@
           "kind": "cooldown",
           "label": "Cool-down",
           "title": "Cool-down",
-          "minutes": 4,
+          "minutes": 6,
           "versions": [
             "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
             "3 min easy row · pigeon stretch 1 min each side · dead hang 3 × 15 s",
@@ -3351,7 +3351,7 @@
           "kind": "strength",
           "label": "Strength",
           "title": "Back squat 3 × 5 (technique)",
-          "minutes": 20,
+          "minutes": 14,
           "lift": {
             "movement": "Back squat",
             "gentleMovement": "Goblet squat",
@@ -3377,7 +3377,7 @@
           "kind": "conditioning",
           "label": "Conditioning",
           "title": "Steady rounds",
-          "minutes": 15,
+          "minutes": 21,
           "versions": [
             "As many rounds as you can in 20 min, steady, rest when you need to:\n5/6 cal row · 8 wall balls (4/6 lb, low target) · 8 Russian kettlebell swings to chest height (13/18 lb)\nNo rower free? 20 s step-jacks or marching.",
             "As many rounds as you can in 20 min, steady pace:\n6/8 cal row · 12 wall balls (6/10 lb) · 12 kettlebell swings (18/26 lb)\nNo rower free? 30 jumping jacks.",
@@ -3403,10 +3403,10 @@
           "title": "Cool-down",
           "minutes": 5,
           "versions": [
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
-            "3 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads.",
+            "2 min easy bike · couch stretch 1 min each side · child's pose 1 min\nLog your loads."
           ]
         }
       ]
