@@ -1,5 +1,5 @@
 import { addDays, nextClassDate, shortDate } from '@/lib/dates';
-import { nextCycle, positionOn, type Schedule, type WeekPlan } from '@/lib/programming/engine';
+import { nextCycle, nextTestIndex, positionOn, type Schedule, type WeekPlan } from '@/lib/programming/engine';
 import { CycleChart } from './CycleChart';
 
 const monthDay = (d: string) => shortDate(d).split(' · ')[1];
@@ -16,7 +16,7 @@ export function CycleCard({ schedule, showGoals = true, showExplainer = true }: 
   const pos = positionOn(today, schedule);
   const c = pos.resolved;
   const lastFriday = addDays(c.end, -3);
-  const testIndex = c.weeks.findIndex((w) => w.kind === 'test');
+  const testIndex = nextTestIndex(c.weeks, pos.started ? pos.week.index : 0);
   const testMonday = testIndex >= 0 ? addDays(c.start, testIndex * 7) : null;
   const next = pos.started ? c.weeks[pos.week.index + 1] : c.weeks[0];
   const following = nextCycle(today, schedule);
