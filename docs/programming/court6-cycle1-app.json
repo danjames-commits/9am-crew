@@ -2,7 +2,7 @@
   "cycle": {
     "start_date": "2026-10-19",
     "name": "Strength + Aerobic Base",
-    "why": "Nine weeks, Monday to Friday: test, three Base weeks, two Build weeks, a primer/deload week, a retest week and a flex week. Week 1 tests a 3RM back squat and deadlift, a 5RM strict press and a 1 km run (or 1,000 m row); every lift percentage comes from estimated max (3RM × 1.06, press 5RM × 1.13) with an RPE 8 cap, and every run pace comes from the 1 km time. Monday and Friday are the hard days, Wednesday is steady threshold work, Thursday is easy, the lift always comes before conditioning, and class running rises no more than 10% a week. stations live in Wednesday conditioning, compromised running starts in Week 5, and toes-to-bar is the block skill (baseline Week 2, retest Week 9). Week 8 repeats the Week 1 tests on the same days, and the Week 8 numbers plus the Week 9 Helen, Mini Challenge and strict pull-up baselines become the next block's starting points.",
+    "why": "Nine weeks, Monday to Friday: test, three Base weeks, two Build weeks, a primer/deload week, a retest week and a flex week. Week 1 tests a 3RM back squat and deadlift, a 5RM strict press and a 1 km run (or 1,000 m row); every lift percentage comes from estimated max (3RM × 1.06, press 5RM × 1.13) with an RPE 8 cap, and every run pace comes from the 1 km time. Monday and Friday are the hard days, Wednesday is steady threshold work, Thursday is easy, the lift always comes before conditioning, and class running rises no more than 10% a week. Stations live in Wednesday conditioning, compromised running starts in Week 5, and toes-to-bar is the block skill (baseline Week 2, retest Week 9). Week 8 repeats the Week 1 tests on the same days, and the Week 8 numbers plus the Week 9 Helen, Mini Challenge and strict pull-up baselines become the next block's starting points.",
     "goals": [
       "Raise 3RM back squat and deadlift and 5RM strict press",
       "Faster 1 km run or 1,000 m row",
@@ -120,8 +120,8 @@
   "workouts": [
     {
       "class_date": "2026-10-19",
-      "title": "Squat Test + Bike Intervals",
-      "focus": "Squat test · bike intervals",
+      "title": "Squat Test + Bike/Row Intervals",
+      "focus": "Squat test · intervals",
       "why": "Find the most you can squat for 3 good reps. It sets your squat weights for the next few weeks. Then short, fast intervals to open up the lungs.",
       "coach_notes": "Two coaches on test days if possible. Watch depth and back position; you call the set. Steady, Strong and Full test the barbell back squat (smaller jumps at Steady); only Gentle tests the goblet squat. Machine-only intervals: Monday has no running on purpose (heavy-leg day), so no outside version.\nScaling: Gentle warm-up: step instead of jump, walk instead of jog, comfortable range. Newer lifters / first 4 weeks after on-ramp: start with the empty bar (or lighter training bar), no max attempt; stop at the first RPE 8 set and record that. Masters (40+): RPE 8 max on the interval hard pieces. Knee or back pain: air bike only.\nTest: stop at RPE 8 (2 reps left), no RPE 9–10 grinders. Gentle: one DB or KB at the chest, box for depth if needed. Record load in lb, level, coach notes. Week 1 3RM × 1.06 = e1RM for every squat % this block.\nIntervals: hard pieces Gentle RPE 6 (can be 0:20), Steady RPE 7, Strong RPE 8, Full RPE 9. Same machine all 6 rounds. Cap 12:00 (fixed) · Aim: hold calories within 10% from round 1 to round 6 · Feel: gas · Pace: reach. No machine: score = reps instead of calories.\nNo machine (warm-up/cool-down): easy jumping jacks, marching or jump rope, about 1:00 per 250 m or per 5 cal.\nLadder: Bar × 8, ~50% × 5, ~65% × 3, ~75% × 3.",
       "parts": [
@@ -139,7 +139,7 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
+          "label": "Test",
           "title": "Squat test: heavy 3",
           "minutes": 20,
           "lift": {
@@ -157,22 +157,22 @@
             "note": "Week 1 3RM × 1.06 = e1RM for squat %."
           },
           "versions": [
-            "Goblet squat: build to a heavy 3 (18 min)\nLight × 8, then 3 sets of 3 getting heavier, then 2–4 tries at 3. Stop with 2 reps left.\nWrite down your best 3 (lb).",
-            "Back squat: build to a heavy 3 (18 min)\nEmpty bar × 8, then build in small jumps, then 2–4 tries at 3, adding 5–10 lb each time.\nCoach calls the set if depth or position breaks. Write down your best 3 (lb).",
-            "Back squat: build to a heavy 3 (18 min)\nEmpty bar × 8, then build in small jumps, then 2–4 tries at 3, adding 5–15 lb each time.\nCoach calls the set if depth or position breaks. Write down your best 3 (lb).",
-            "Back squat: build to a heavy 3 (18 min)\nEmpty bar × 8, then build in small jumps, then 2–4 tries at 3, adding 5–20 lb each time.\nCoach calls the set if depth or position breaks. Write down your best 3 (lb)."
+            "Goblet squat: build to a heavy 3\nLight × 8, then 3 sets of 3 getting heavier, then 2–4 tries at 3. Stop with 2 reps left.\nWrite down your best 3 (lb).",
+            "Back squat: build to a heavy 3\nEmpty bar × 8, then build in small jumps, then 2–4 tries at 3, adding 5–10 lb each time.\nCoach calls the set if depth or position breaks. Write down your best 3 (lb).",
+            "Back squat: build to a heavy 3\nEmpty bar × 8, then build in small jumps, then 2–4 tries at 3, adding 5–15 lb each time.\nCoach calls the set if depth or position breaks. Write down your best 3 (lb).",
+            "Back squat: build to a heavy 3\nEmpty bar × 8, then build in small jumps, then 2–4 tries at 3, adding 5–20 lb each time.\nCoach calls the set if depth or position breaks. Write down your best 3 (lb)."
           ]
         },
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Bike intervals",
+          "title": "Bike/row intervals",
           "minutes": 13,
           "versions": [
-            "6 rounds: 0:30 hard, 1:30 easy (12 min)\nBike or rower, whichever feels easier. Hard but comfortable; hard pieces can be 0:20. Same machine every round.\nNo machine free? Fast marching, then slow walk.",
-            "6 rounds: 0:30 hard, 1:30 easy (12 min)\nAny machine, same one all 6 rounds. Hard but smooth.\nNo machine free? Jumping jacks, then walk.",
-            "6 rounds: 0:30 hard, 1:30 easy (12 min)\nRower, all 6 rounds. Hard, but keep good form.\nNo rower free? Fast single-unders or high knees, then walk.",
-            "6 rounds: 0:30 hard, 1:30 easy (12 min)\nAir bike, all 6 rounds. Close to all-out.\nNo bike free? All-out single-unders or high knees, then walk."
+            "6 rounds: 0:30 hard, 1:30 easy\nAir bike or rower, whichever feels easier. Same one every round.\nHard but comfortable. Hard pieces can be 0:20.\nWrite down your total calories.\nNo machine free? Fast marching, then slow walk.",
+            "6 rounds: 0:30 hard, 1:30 easy\nAir bike or rower, same one every round. Hard but smooth.\nWrite down your total calories.\nNo machine free? Jumping jacks, then walk.",
+            "6 rounds: 0:30 hard, 1:30 easy\nRower, all 6 rounds. Hard, but keep good form.\nWrite down your total calories.\nNo rower free? Fast single-unders or high knees, then walk.",
+            "6 rounds: 0:30 hard, 1:30 easy\nAir bike, all 6 rounds. Close to all-out.\nWrite down your total calories.\nNo bike free? All-out single-unders or high knees, then walk."
           ]
         },
         {
@@ -238,18 +238,18 @@
           "title": "1,000 m row test",
           "minutes": 15,
           "versions": [
-            "1,000 m row, steady and comfortable-hard. A short pause at 500 m is fine (note it).\nThen walk and drink water, 8–10 min.\nWrite down your time and whether you ran or rowed.\nNo rower free? Wait for the next one, or run 1 km outside if safe.",
-            "1,000 m row, as fast as you can hold the whole way.\nThen walk and drink water, 8–10 min.\nWrite down your time and whether you ran or rowed.\nNo rower free? Wait for the next one, or run 1 km outside if safe.",
-            "1,000 m row at an even pace.\nThen walk and drink water, 8–10 min.\nWrite down your time and whether you ran or rowed.\nNo rower free? Wait for the next one, or run 1 km outside if safe.",
-            "1,000 m row, hard but even: same split every 250 m.\nThen walk and drink water, 8–10 min.\nWrite down your time and whether you ran or rowed.\nNo rower free? Wait for the next one, or run 1 km outside if safe."
+            "1,000 m row, steady and comfortable-hard. A short pause at 500 m is fine (note it).\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed.\nNo rower free? Wait for the next one, or run 1 km outside if safe.",
+            "1,000 m row, as fast as you can hold the whole way.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed.\nNo rower free? Wait for the next one, or run 1 km outside if safe.",
+            "1,000 m row, as fast as you can at an even pace.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed.\nNo rower free? Wait for the next one, or run 1 km outside if safe.",
+            "1,000 m row, hard but even: same split every 250 m.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed.\nNo rower free? Wait for the next one, or run 1 km outside if safe."
           ],
           "outdoor": {
             "title": "1 km run test",
             "versions": [
-              "1 km walk/jog: jog 1 min, walk 1 min, repeat (or brisk walk all the way). Keep the same plan in Week 8.\nThen walk and drink water, 8–10 min.\nWrite down your time and whether you ran or rowed.",
-              "1 km run/walk, as fast as you can hold the whole way.\nThen walk and drink water, 8–10 min.\nWrite down your time and whether you ran or rowed.",
-              "1 km run at an even pace.\nThen walk and drink water, 8–10 min.\nWrite down your time and whether you ran or rowed.",
-              "1 km run, hard but even: same pace every 200 m.\nThen walk and drink water, 8–10 min.\nWrite down your time and whether you ran or rowed."
+              "1 km walk/jog: jog 1 min, walk 1 min, repeat (or brisk walk all the way). Keep the same plan in Week 8.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed.",
+              "1 km run/walk, as fast as you can hold the whole way.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed.",
+              "1 km run, as fast as you can at an even pace.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed.",
+              "1 km run, hard but even: same pace every 200 m.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed."
             ]
           }
         },
@@ -259,18 +259,18 @@
           "title": "Easy flush",
           "minutes": 13,
           "versions": [
-            "3 rounds, easy, not for time (12 min):\n1 min step-jacks or marching on the spot · 8 incline push-ups (box or wall) · 8 air squats to a box\nTalk-able pace the whole time.",
-            "3 rounds, easy, not for time (12 min):\n1 min easy jumping jacks or single-unders · 8 incline push-ups (hands on a box) · 12 air squats\nTalk-able pace the whole time.",
-            "3 rounds, easy, not for time (12 min):\n1:30 easy single-unders (break when you like) · 10 push-ups (knees if needed) · 15 air squats\nTalk-able pace the whole time.",
-            "3 rounds, easy, not for time (12 min):\n1:30 easy single-unders (break when you like) · 10 push-ups · 15 air squats\nTalk-able pace the whole time."
+            "3 rounds, easy, not for time:\n1 min step-jacks or marching on the spot · 8 incline push-ups (box or wall) · 8 air squats to a box\nTalk-able pace the whole time.",
+            "3 rounds, easy, not for time:\n1 min easy jumping jacks or single-unders · 8 incline push-ups (hands on a box) · 12 air squats\nTalk-able pace the whole time.",
+            "3 rounds, easy, not for time:\n1:30 easy single-unders (break when you like) · 10 push-ups (knees if needed) · 15 air squats\nTalk-able pace the whole time.",
+            "3 rounds, easy, not for time:\n1:30 easy single-unders (break when you like) · 10 push-ups · 15 air squats\nTalk-able pace the whole time."
           ],
           "outdoor": {
             "title": "Easy run flush",
             "versions": [
-              "3 rounds, easy, not for time (12 min):\n300 m walk/jog · 8 incline push-ups (box or wall) · 8 air squats to a box\nTalk-able pace the whole time.",
-              "3 rounds, easy, not for time (12 min):\n400 m easy run/walk · 8 incline push-ups (hands on a box) · 12 air squats\nTalk-able pace the whole time.",
-              "3 rounds, easy, not for time (12 min):\n400 m easy run · 10 push-ups (knees if needed) · 15 air squats\nTalk-able pace the whole time.",
-              "3 rounds, easy, not for time (12 min):\n400 m easy run · 10 push-ups · 15 air squats\nTalk-able pace the whole time."
+              "3 rounds, easy, not for time:\n300 m walk/jog · 8 incline push-ups (box or wall) · 8 air squats to a box\nTalk-able pace the whole time.",
+              "3 rounds, easy, not for time:\n400 m easy run/walk · 8 incline push-ups (hands on a box) · 12 air squats\nTalk-able pace the whole time.",
+              "3 rounds, easy, not for time:\n400 m easy run · 10 push-ups (knees if needed) · 15 air squats\nTalk-able pace the whole time.",
+              "3 rounds, easy, not for time:\n400 m easy run · 10 push-ups · 15 air squats\nTalk-able pace the whole time."
             ]
           }
         },
@@ -309,7 +309,7 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
+          "label": "Test",
           "title": "Deadlift test: heavy 3",
           "minutes": 18,
           "lift": {
@@ -327,22 +327,22 @@
             "note": "Week 1 3RM × 1.06 = e1RM for deadlift %."
           },
           "versions": [
-            "Kettlebell deadlift: build to a heavy 3 (16 min)\nLight × 5, then 3 sets of 3 getting heavier, then 2–4 tries at 3. Stop with 2 reps left. Reset each rep.\nWrite down your best 3 (lb).",
-            "Deadlift: build to a heavy 3 (16 min)\n40% × 5, 55% × 3, 65% × 3, 75% × 3, then 2–4 tries at 3, adding 5–15 lb each time.\nReset each rep. Coach stops the set if your back rounds. Write down your best 3 (lb).",
-            "Deadlift: build to a heavy 3 (16 min)\n40% × 5, 55% × 3, 65% × 3, 75% × 3, then 2–4 tries at 3, adding 10–20 lb each time.\nReset each rep. Coach stops the set if your back rounds. Write down your best 3 (lb).",
-            "Deadlift: build to a heavy 3 (16 min)\n40% × 5, 55% × 3, 65% × 3, 75% × 3, then 2–4 tries at 3, adding 10–30 lb each time.\nReset each rep. Coach stops the set if your back rounds. Write down your best 3 (lb)."
+            "Kettlebell deadlift: build to a heavy 3\nLight × 5, then 3 sets of 3 getting heavier, then 2–4 tries at 3. Stop with 2 reps left. Reset each rep.\nWrite down your best 3 (lb).",
+            "Deadlift: build to a heavy 3\nLight × 5, then build in small jumps, then 2–4 tries at 3, adding 5–15 lb each time.\nReset each rep. Coach stops the set if your back rounds. Write down your best 3 (lb).",
+            "Deadlift: build to a heavy 3\nLight × 5, then build in small jumps, then 2–4 tries at 3, adding 10–20 lb each time.\nReset each rep. Coach stops the set if your back rounds. Write down your best 3 (lb).",
+            "Deadlift: build to a heavy 3\nLight × 5, then build in small jumps, then 2–4 tries at 3, adding 10–30 lb each time.\nReset each rep. Coach stops the set if your back rounds. Write down your best 3 (lb)."
           ]
         },
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Easy bike EMOM",
+          "title": "Easy bike, every minute",
           "minutes": 14,
           "versions": [
-            "Every minute, 3 rounds (12 min), easy, not for score:\nMin 1 + 3: 0:30 very easy air bike\nMin 2: 6 reverse lunges each side (hold the rig) or step-backs\nMin 4: 10 m hands-and-knees crawl + 8 glute bridges\nNo bike free? Step-jacks or march.",
-            "Every minute, 3 rounds (12 min), easy, not for score:\nMin 1 + 3: 0:40 easy air bike\nMin 2: 8 reverse lunges each side\nMin 4: 15 m bear crawl + 10 glute bridges\nNo bike free? Easy jumping jacks.",
-            "Every minute, 3 rounds (12 min), easy, not for score:\nMin 1 + 3: 0:40 easy air bike\nMin 2: 8 reverse lunges each side\nMin 4: 20 m bear crawl + 10 glute bridges\nNo bike free? Easy single-unders.",
-            "Every minute, 3 rounds (12 min), easy, not for score:\nMin 1 + 3: 0:40 easy air bike\nMin 2: 10 reverse lunges each side\nMin 4: 20 m bear crawl + 12 glute bridges\nNo bike free? Easy single-unders."
+            "Every minute, 3 rounds, easy, not for score:\nMin 1 + 3: 0:30 very easy air bike\nMin 2: 6 reverse lunges each side (hold the rig) or step-backs\nMin 4: 10 m hands-and-knees crawl + 8 glute bridges\nNo bike free? Step-jacks or march.",
+            "Every minute, 3 rounds, easy, not for score:\nMin 1 + 3: 0:40 easy air bike\nMin 2: 8 reverse lunges each side\nMin 4: 15 m bear crawl + 10 glute bridges\nNo bike free? Easy jumping jacks.",
+            "Every minute, 3 rounds, easy, not for score:\nMin 1 + 3: 0:40 easy air bike\nMin 2: 8 reverse lunges each side\nMin 4: 20 m bear crawl + 10 glute bridges\nNo bike free? Easy single-unders.",
+            "Every minute, 3 rounds, easy, not for score:\nMin 1 + 3: 0:40 easy air bike\nMin 2: 10 reverse lunges each side\nMin 4: 20 m bear crawl + 12 glute bridges\nNo bike free? Easy single-unders."
           ]
         },
         {
@@ -373,7 +373,7 @@
     },
     {
       "class_date": "2026-10-22",
-      "title": "Easy Day: Strength + Row/Bike",
+      "title": "Accessories + Easy Row/Bike",
       "focus": "Accessory strength · easy intervals",
       "why": "The easy day: strength work for joints and posture, then easy row and bike pieces. Your coach also checks how you move, to set up your level.",
       "coach_notes": "Movement screen during the accessory block: watch each member do 5 air squats, 5 PVC overhead squats, 20 s/side single-leg balance and a 20 s dead hang; note injuries and their level (Gentle, Steady, Strong or Full) on their card. If rowers and bikes are short, run two waves: wave 1 does the intervals while wave 2 does the accessory strength, then swap at about minute 31; or send the overflow to the no-machine bodyweight rounds. No outside version on purpose: Thursday is machine-only so weekly running volume stays as planned.\nScaling: Gentle warm-up: step instead of jump, walk instead of jog, comfortable range. Masters or injury: today is the best day for extra mobility or rehab work.\nIntervals: Gentle RPE 3–4 (rounds can be 1:00–2:00 shorter, slow pedalling fine), Steady RPE 4 (rounds can be 1:00 shorter), Strong RPE 4–5, Full RPE 5. Zone 2: full sentences; if only a few words, slow down. Cap 19:00 (fixed) · Feel: cardio (easy) · Pace: sustain. Aim: Gentle same easy pace every round; Steady/Strong/Full row split 0:15–0:25 per 500 m slower than their 1 km test split, bike same calories each round (±1).\nNo machine (warm-up/cool-down): easy jumping jacks, marching or jump rope, about 1:00 per 250 m or per 5 cal.",
@@ -408,10 +408,10 @@
           "title": "Easy row/bike intervals",
           "minutes": 21,
           "versions": [
-            "4 rounds: 4 min easy, 1 min rest (19 min). Switch between row and air bike each round.\nVery easy: talk in full sentences. Rounds can be 1–2 min shorter.\nNo machine free? 1 min each: marching · low step-ups · wall push-ups. Repeat.",
-            "4 rounds: 4 min easy, 1 min rest (19 min). Switch between row and air bike each round.\nEasy and chatty: talk in full sentences. Rounds can be 1 min shorter.\nNo machine free? 1 min each: low box step-ups · jumping jacks · air squats. Repeat.",
-            "4 rounds: 4 min easy, 1 min rest (19 min). Switch between row and air bike each round.\nEasy: talk in full sentences; slow down if you can't.\nNo machine free? 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat.",
-            "4 rounds: 4 min easy, 1 min rest (19 min). Switch between row and air bike each round.\nEasy but steady: talk in full sentences; slow down if you can't.\nNo machine free? 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat."
+            "4 rounds: 4 min easy, 1 min rest. Switch between row and air bike each round.\nVery easy: talk in full sentences. Rounds can be 1–2 min shorter.\nNo machine free? 1 min each: marching · low step-ups · wall push-ups. Repeat.",
+            "4 rounds: 4 min easy, 1 min rest. Switch between row and air bike each round.\nEasy and chatty: talk in full sentences. Rounds can be 1 min shorter.\nNo machine free? 1 min each: low box step-ups · jumping jacks · air squats. Repeat.",
+            "4 rounds: 4 min easy, 1 min rest. Switch between row and air bike each round.\nEasy: talk in full sentences; slow down if you can't.\nNo machine free? 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat.",
+            "4 rounds: 4 min easy, 1 min rest. Switch between row and air bike each round.\nEasy but steady: talk in full sentences; slow down if you can't.\nNo machine free? 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat."
           ]
         },
         {
@@ -430,7 +430,7 @@
     },
     {
       "class_date": "2026-10-23",
-      "title": "Press Test + Station AMRAP",
+      "title": "Press Test + Station Test",
       "focus": "Press test · stations",
       "why": "Find the most you can strict press for 5 good reps. Then a first, steady look at four stations you'll repeat in week 8.",
       "coach_notes": "Demo the wall ball, farmers carry, sandbag lunge and burpee broad jump standards before the AMRAP (4 min). Start members on different stations if kit is short. Steady, Strong and Full test the barbell strict press; only Gentle tests the seated dumbbell press. Benchmark: Full is the Rx standard; members record their level. No outside version: no running in this piece.\nScaling: Gentle warm-up: step instead of jump, walk instead of jog, comfortable range. Newer lifters / first 4 weeks after on-ramp: start with the empty bar (or lighter training bar), no max attempt; stop at the first RPE 8 set and record that. Shoulder sore after the press: goblet squats instead of wall balls. Knees: step-ups instead of lunges.\nTest: stop at RPE 8, no leg drive. Gentle: back against a bench, record weight per hand. Record load in lb, level, coach notes. Week 1 5RM × 1.13 = e1RM for every press % this block.\nAMRAP: all levels RPE 6, steady, not a max effort. Cap 10:00 · Feel: cardio · Pace: sustain. Aim: Gentle smooth and easy, Steady no rushing, Strong steady rounds, Full 5–7 rounds. Record rounds + reps and level (repeat in Week 8).\nNo machine (warm-up/cool-down): easy jumping jacks, marching or jump rope, about 1:00 per 250 m or per 5 cal.\nLadder: Bar × 10, ~50% × 5, ~65% × 5.",
@@ -449,7 +449,7 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
+          "label": "Test",
           "title": "Press test: heavy 5",
           "minutes": 17,
           "lift": {
@@ -467,22 +467,22 @@
             "note": "Week 1 5RM × 1.13 = e1RM for press %."
           },
           "versions": [
-            "Seated dumbbell press: build to a heavy 5 (15 min)\nBack against a bench. Light × 10, then 2 sets of 5 getting heavier, then 2–4 tries at 5. Stop with 2 reps left.\nWrite down the weight per hand (lb).",
-            "Strict press: build to a heavy 5 (15 min)\nEmpty bar × 10, then build in small jumps, then 2–4 tries at 5, adding 2.5–5 lb each time.\nNo leg drive, ribs down. Write down your best 5 (lb).",
-            "Strict press: build to a heavy 5 (15 min)\nEmpty bar × 10, then build in small jumps, then 2–4 tries at 5, adding 5 lb each time.\nNo leg drive, ribs down. Write down your best 5 (lb).",
-            "Strict press: build to a heavy 5 (15 min)\nEmpty bar × 10, then build in small jumps, then 2–4 tries at 5, adding 5–10 lb each time.\nNo leg drive, ribs down. Write down your best 5 (lb)."
+            "Seated dumbbell press: build to a heavy 5\nBack against a bench. Light × 10, then 2 sets of 5 getting heavier, then 2–4 tries at 5. Stop with 2 reps left.\nWrite down the weight per hand (lb).",
+            "Strict press: build to a heavy 5\nEmpty bar × 10, then build in small jumps, then 2–4 tries at 5, adding 2.5–5 lb each time.\nNo leg drive, ribs down. Write down your best 5 (lb).",
+            "Strict press: build to a heavy 5\nEmpty bar × 10, then build in small jumps, then 2–4 tries at 5, adding 5 lb each time.\nNo leg drive, ribs down. Write down your best 5 (lb).",
+            "Strict press: build to a heavy 5\nEmpty bar × 10, then build in small jumps, then 2–4 tries at 5, adding 5–10 lb each time.\nNo leg drive, ribs down. Write down your best 5 (lb)."
           ]
         },
         {
           "kind": "conditioning",
           "label": "Test",
-          "title": "Station AMRAP",
+          "title": "Station test",
           "minutes": 16,
           "versions": [
-            "Learn the stations (4 min). Then 10 min, as many rounds as you can, steady:\n10 wall balls (4/6 lb, 7 ft target) · 20 m farmers carry 2 × 13/18 lb · 10 low step-ups (total) · 4 incline step-back burpees + 2 long strides\nWrite down rounds + reps. Redo in week 8.",
-            "Learn the stations (4 min). Then 10 min, as many rounds as you can, steady:\n10 wall balls (6/10 lb, lower target) · 20 m farmers carry 2 × 18/26 lb · 10 bodyweight lunges (total) · 4 step-back burpees + broad jump\nWrite down rounds + reps. Redo in week 8.",
-            "Learn the stations (4 min). Then 10 min, as many rounds as you can, steady:\n10 wall balls (6/10 lb) · 20 m farmers carry 2 × 26/35 lb · 10 sandbag lunges (22/33 lb, total) · 4 burpee broad jumps\nWrite down rounds + reps. Redo in week 8.",
-            "Learn the stations (4 min). Then 10 min, as many rounds as you can, steady:\n10 wall balls (10/14 lb) · 20 m farmers carry 2 × 35/53 lb · 10 sandbag lunges (22/44 lb, total) · 4 burpee broad jumps\nWrite down rounds + reps. Redo in week 8."
+            "Learn the stations. Then 10 min, as many rounds as you can, steady:\n10 wall balls (4/6 lb, 7 ft target) · 20 m farmers carry 2 × 13/18 lb · 10 low step-ups (total) · 4 incline step-back burpees + 2 long strides\nWrite down rounds + reps. Redo in week 8.",
+            "Learn the stations. Then 10 min, as many rounds as you can, steady:\n10 wall balls (6/10 lb, lower target) · 20 m farmers carry 2 × 18/26 lb · 10 bodyweight lunges (total) · 4 step-back burpees + broad jump\nWrite down rounds + reps. Redo in week 8.",
+            "Learn the stations. Then 10 min, as many rounds as you can, steady:\n10 wall balls (6/10 lb) · 20 m farmers carry 2 × 26/35 lb · 10 sandbag lunges (22/33 lb, total) · 4 burpee broad jumps\nWrite down rounds + reps. Redo in week 8.",
+            "Learn the stations. Then 10 min, as many rounds as you can, steady:\n10 wall balls (10/14 lb) · 20 m farmers carry 2 × 35/53 lb · 10 sandbag lunges (22/44 lb, total) · 4 burpee broad jumps\nWrite down rounds + reps. Redo in week 8."
           ]
         },
         {
@@ -513,7 +513,7 @@
     },
     {
       "class_date": "2026-10-26",
-      "title": "Squat + Row EMOM",
+      "title": "Squat + Row Intervals",
       "focus": "Squat · intervals",
       "why": "Plenty of squat sets at a moderate weight, then short intervals you repeat every minute.",
       "coach_notes": "Machine and kettlebell piece: no running on squat day by design, so no outside version. Short on rowers? Members use the 'No machine free' swap on their own clock.\nScaling: Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range. Masters (40+) never above 85%, RPE 8 is the ceiling. Newer lifters / first 4 weeks: same sets and reps with empty bar or light plates at RPE 7. Pain or injury: pain-free range, tell the coach.\nLoads: e1RM × 0.65, rounded to 5 lb (lookup table in the coach book). Ramp: empty bar × 10, 40% × 5, 50% × 3, 60% × 2, rest 2:00. RPE 8 cap: past RPE 8 or form breaks, drop 5–10%; every set RPE 6 or easier, add 2.5–5% next week (max +5%). Gentle: goblet box squat at RPE 6–7.\nConditioning targets: Cap 12:00 (fixed) · Aim every minute done in 35–45 s · Feel cardio · Pace sustain. Low back: KB deadlifts instead of swings.\nNo machine (warm-up/cool-down): swap for easy jumping jacks, marching or jump rope, about 1:00 per 250 m or per 5 cal.",
@@ -524,10 +524,10 @@
           "title": "Warm-up",
           "minutes": 12,
           "versions": [
-            "2 rounds (5 min): 200 m easy row · 10 air squats · 10 band pull-aparts · 5 inchworms\nThen (6 min): 10 goblet squats with a 3 s pause · 10 band side-steps each way · 10 empty-bar back squats",
-            "2 rounds (5 min): 200 m easy row · 10 air squats · 10 band pull-aparts · 5 inchworms\nThen (6 min): 10 goblet squats with a 3 s pause · 10 band side-steps each way · 10 empty-bar back squats",
-            "2 rounds (5 min): 200 m easy row · 10 air squats · 10 band pull-aparts · 5 inchworms\nThen (6 min): 10 goblet squats with a 3 s pause · 10 band side-steps each way · 10 empty-bar back squats",
-            "2 rounds (5 min): 200 m easy row · 10 air squats · 10 band pull-aparts · 5 inchworms\nThen (6 min): 10 goblet squats with a 3 s pause · 10 band side-steps each way · 10 empty-bar back squats"
+            "2 rounds: 200 m easy row · 10 air squats · 10 band pull-aparts · 5 inchworms\nThen: 10 goblet squats with a 3 s pause · 10 band side-steps each way · 10 empty-bar back squats",
+            "2 rounds: 200 m easy row · 10 air squats · 10 band pull-aparts · 5 inchworms\nThen: 10 goblet squats with a 3 s pause · 10 band side-steps each way · 10 empty-bar back squats",
+            "2 rounds: 200 m easy row · 10 air squats · 10 band pull-aparts · 5 inchworms\nThen: 10 goblet squats with a 3 s pause · 10 band side-steps each way · 10 empty-bar back squats",
+            "2 rounds: 200 m easy row · 10 air squats · 10 band pull-aparts · 5 inchworms\nThen: 10 goblet squats with a 3 s pause · 10 band side-steps each way · 10 empty-bar back squats"
           ]
         },
         {
@@ -559,13 +559,13 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Row/Swing EMOM",
+          "title": "Row/swing every minute",
           "minutes": 15,
           "versions": [
-            "Every minute, 4 rounds (12 min):\nMin 1: 5/6 cal row · Min 2: 8 Russian kettlebell swings to chest height (13/18 lb) · Min 3: 4 incline step-back burpees, hands on a box\nNo rower free? 20 s step-jacks or marching.",
-            "Every minute, 4 rounds (12 min):\nMin 1: 6/8 cal row · Min 2: 10 Russian kettlebell swings (18/26 lb) · Min 3: 5 step-back burpees\nNo rower free? 30 jumping jacks.",
-            "Every minute, 4 rounds (12 min):\nMin 1: 8/10 cal row · Min 2: 12 kettlebell swings (26/35 lb) · Min 3: 6 burpees\nNo rower free? 70 single-unders.",
-            "Every minute, 4 rounds (12 min):\nMin 1: 9/12 cal row · Min 2: 12 kettlebell swings (35/53 lb) · Min 3: 8 burpees\nNo rower free? 80 single-unders."
+            "Every minute, 4 rounds:\nMin 1: 5/6 cal row · Min 2: 8 Russian kettlebell swings to chest height (13/18 lb) · Min 3: 4 incline step-back burpees, hands on a box\nNo rower free? 20 s step-jacks or marching.",
+            "Every minute, 4 rounds:\nMin 1: 6/8 cal row · Min 2: 10 Russian kettlebell swings (18/26 lb) · Min 3: 5 step-back burpees\nNo rower free? 30 jumping jacks.",
+            "Every minute, 4 rounds:\nMin 1: 8/10 cal row · Min 2: 12 kettlebell swings (26/35 lb) · Min 3: 6 burpees\nNo rower free? 70 single-unders.",
+            "Every minute, 4 rounds:\nMin 1: 9/12 cal row · Min 2: 12 kettlebell swings (35/53 lb) · Min 3: 8 burpees\nNo rower free? 80 single-unders."
           ]
         },
         {
@@ -628,21 +628,21 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Bike/Row Easy Rounds",
+          "title": "Bike/row easy rounds",
           "minutes": 28,
           "versions": [
-            "4 rounds, not for time (28 min). Easy, talk-able pace:\n12/15 cal air bike · 200 m row · 8 wall balls (4/6 lb) to a low target · 30 s step-jacks\nNo bike or rower free? Bike: 55 s step-jacks. Row: 50 s.",
-            "4 rounds, not for time (28 min). Easy, talk-able pace:\n16/20 cal air bike · 300 m row · 10 wall balls (6/10 lb) · 30 s single-unders\nNo bike or rower free? Bike: 70 jumping jacks. Row: 75.",
-            "4 rounds, not for time (28 min). Easy, talk-able pace:\n20/25 cal air bike · 400 m row · 15 wall balls (6/10 lb) · 30 s double-under attempts\nNo bike or rower free? Bike: 180 single-unders. Row: 200.",
-            "4 rounds, not for time (28 min). Easy, talk-able pace:\n24/30 cal air bike · 400 m row · 15 wall balls (10/14 lb) · 30 s double-unders\nNo bike or rower free? Bike: 220 single-unders. Row: 200."
+            "4 rounds, not for time. Easy, talk-able pace:\n12/15 cal air bike · 200 m row · 8 wall balls (4/6 lb) to a low target · 30 s step-jacks\nNo bike free? 55 s step-jacks. No rower free? 50 s step-jacks.",
+            "4 rounds, not for time. Easy, talk-able pace:\n16/20 cal air bike · 300 m row · 10 wall balls (6/10 lb) · 30 s single-unders\nNo bike free? 70 jumping jacks. No rower free? 75 jumping jacks.",
+            "4 rounds, not for time. Easy, talk-able pace:\n20/25 cal air bike · 400 m row · 15 wall balls (6/10 lb) · 30 s double-under attempts\nNo bike free? 180 single-unders. No rower free? 200 single-unders.",
+            "4 rounds, not for time. Easy, talk-able pace:\n24/30 cal air bike · 400 m row · 15 wall balls (10/14 lb) · 30 s double-unders\nNo bike free? 220 single-unders. No rower free? 200 single-unders."
           ],
           "outdoor": {
-            "title": "Run/Row Easy Rounds",
+            "title": "Run/row easy rounds",
             "versions": [
-              "4 rounds, not for time (28 min). Easy, talk-able pace:\n300 m walk/jog · 200 m row · 8 wall balls (4/6 lb) to a low target · 30 s step-jacks\nNo rower free? 150 m walk/jog.",
-              "4 rounds, not for time (28 min). Easy, talk-able pace:\n400 m run/walk · 300 m row · 10 wall balls (6/10 lb) · 30 s single-unders\nNo rower free? 250 m run.",
-              "4 rounds, not for time (28 min). Easy, talk-able pace:\n500 m run · 400 m row · 15 wall balls (6/10 lb) · 30 s double-under attempts\nNo rower free? 300 m run.",
-              "4 rounds, not for time (28 min). Easy, talk-able pace:\n600 m run · 400 m row · 15 wall balls (10/14 lb) · 30 s double-unders\nNo rower free? 300 m run."
+              "4 rounds, not for time. Easy, talk-able pace:\n300 m walk/jog · 200 m row · 8 wall balls (4/6 lb) to a low target · 30 s step-jacks\nNo rower free? 150 m walk/jog.",
+              "4 rounds, not for time. Easy, talk-able pace:\n400 m run/walk · 300 m row · 10 wall balls (6/10 lb) · 30 s single-unders\nNo rower free? 250 m run.",
+              "4 rounds, not for time. Easy, talk-able pace:\n500 m run · 400 m row · 15 wall balls (6/10 lb) · 30 s double-under attempts\nNo rower free? 300 m run.",
+              "4 rounds, not for time. Easy, talk-able pace:\n600 m run · 400 m row · 15 wall balls (10/14 lb) · 30 s double-unders\nNo rower free? 300 m run."
             ]
           }
         },
@@ -662,7 +662,7 @@
     },
     {
       "class_date": "2026-10-28",
-      "title": "Deadlift + Station AMRAP",
+      "title": "Deadlift + Station Rounds",
       "focus": "Deadlift · steady stations",
       "why": "Deadlift sets at a moderate weight, then 20 minutes on four stations. Keep the same pace from the first round to the last.",
       "coach_notes": "No running in this piece, so no outside version. Spread members across stations at the start so the farmers handles and sandbags don't bottleneck.\nScaling: Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range. Masters (40+) never above 85%, RPE 8 is the ceiling. Newer lifters / first 4 weeks: same sets and reps with empty bar or light plates at RPE 7. Pain or injury: pain-free range, tell the coach.\nLoads: e1RM × 0.65, rounded to 5 lb (lookup table in the coach book). Ramp: 40% × 5, 50% × 3, 60% × 2; reset every rep, no bouncing; rest 2:00. RPE 8 cap: past RPE 8 or form breaks, drop 5–10%; every set RPE 6 or easier, add 2.5–5% next week (max +5%). Gentle: KB deadlift at RPE 6–7.\nConditioning targets: first threshold piece. Cap 20:00 · Aim: Gentle steady rounds, short pause between stations is fine; Steady every round within ±15 s of round 1; Strong/Full 6–8 rounds, each within ±15 s of round 1 · Feel cardio · Pace sustain. Knees: step-ups instead of lunges. Low back: lighter farmers carry.\nNo machine (warm-up/cool-down): swap for easy jumping jacks, marching or jump rope, about 1:00 per 250 m or per 5 cal.",
@@ -673,10 +673,10 @@
           "title": "Warm-up",
           "minutes": 11,
           "versions": [
-            "2 rounds (5 min): 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen (6 min): 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
-            "2 rounds (5 min): 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen (6 min): 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
-            "2 rounds (5 min): 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen (6 min): 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
-            "2 rounds (5 min): 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen (6 min): 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts"
+            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
+            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
+            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
+            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts"
           ]
         },
         {
@@ -708,7 +708,7 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Station AMRAP",
+          "title": "Station rounds",
           "minutes": 22,
           "versions": [
             "As many rounds as you can in 20 min, about 7/10 effort: breathing hard but controlled.\n6/8 cal row · 8 wall balls (4/6 lb) to a low target · 20 m farmers carry (2 × 13/18 lb) · 8 step-ups to a low step (total)\nNo rower free? 30 s step-jacks.",
@@ -746,7 +746,7 @@
     {
       "class_date": "2026-10-29",
       "title": "Accessories + Easy Intervals",
-      "focus": "Accessory strength · easy cardio",
+      "focus": "Accessory strength · easy intervals",
       "why": "The easy day: strength work for joints and posture, then easy intervals. Nobody should breathe hard today.",
       "coach_notes": "If there aren't enough rowers and bikes, run the class in two waves: wave 1 does the intervals while wave 2 does the accessory strength, then swap at about minute 31; or send the overflow to the 'No machine free' bodyweight rounds. The intervals have no outside version on purpose: Thursday is machine-only so weekly running volume stays as planned.\nScaling: Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range. Masters or injury: today is the best day for extra mobility or rehab work.\nConditioning targets: Zone 2 (full sentences the whole time). RPE: Gentle 3–4, Steady 4, Strong 4–5, Full 5. Cap 19:00 (fixed) · Aim: Gentle same easy pace every round; Steady/Strong/Full row split 0:15–0:25 per 500 m slower than their 1 km test split, bike same calories each round (±1) · Feel cardio (easy) · Pace sustain.\nNo machine (warm-up/cool-down): swap for easy jumping jacks, marching or jump rope, about 1:00 per 250 m or per 5 cal.",
       "parts": [
@@ -780,10 +780,10 @@
           "title": "Easy row/bike intervals",
           "minutes": 21,
           "versions": [
-            "4 rounds: 4 min easy, 1 min rest (19 min). Switch between row and air bike each round.\nVery easy: full sentences the whole time. Rounds can be 1–2 min shorter.\nNo machine free? 1 min each, on repeat: marching · step-ups to a low step · wall push-ups.",
-            "4 rounds: 4 min easy, 1 min rest (19 min). Switch between row and air bike each round.\nEasy and chatty. Rounds can be 1 min shorter.\nNo machine free? 1 min each, on repeat: step-ups to a low box · jumping jacks · air squats.",
-            "4 rounds: 4 min easy, 1 min rest (19 min). Switch between row and air bike each round.\nEasy: full sentences the whole time. Same pace every round.\nNo machine free? 1 min each, on repeat: step-ups · jumping jacks · air squats · easy single-unders.",
-            "4 rounds: 4 min easy, 1 min rest (19 min). Switch between row and air bike each round.\nEasy: full sentences the whole time. Same pace every round.\nNo machine free? 1 min each, on repeat: step-ups · jumping jacks · air squats · easy single-unders."
+            "4 rounds: 4 min easy, 1 min rest. Switch between row and air bike each round.\nVery easy: full sentences the whole time. Rounds can be 1–2 min shorter.\nNo machine free? 1 min each, on repeat: marching · step-ups to a low step · wall push-ups.",
+            "4 rounds: 4 min easy, 1 min rest. Switch between row and air bike each round.\nEasy and chatty. Rounds can be 1 min shorter.\nNo machine free? 1 min each, on repeat: step-ups to a low box · jumping jacks · air squats.",
+            "4 rounds: 4 min easy, 1 min rest. Switch between row and air bike each round.\nEasy: full sentences the whole time. Same pace every round.\nNo machine free? 1 min each, on repeat: step-ups · jumping jacks · air squats · easy single-unders.",
+            "4 rounds: 4 min easy, 1 min rest. Switch between row and air bike each round.\nEasy: full sentences the whole time. Same pace every round.\nNo machine free? 1 min each, on repeat: step-ups · jumping jacks · air squats · easy single-unders."
           ]
         },
         {
@@ -802,7 +802,7 @@
     },
     {
       "class_date": "2026-10-30",
-      "title": "Clean + Press + 15-12-9",
+      "title": "Clean + Press + Row/Burpee Sprint",
       "focus": "Clean · press · short workout",
       "why": "Practise clean positions with a light bar, then press sets, then a short, fast finish.",
       "coach_notes": "No running in this piece, so no outside version.\nScaling: Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range. Masters (40+) never above 85%, RPE 8 is the ceiling. Newer lifters / first 4 weeks: same sets and reps with empty bar or light plates at RPE 7. Pain or injury: pain-free range, tell the coach.\nClean: build from empty bar by feel, no percentages; RPE 6 is plenty (Gentle RPE 5–6).\nPress loads: e1RM × 0.65, rounded to 5 lb (lookup table in the coach book). Build to working weight in 2–3 lighter sets; rest 1:30–2:00. RPE 8 cap: past RPE 8 or form breaks, drop 5–10%; every set RPE 6 or easier, add 2.5–5% next week (max +5%). Gentle: seated DB press at RPE 6–7.\nConditioning targets: Cap 12:00 · Aim: Gentle finish under the cap, rest as needed; Steady under the cap, smooth; Strong under the cap; Full 7:00–9:30 · Feel gas · Pace reach. Knees: wall balls to a lower target.\nNo machine (warm-up/cool-down): swap for easy jumping jacks, marching or jump rope, about 1:00 per 250 m or per 5 cal.",
@@ -825,7 +825,7 @@
           "title": "Power clean practice",
           "minutes": 8,
           "versions": [
-            "Dumbbell clean practice: every minute for 8 min\nOne light dumbbell or kettlebell: hang clean it to your shoulder, then 1–2 goblet squats for each front squat. Half the reps is fine. Smooth reps only.",
+            "Dumbbell clean: every minute for 8 min\nOne light dumbbell or kettlebell: 1 hang clean to the shoulder + 2 goblet squats. Smooth reps only.",
             "Power clean practice: every minute for 8 min\n1 hang power clean + 2 front squats. Stay light: empty bar or light plates. Start above the knee if the floor feels rushed. Fast, crisp reps.",
             "Power clean practice: every minute for 8 min\n1 hang power clean + 2 front squats. Build from the empty bar by feel. Stop adding weight when reps slow down.",
             "Power clean practice: every minute for 8 min\n1 hang power clean + 2 front squats. Build from the empty bar by feel. Stop adding weight when reps slow down."
@@ -860,13 +860,13 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "15-12-9 Row/Wall Ball/Burpee",
+          "title": "Row, wall balls, burpees",
           "minutes": 19,
           "versions": [
-            "For time, 9-6-3 reps of: calorie row · wall balls (4/6 lb) to a low target · incline step-back burpees, hands on a box\n12 min max. Rest when you need to.\nNo rower free? 4 s of step-jacks per calorie (9 cal = about 36 s).",
-            "For time, 12-9-6 reps of: calorie row · wall balls (6/10 lb) to a lower target · step-back burpees\n12 min max. Keep it smooth.\nNo rower free? 4 jumping jacks per calorie (12 cal = 48).",
-            "For time, 15-12-9 reps of: calorie row · wall balls (10/14 lb) to 9 ft · burpees\n12 min max.\nNo rower free? 8 single-unders per calorie (15 cal = 120).",
-            "For time, 15-12-9 reps of: calorie row · wall balls (14/20 lb) to 9/10 ft · burpees\n12 min max.\nNo rower free? 8 single-unders per calorie (15 cal = 120)."
+            "For time, 9-6-3 reps of: calorie row · wall balls (4/6 lb) to a low target · incline step-back burpees, hands on a box\n12 min max. Rest when you need to.\nNo rower free? 4 s of step-jacks per calorie.",
+            "For time, 12-9-6 reps of: calorie row · wall balls (6/10 lb) to a lower target · step-back burpees\n12 min max. Keep it smooth.\nNo rower free? 4 jumping jacks per calorie.",
+            "For time, 15-12-9 reps of: calorie row · wall balls (10/14 lb) to 9 ft · burpees\n12 min max.\nNo rower free? 8 single-unders per calorie.",
+            "For time, 15-12-9 reps of: calorie row · wall balls (14/20 lb) to 9/10 ft · burpees\n12 min max.\nNo rower free? 8 single-unders per calorie."
           ]
         },
         {
@@ -905,7 +905,7 @@
         {
           "kind": "strength",
           "label": "Strength",
-          "title": "Back squat 5×6 @ 70%",
+          "title": "Back squat 5 × 6",
           "minutes": 20,
           "lift": {
             "movement": "Back squat",
@@ -931,13 +931,13 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Bike/Burpee Intervals",
+          "title": "Bike/burpee intervals",
           "minutes": 15,
           "versions": [
-            "4 rounds: 2 min work / 1 min rest (12 min)\nEach round: 5/6 cal air bike, then max incline step-back burpees (hands on a box). Score = total reps.\nNo bike free? 20 s step-jacks or marching.",
-            "4 rounds: 2 min work / 1 min rest (12 min)\nEach round: 6/8 cal air bike, then max step-back burpees. Score = total burpees.\nNo bike free? 30 jumping jacks.",
-            "4 rounds: 2 min work / 1 min rest (12 min)\nEach round: 8/10 cal air bike, then max burpees. Score = total burpees.\nNo bike free? 70 single-unders.",
-            "4 rounds: 2 min work / 1 min rest (12 min)\nEach round: 9/12 cal air bike, then max burpees. Score = total burpees.\nNo bike free? 80 single-unders."
+            "4 rounds: 2 min work, 1 min rest\nEach round: 5/6 cal air bike, then max incline step-back burpees (hands on a box). Score = total reps.\nNo bike free? 20 s step-jacks or marching.",
+            "4 rounds: 2 min work, 1 min rest\nEach round: 6/8 cal air bike, then max step-back burpees. Score = total burpees.\nNo bike free? 30 jumping jacks.",
+            "4 rounds: 2 min work, 1 min rest\nEach round: 8/10 cal air bike, then max burpees. Score = total burpees.\nNo bike free? 70 single-unders.",
+            "4 rounds: 2 min work, 1 min rest\nEach round: 9/12 cal air bike, then max burpees. Score = total burpees.\nNo bike free? 80 single-unders."
           ]
         },
         {
@@ -1000,21 +1000,21 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Bike/Snatch/Row Intervals",
+          "title": "Bike/snatch/row intervals",
           "minutes": 28,
           "versions": [
-            "3 × 9 min on / 1 min off (29 min), talk-able pace. Each 9 min:\n12/15 cal air bike · 12 alternating dumbbell hang snatches (10/15 lb) · easy row until time's up\nNo machines free? Bike: 55 s step-jacks or marching. Row: march.",
-            "3 × 9 min on / 1 min off (29 min), talk-able pace. Each 9 min:\n20/25 cal air bike · 20 alternating dumbbell hang snatches (10–15 lb) · easy row until time's up\nNo machines free? Bike: 90 jumping jacks. Row: step-ups or jumping jacks.",
-            "3 × 9 min on / 1 min off (29 min), talk-able pace. Each 9 min:\n28/35 cal air bike · 20 alternating dumbbell snatches (15/20 lb) · easy row until time's up\nNo machines free? Bike: 250 single-unders. Row: jumping jacks or single-unders.",
-            "3 × 9 min on / 1 min off (29 min), talk-able pace. Each 9 min:\n32/40 cal air bike · 20 alternating dumbbell snatches (25/35 lb) · easy row until time's up\nNo machines free? Bike: 290 single-unders. Row: jumping jacks or single-unders."
+            "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n12/15 cal air bike · 12 alternating dumbbell hang snatches (10/15 lb) · easy row until time's up\nNo bike free? 55 s step-jacks or marching. No rower free? March.",
+            "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n20/25 cal air bike · 20 alternating dumbbell hang snatches (10/15 lb) · easy row until time's up\nNo bike free? 90 jumping jacks. No rower free? Step-ups or jumping jacks.",
+            "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n28/35 cal air bike · 20 alternating dumbbell snatches (15/20 lb) · easy row until time's up\nNo bike free? 250 single-unders. No rower free? Jumping jacks or single-unders.",
+            "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n32/40 cal air bike · 20 alternating dumbbell snatches (25/35 lb) · easy row until time's up\nNo bike free? 290 single-unders. No rower free? Jumping jacks or single-unders."
           ],
           "outdoor": {
-            "title": "Run/Snatch/Row Intervals",
+            "title": "Run/snatch/row intervals",
             "versions": [
-              "3 × 9 min on / 1 min off (29 min), talk-able pace. Each 9 min:\n300 m walk/jog · 12 alternating dumbbell hang snatches (10/15 lb) · easy row until time's up\nNo rower free? Walk easy instead.",
-              "3 × 9 min on / 1 min off (29 min), talk-able pace. Each 9 min:\n500 m run/walk · 20 alternating dumbbell hang snatches (10–15 lb) · easy row until time's up\nNo rower free? Jog easy instead.",
-              "3 × 9 min on / 1 min off (29 min), talk-able pace. Each 9 min:\n700 m run · 20 alternating dumbbell snatches (15/20 lb) · easy row until time's up\nNo rower free? Jog easy instead.",
-              "3 × 9 min on / 1 min off (29 min), talk-able pace. Each 9 min:\n800 m run · 20 alternating dumbbell snatches (25/35 lb) · easy row until time's up\nNo rower free? Jog easy instead."
+              "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n300 m walk/jog · 12 alternating dumbbell hang snatches (10/15 lb) · easy row until time's up\nNo rower free? Walk easy instead.",
+              "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n500 m run/walk · 20 alternating dumbbell hang snatches (10/15 lb) · easy row until time's up\nNo rower free? Jog easy instead.",
+              "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n700 m run · 20 alternating dumbbell snatches (15/20 lb) · easy row until time's up\nNo rower free? Jog easy instead.",
+              "3 × 9 min on, 1 min off, talk-able pace. Each 9 min:\n800 m run · 20 alternating dumbbell snatches (25/35 lb) · easy row until time's up\nNo rower free? Jog easy instead."
             ]
           }
         },
@@ -1045,16 +1045,16 @@
           "title": "Warm-up",
           "minutes": 11,
           "versions": [
-            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar RDLs",
-            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar RDLs",
-            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar RDLs",
-            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar RDLs"
+            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
+            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
+            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts",
+            "2 rounds: 250 m easy row · 10 PVC good mornings · 10 bird dogs · 5 push-ups\nThen: 10 kettlebell deadlifts · 8 empty-bar Romanian deadlifts"
           ]
         },
         {
           "kind": "strength",
           "label": "Strength",
-          "title": "Deadlift 4×6 @ 70%",
+          "title": "Deadlift 4 × 6",
           "minutes": 16,
           "lift": {
             "movement": "Deadlift",
@@ -1080,7 +1080,7 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Station Threshold 3×7",
+          "title": "Station rounds 3 × 7",
           "minutes": 22,
           "versions": [
             "3 × 7 min, as many rounds as you can, 1 min rest between. Hard but smooth (about 7/10):\n150 m row · 8 step-ups to a low step (total) · 4 incline step-back burpees (hands on a box), 2 long strides after each\nNo rower free? 40 s step-jacks or marching.",
@@ -1117,7 +1117,7 @@
     },
     {
       "class_date": "2026-11-05",
-      "title": "Accessory Work + Easy Intervals",
+      "title": "Accessories + Easy Intervals",
       "focus": "Accessory strength · easy intervals",
       "why": "The easy day: strength work for joints and posture, then easy intervals. Nobody should breathe hard today.",
       "coach_notes": "If there aren't enough rowers and bikes, run the class in two waves: wave 1 does the intervals while wave 2 does the accessory strength, then swap at about minute 31; or send the overflow to the 'No machine free' bodyweight rounds. The intervals have no outside version on purpose: Thursday is machine-only so weekly running volume stays as planned.\nWarm-up: 4 min general, 3 min specific.\nScaling: Gentle: step instead of jumping, walk instead of jogging, comfortable range. Masters or injury: today is the best day for extra mobility or rehab work.\nIntervals: Zone 2. Effort: Gentle RPE 3–4 (slow pedalling fine), Steady RPE 4, Strong RPE 4–5, Full RPE 5.\nConditioning targets: Cap 20:00 (fixed) · Aim: Gentle same easy pace every round, could keep going; others same pace every round: row split 0:15–0:25 per 500 m slower than 1 km test split; bike, same calories each round (±1) · Feel: cardio (easy) · Pace: sustain.\nNo machine: warm-up/cool-down machine → easy jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
@@ -1152,10 +1152,10 @@
           "title": "Easy row/bike intervals",
           "minutes": 21,
           "versions": [
-            "3 rounds: 6 min easy / 1 min rest (20 min). Switch row and air bike each round.\nVery easy, talk-able pace. Rounds can be 1–2 min shorter.\nNo machine free? Same clock, 1 min each: marching · low step-ups · wall push-ups.",
-            "3 rounds: 6 min easy / 1 min rest (20 min). Switch row and air bike each round.\nEasy, chatty pace: you can talk in full sentences. Rounds can be 1 min shorter.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
-            "3 rounds: 6 min easy / 1 min rest (20 min). Switch row and air bike each round.\nEasy pace: you can talk in full sentences the whole time.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders.",
-            "3 rounds: 6 min easy / 1 min rest (20 min). Switch row and air bike each round.\nEasy pace: you can talk in full sentences the whole time.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders."
+            "3 rounds: 6 min easy, 1 min rest. Switch row and air bike each round.\nVery easy, talk-able pace. Rounds can be 1–2 min shorter.\nNo machine free? Same clock, 1 min each: marching · low step-ups · wall push-ups.",
+            "3 rounds: 6 min easy, 1 min rest. Switch row and air bike each round.\nEasy, chatty pace: you can talk in full sentences. Rounds can be 1 min shorter.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
+            "3 rounds: 6 min easy, 1 min rest. Switch row and air bike each round.\nEasy pace: you can talk in full sentences the whole time.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders.",
+            "3 rounds: 6 min easy, 1 min rest. Switch row and air bike each round.\nEasy pace: you can talk in full sentences the whole time.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders."
           ]
         },
         {
@@ -1174,7 +1174,7 @@
     },
     {
       "class_date": "2026-11-06",
-      "title": "Clean + Press + 10-min AMRAP",
+      "title": "Clean + Press + 10-Minute Rounds",
       "focus": "Clean · press · short workout",
       "why": "More clean technique and press work, then a short workout with this block's toes-to-bar skill.",
       "coach_notes": "No running in this piece, so no outside version.\nWarm-up: 5 min general, 7 min specific.\nScaling: Masters (40+) never above 85%, RPE 8 is the ceiling. Newer lifters / first 4 weeks: same sets and reps with empty bar or light plates at RPE 7. Pain: pain-free range, tell the coach. Gentle: step instead of jumping, walk instead of jogging, comfortable range. Gentle press: RPE 6–7.\nClean: RPE 6–7 (Gentle RPE 5–6; Steady RPE 6 is plenty).\nPress loads: e1RM × 0.7, round to nearest 5 lb (coach book table). Build to working weight in 2–3 lighter sets; rest 1:30–2:00. RPE 8 cap: past RPE 8 or form breaks, drop 5–10%; every set RPE 6 or easier, add 2.5–5% next week (max +5%).\nConditioning targets: Cap 10:00 · Aim: Gentle steady rounds, rest when needed; Steady/Strong steady rounds; Full 6–8 rounds · Feel: cardio · Pace: reach.\nNo machine: warm-up/cool-down machine → easy jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
@@ -1193,11 +1193,11 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
-          "title": "Power clean technique",
+          "label": "Skill",
+          "title": "Power clean practice",
           "minutes": 8,
           "versions": [
-            "Dumbbell clean: every minute for 10 min\nOne light dumbbell or kettlebell: hang clean to the shoulder, then 1–2 goblet squats. Half the reps is fine. Easy, smooth reps.",
+            "Dumbbell clean: every minute for 10 min\nOne light dumbbell or kettlebell: 2 hang cleans to the shoulder + 1 goblet squat. Easy, smooth reps.",
             "Power clean: every minute for 10 min\n2 hang power cleans + 1 front squat. Empty bar or light plates; start above the knee if the floor feels rushed. Fast, crisp reps.",
             "Power clean: every minute for 10 min\n2 hang power cleans + 1 front squat. Build by feel, no percentages. Stop adding weight when reps slow down.",
             "Power clean: every minute for 10 min\n2 hang power cleans + 1 front squat. Build by feel, no percentages. Stop adding weight when reps slow down."
@@ -1206,7 +1206,7 @@
         {
           "kind": "strength",
           "label": "Strength",
-          "title": "Strict press 5×6 @ 70%",
+          "title": "Strict press 5 × 6",
           "minutes": 10,
           "lift": {
             "movement": "Strict press",
@@ -1232,7 +1232,7 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "10-min Dumbbell/T2B/Row AMRAP",
+          "title": "Dumbbell, core and row rounds",
           "minutes": 19,
           "versions": [
             "As many rounds as you can in 10 min:\n4 alternating dumbbell hang clean & presses (10/15 lb) · 6 lying bent-knee raises · 5/6 cal row\nBreak up the core work early; aim for under 1 min a round.\nNo rower free? 20 s step-jacks or marching.",
@@ -1259,7 +1259,7 @@
       "class_date": "2026-11-09",
       "title": "Back Squat + Row/Press Intervals",
       "focus": "Squat · intervals",
-      "why": "The heaviest squat week of this block, then short intervals you can repeat every round.",
+      "why": "Squat sets of 5 at 75%, then short row and press intervals you can repeat every round.",
       "coach_notes": "Machine-only intervals (no running on squat day by design), so no outside version.\nScaling: Masters (40+) never above 85%, RPE 8 is the ceiling. Newer lifters / first 4 weeks: same sets and reps with empty bar or light plates at RPE 7. Gentle: goblet box squat at RPE 6–7 (3–4 reps left), one easy weight, fewer reps fine if the last ones slow down. Pain: pain-free range, tell the coach. Warm-up: step instead of jumping, walk instead of jogging, comfortable range.\nLoads: e1RM × 0.75, round to 5 lb (lookup table in the coach book). Ramp: empty bar × 10, 40% × 5, 50% × 3, 60% × 2, then working sets; rest 2:30. RPE 8 cap: past RPE 8 or form breaks, drop 5–10%; every set RPE 6 or easier, add 2.5–5% next week (max +5%).\nConditioning targets: Cap 12:00 (fixed) · Aim each round under 1:30 (Gentle), under 1:10 (Steady/Strong/Full) · Feel gas · Pace reach. Shoulder: single-arm landmine press instead of push press.\nNo machine: warm-up/cool-down bike → jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
       "parts": [
         {
@@ -1303,13 +1303,13 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Row/Press intervals",
+          "title": "Row/press intervals",
           "minutes": 15,
           "versions": [
-            "Every 2 min × 6 (12 min):\n5/6 cal row · 6 dumbbell push press (2 × 5 lb)\nRest until the next 2 min starts.\nNo rower free? 20 s step-jacks or marching.",
-            "Every 2 min × 6 (12 min):\n7/10 cal row · 8 dumbbell push press (2 × 10 lb)\nRest until the next 2 min starts.\nNo rower free? 35 jumping jacks.",
-            "Every 2 min × 6 (12 min):\n9/12 cal row · 8 dumbbell push press (2 × 15/20 lb)\nRest until the next 2 min starts.\nNo rower free? 80 single-unders.",
-            "Every 2 min × 6 (12 min):\n11/14 cal row · 8 dumbbell push press (2 × 25/35 lb)\nRest until the next 2 min starts.\nNo rower free? 100 single-unders."
+            "Every 2 min × 6:\n5/6 cal row · 6 dumbbell push press (2 × 5 lb)\nRest until the next 2 min starts.\nNo rower free? 20 s step-jacks or marching.",
+            "Every 2 min × 6:\n7/10 cal row · 8 dumbbell push press (2 × 10 lb)\nRest until the next 2 min starts.\nNo rower free? 35 jumping jacks.",
+            "Every 2 min × 6:\n9/12 cal row · 8 dumbbell push press (2 × 15/20 lb)\nRest until the next 2 min starts.\nNo rower free? 80 single-unders.",
+            "Every 2 min × 6:\n11/14 cal row · 8 dumbbell push press (2 × 25/35 lb)\nRest until the next 2 min starts.\nNo rower free? 100 single-unders."
           ]
         },
         {
@@ -1365,7 +1365,7 @@
           "versions": [
             "Toes-to-bar level 3: every minute × 10\nOdd minutes: 6 lying bent-knee raises\nEven minutes: 15 s tuck hollow hold",
             "Toes-to-bar level 3: every minute × 10\nOdd minutes: 5 hanging knee raises (any height)\nEven minutes: 8 lying leg raises",
-            "Toes-to-bar level 3: every minute × 10\nOdd minutes: 3–5 kipping knee raises (knees above hips)\nEven minutes: 3–5 kipping knee raises",
+            "Toes-to-bar level 3: every minute × 10\n3–5 kipping knee raises (knees above hips)",
             "Toes-to-bar level 3: every minute × 10\nOdd minutes: 3–5 kipping knee raises (knees above hips)\nEven minutes: 3 kip swings + 2–3 toes-to-bar singles (knee raises if not ready)"
           ]
         },
@@ -1375,18 +1375,18 @@
           "title": "Row every 8 min",
           "minutes": 28,
           "versions": [
-            "Every 8 min × 4 (32 min), talk-able pace:\n400 m row · 8 wall balls (4/6 lb) to a low target · 5/6 cal air bike, easy\nRest until the next 8 min starts.\nNo rower or bike free? March or step-jack 1:40 for the row, 0:20 for the bike.",
-            "Every 8 min × 4 (32 min), talk-able pace:\n500 m row · 10 wall balls (6/10 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo rower or bike free? 125 jumping jacks for the row, 35 for the bike.",
-            "Every 8 min × 4 (32 min), talk-able pace:\n600 m row · 15 wall balls (6/10 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo rower or bike free? 300 single-unders for the row, 70 for the bike.",
-            "Every 8 min × 4 (32 min), talk-able pace:\n750 m row · 15 wall balls (10/14 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo rower or bike free? 380 single-unders for the row, 70 for the bike."
+            "Every 8 min × 4, talk-able pace:\n400 m row · 8 wall balls (4/6 lb) to a low target · 5/6 cal air bike, easy\nRest until the next 8 min starts.\nNo rower free? 1:40 marching or step-jacks. No bike free? 20 s.",
+            "Every 8 min × 4, talk-able pace:\n500 m row · 10 wall balls (6/10 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo rower free? 125 jumping jacks. No bike free? 35 jumping jacks.",
+            "Every 8 min × 4, talk-able pace:\n600 m row · 15 wall balls (6/10 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo rower free? 300 single-unders. No bike free? 70 single-unders.",
+            "Every 8 min × 4, talk-able pace:\n750 m row · 15 wall balls (10/14 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo rower free? 380 single-unders. No bike free? 70 single-unders."
           ],
           "outdoor": {
-            "title": "Run Every 8 Min",
+            "title": "Run every 8 min",
             "versions": [
-              "Every 8 min × 4 (32 min), talk-able pace:\n300 m walk/jog · 8 wall balls (4/6 lb) to a low target · 5/6 cal air bike, easy\nRest until the next 8 min starts.\nNo bike free? 100 m walk/jog.",
-              "Every 8 min × 4 (32 min), talk-able pace:\n400 m run/walk · 10 wall balls (6/10 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo bike free? 200 m run.",
-              "Every 8 min × 4 (32 min), talk-able pace:\n500 m run · 15 wall balls (6/10 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo bike free? 200 m run.",
-              "Every 8 min × 4 (32 min), talk-able pace:\n600 m run · 15 wall balls (10/14 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo bike free? 200 m run."
+              "Every 8 min × 4, talk-able pace:\n300 m walk/jog · 8 wall balls (4/6 lb) to a low target · 5/6 cal air bike, easy\nRest until the next 8 min starts.\nNo bike free? 100 m walk/jog.",
+              "Every 8 min × 4, talk-able pace:\n400 m run/walk · 10 wall balls (6/10 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo bike free? 200 m run.",
+              "Every 8 min × 4, talk-able pace:\n500 m run · 15 wall balls (6/10 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo bike free? 200 m run.",
+              "Every 8 min × 4, talk-able pace:\n600 m run · 15 wall balls (10/14 lb) · 8/10 cal air bike, easy\nRest until the next 8 min starts.\nNo bike free? 200 m run."
             ]
           }
         },
@@ -1408,7 +1408,7 @@
       "class_date": "2026-11-11",
       "title": "Deadlift + Row/Station Blocks",
       "focus": "Deadlift · steady row",
-      "why": "The heaviest deadlift week of this block, then 25 minutes switching between rowing and stations at a pace you can hold.",
+      "why": "Deadlift sets of 5 at 75%, then 25 minutes switching between rowing and stations at a pace you can hold.",
       "coach_notes": "Remembrance Day (PEI statutory holiday): run this class on holiday hours. No running in this piece, so no outside version.\nScaling: Masters (40+) never above 85%, RPE 8 is the ceiling. Newer lifters / first 4 weeks: same sets and reps with empty bar or light plates at RPE 7. Gentle: one light kettlebell at RPE 6–7 (3–4 reps left), one easy weight, fewer reps fine if the last ones slow down. Pain: pain-free range, tell the coach. Warm-up: step instead of jumping, walk instead of jogging, comfortable range.\nLoads: e1RM × 0.75, round to 5 lb (lookup table in the coach book). Ramp: 40% × 5, 50% × 3, 60% × 2; reset every rep, no bouncing; rest 2:30. RPE 8 cap: past RPE 8 or form breaks, drop 5–10%; every set RPE 6 or easier, add 2.5–5% next week (max +5%).\nConditioning targets: Cap 25:00 (fixed) · Aim row metres within 50 m across the 3 row blocks · Feel cardio · Pace sustain. Gentle rows steady (6/10, can say a sentence); others at threshold (7/10, breathing hard but controlled). Knees: step-ups instead of lunges. No machine: each row block becomes 5:00 of the listed bodyweight pair; score total reps (Gentle: total step-ups).\nNo machine: warm-up/cool-down row → jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
       "parts": [
         {
@@ -1417,10 +1417,10 @@
           "title": "Warm-up",
           "minutes": 11,
           "versions": [
-            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow RDLs · 3 deadlifts at 40–50% · warm-up sets",
-            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow RDLs · 3 deadlifts at 40–50% · warm-up sets",
-            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow RDLs · 3 deadlifts at 40–50% · warm-up sets",
-            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow RDLs · 3 deadlifts at 40–50% · warm-up sets"
+            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow Romanian deadlifts · 3 deadlifts at 40–50% · warm-up sets",
+            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow Romanian deadlifts · 3 deadlifts at 40–50% · warm-up sets",
+            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow Romanian deadlifts · 3 deadlifts at 40–50% · warm-up sets",
+            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\nThen: 5 slow Romanian deadlifts · 3 deadlifts at 40–50% · warm-up sets"
           ]
         },
         {
@@ -1455,10 +1455,10 @@
           "title": "Row + stations",
           "minutes": 26,
           "versions": [
-            "25 min, switch every 5 min:\nOdd blocks (3): row steady, 6/10 effort. Score metres.\nEven blocks (2): rounds of 8 wall balls (4/6 lb), low target · 20 m farmers carry (2 × 13/18 lb) · 8 step-ups to a low step\nNo rower free? Step-ups + marching, swap each minute.",
-            "25 min, switch every 5 min:\nOdd blocks (3): row at 7/10 effort. Score metres.\nEven blocks (2): rounds of 10 wall balls (6/10 lb) · 20 m farmers carry (2 × 18/26 lb) · 10 bodyweight lunges\nNo rower free? Jumping jacks + air squats, swap each minute.",
-            "25 min, switch every 5 min:\nOdd blocks (3): row at 7/10 effort. Score metres.\nEven blocks (2): rounds of 10 wall balls (6/10 lb) · 20 m farmers carry (2 × 26/35 lb) · 10 sandbag lunges (22/33 lb)\nNo rower free? Single-unders + air squats, swap each minute.",
-            "25 min, switch every 5 min:\nOdd blocks (3): row at 7/10 effort. Score metres.\nEven blocks (2): rounds of 10 wall balls (10/14 lb) · 20 m farmers carry (2 × 35/53 lb) · 10 sandbag lunges (22/44 lb)\nNo rower free? Single-unders + air squats, swap each minute."
+            "5 blocks of 5 min, no rest: row, stations, row, stations, row.\nRow: steady, 6/10 effort. Score metres.\nStations: as many rounds as you can of 8 wall balls (4/6 lb), low target · 20 m farmers carry (2 × 13/18 lb) · 8 step-ups to a low step\nNo rower free? Step-ups + marching, swap each minute.",
+            "5 blocks of 5 min, no rest: row, stations, row, stations, row.\nRow: at 7/10 effort. Score metres.\nStations: as many rounds as you can of 10 wall balls (6/10 lb) · 20 m farmers carry (2 × 18/26 lb) · 10 bodyweight lunges\nNo rower free? Jumping jacks + air squats, swap each minute.",
+            "5 blocks of 5 min, no rest: row, stations, row, stations, row.\nRow: at 7/10 effort. Score metres.\nStations: as many rounds as you can of 10 wall balls (6/10 lb) · 20 m farmers carry (2 × 26/35 lb) · 10 sandbag lunges (22/33 lb)\nNo rower free? Single-unders + air squats, swap each minute.",
+            "5 blocks of 5 min, no rest: row, stations, row, stations, row.\nRow: at 7/10 effort. Score metres.\nStations: as many rounds as you can of 10 wall balls (10/14 lb) · 20 m farmers carry (2 × 35/53 lb) · 10 sandbag lunges (22/44 lb)\nNo rower free? Single-unders + air squats, swap each minute."
           ]
         },
         {
@@ -1489,7 +1489,7 @@
     },
     {
       "class_date": "2026-11-12",
-      "title": "Easy Day: Strength + Intervals",
+      "title": "Accessories + Easy Intervals",
       "focus": "Accessory strength · easy intervals",
       "why": "The easy day: strength work for joints and posture, then easy intervals. Nobody should breathe hard today.",
       "coach_notes": "If there aren't enough rowers and bikes, run the class in two waves: wave 1 does the intervals while wave 2 does the accessory strength, then swap at about minute 31; or send the overflow to the 'No machine free' bodyweight rounds. The intervals have no outside version on purpose: Thursday is machine-only so weekly running volume stays as planned.\nScaling: Masters or injury: today is the best day for extra mobility or rehab work. Warm-up: step instead of jumping, walk instead of jogging, comfortable range.\nConditioning targets: Effort RPE Gentle 3–4, Steady 4, Strong 4–5, Full 5; Zone 2 (full sentences the whole time). Cap 20:00 (fixed) · Aim same pace every round: row split 0:15–0:25 per 500 m slower than 1 km test split; bike same calories each round (±1); Gentle: same easy pace, could keep going, slow pedalling fine · Feel cardio (easy) · Pace sustain. No machine: bodyweight rounds repeat until the work time ends.\nNo machine: warm-up/cool-down row → jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
@@ -1524,10 +1524,10 @@
           "title": "Easy row/bike intervals",
           "minutes": 21,
           "versions": [
-            "3 × 6 min easy, 1 min rest (20 min), switching row and air bike each round.\nVery easy. Rounds can be 1–2 min shorter. If you can only say a few words, slow down.\nNo machine free? Same clock, 1 min each: marching · step-ups to a low step · wall push-ups.",
-            "3 × 6 min easy, 1 min rest (20 min), switching row and air bike each round.\nEasy and chatty. Rounds can be 1 min shorter. If you can only say a few words, slow down.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
-            "3 × 6 min easy, 1 min rest (20 min), switching row and air bike each round.\nEasy: you can talk in full sentences. If you can only say a few words, slow down.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders.",
-            "3 × 6 min easy, 1 min rest (20 min), switching row and air bike each round.\nEasy: you can talk in full sentences. If you can only say a few words, slow down.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders."
+            "3 × 6 min easy, 1 min rest, switching row and air bike each round.\nVery easy. Rounds can be 1–2 min shorter. If you can only say a few words, slow down.\nNo machine free? Same clock, 1 min each: marching · step-ups to a low step · wall push-ups.",
+            "3 × 6 min easy, 1 min rest, switching row and air bike each round.\nEasy and chatty. Rounds can be 1 min shorter. If you can only say a few words, slow down.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
+            "3 × 6 min easy, 1 min rest, switching row and air bike each round.\nEasy: you can talk in full sentences. If you can only say a few words, slow down.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders.",
+            "3 × 6 min easy, 1 min rest, switching row and air bike each round.\nEasy: you can talk in full sentences. If you can only say a few words, slow down.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders."
           ]
         },
         {
@@ -1566,13 +1566,13 @@
         {
           "kind": "strength",
           "label": "Skill",
-          "title": "Power clean technique",
+          "title": "Power clean practice",
           "minutes": 9,
           "versions": [
-            "Dumbbell clean: every 1 min, light and smooth\nHang clean a light dumbbell or kettlebell to your shoulder, then 1–2 goblet squats. Half the reps is fine.",
-            "Power clean: every 1:30 × 6 (9 min)\nPower clean + hang power clean + front squat. Stay light: empty bar or light plates; start from the hang if the floor feels rushed.",
-            "Power clean: every 1:30 × 6 (9 min)\nPower clean + hang power clean + front squat. Build by feel, no percentages. Stop adding weight when the bar slows down.",
-            "Power clean: every 1:30 × 6 (9 min)\nPower clean + hang power clean + front squat. Build by feel, no percentages. Stop adding weight when the bar slows down."
+            "Dumbbell clean: every 1:30 × 6\nOne light dumbbell or kettlebell: 2 hang cleans to the shoulder + 1 goblet squat. Easy, smooth reps.",
+            "Power clean: every 1:30 × 6\nPower clean + hang power clean + front squat. Stay light: empty bar or light plates; start from the hang if the floor feels rushed.",
+            "Power clean: every 1:30 × 6\nPower clean + hang power clean + front squat. Build by feel, no percentages. Stop adding weight when the bar slows down.",
+            "Power clean: every 1:30 × 6\nPower clean + hang power clean + front squat. Build by feel, no percentages. Stop adding weight when the bar slows down."
           ]
         },
         {
@@ -1649,7 +1649,7 @@
         {
           "kind": "strength",
           "label": "Strength",
-          "title": "Back squat 5×3 @ 80%",
+          "title": "Back squat 5 × 3",
           "minutes": 20,
           "lift": {
             "movement": "Back squat",
@@ -1675,13 +1675,13 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Row/Wall Ball Intervals",
+          "title": "Row/wall ball intervals",
           "minutes": 15,
           "versions": [
-            "Every 3 min, 4 rounds (12 min):\n6/8 cal row · 6 wall balls (4/6 lb) to a low target · rest till the next round\nNo rower free? 30 s step-jacks or marching.",
-            "Every 3 min, 4 rounds (12 min):\n8/10 cal row · 8 wall balls (6/10 lb) · rest till the next round\nNo rower free? 35 jumping jacks.",
-            "Every 3 min, 4 rounds (12 min):\n10/13 cal row · 10 wall balls (10/14 lb) · rest till the next round\nNo rower free? 90 single-unders.",
-            "Every 3 min, 4 rounds (12 min):\n12/15 cal row · 10 wall balls (14/20 lb) · rest till the next round\nNo rower free? 110 single-unders."
+            "Every 3 min, 4 rounds:\n6/8 cal row · 6 wall balls (4/6 lb) to a low target · rest till the next round\nNo rower free? 30 s step-jacks or marching.",
+            "Every 3 min, 4 rounds:\n8/10 cal row · 8 wall balls (6/10 lb) · rest till the next round\nNo rower free? 35 jumping jacks.",
+            "Every 3 min, 4 rounds:\n10/13 cal row · 10 wall balls (10/14 lb) · rest till the next round\nNo rower free? 90 single-unders.",
+            "Every 3 min, 4 rounds:\n12/15 cal row · 10 wall balls (14/20 lb) · rest till the next round\nNo rower free? 110 single-unders."
           ]
         },
         {
@@ -1744,21 +1744,21 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Row/Step-up/Bike Every 7 Min",
+          "title": "Row/step-up/bike every 7 min",
           "minutes": 28,
           "versions": [
-            "Every 7 min, 4 rounds (28 min), steady talk-able pace:\n250 m row · 8 step-ups to a low step · 6/8 cal air bike · rest till the next round\nNo machine free? March 1 min (row), 30 s (bike).",
-            "Every 7 min, 4 rounds (28 min), steady talk-able pace:\n400 m row · 10 step-ups to a low box · 8/10 cal air bike · rest till the next round\nNo machine free? 100 jumping jacks (row), 35 (bike).",
-            "Every 7 min, 4 rounds (28 min), steady talk-able pace:\n500 m row · 12 bodyweight step-ups · 10/12 cal air bike · rest till the next round\nNo machine free? 250 single-unders (row), 90 (bike).",
-            "Every 7 min, 4 rounds (28 min), steady talk-able pace:\n500 m row · 12 dumbbell step-ups (2 × 15/20 lb) · 11/14 cal air bike · rest till the next round\nNo machine free? 250 single-unders (row), 100 (bike)."
+            "Every 7 min, 4 rounds, steady talk-able pace:\n250 m row · 8 step-ups to a low step · 6/8 cal air bike · rest till the next round\nNo rower free? March 1 min. No bike free? March 30 s.",
+            "Every 7 min, 4 rounds, steady talk-able pace:\n400 m row · 10 step-ups to a low box · 8/10 cal air bike · rest till the next round\nNo rower free? 100 jumping jacks. No bike free? 35 jumping jacks.",
+            "Every 7 min, 4 rounds, steady talk-able pace:\n500 m row · 12 bodyweight step-ups · 10/12 cal air bike · rest till the next round\nNo rower free? 250 single-unders. No bike free? 90 single-unders.",
+            "Every 7 min, 4 rounds, steady talk-able pace:\n500 m row · 12 dumbbell step-ups (2 × 15/20 lb) · 11/14 cal air bike · rest till the next round\nNo rower free? 250 single-unders. No bike free? 100 single-unders."
           ],
           "outdoor": {
-            "title": "Run/Step-up/Bike Every 7 Min",
+            "title": "Run/step-up/bike every 7 min",
             "versions": [
-              "Every 7 min, 4 rounds (28 min), steady talk-able pace:\n200 m walk/jog · 8 step-ups to a low step · 6/8 cal air bike · rest till the next round\nNo bike free? 150 m walk/jog.",
-              "Every 7 min, 4 rounds (28 min), steady talk-able pace:\n300 m run/walk · 10 step-ups to a low box · 8/10 cal air bike · rest till the next round\nNo bike free? 200 m run.",
-              "Every 7 min, 4 rounds (28 min), steady talk-able pace:\n400 m run · 12 bodyweight step-ups · 10/12 cal air bike · rest till the next round\nNo bike free? 200 m run.",
-              "Every 7 min, 4 rounds (28 min), steady talk-able pace:\n400 m run · 12 dumbbell step-ups (2 × 15/20 lb) · 11/14 cal air bike · rest till the next round\nNo bike free? 250 m run."
+              "Every 7 min, 4 rounds, steady talk-able pace:\n200 m walk/jog · 8 step-ups to a low step · 6/8 cal air bike · rest till the next round\nNo bike free? 150 m walk/jog.",
+              "Every 7 min, 4 rounds, steady talk-able pace:\n300 m run/walk · 10 step-ups to a low box · 8/10 cal air bike · rest till the next round\nNo bike free? 200 m run.",
+              "Every 7 min, 4 rounds, steady talk-able pace:\n400 m run · 12 bodyweight step-ups · 10/12 cal air bike · rest till the next round\nNo bike free? 200 m run.",
+              "Every 7 min, 4 rounds, steady talk-able pace:\n400 m run · 12 dumbbell step-ups (2 × 15/20 lb) · 11/14 cal air bike · rest till the next round\nNo bike free? 250 m run."
             ]
           }
         },
@@ -1798,7 +1798,7 @@
         {
           "kind": "strength",
           "label": "Strength",
-          "title": "Deadlift 4×3 @ 80%",
+          "title": "Deadlift 4 × 3",
           "minutes": 14,
           "lift": {
             "movement": "Deadlift",
@@ -1824,21 +1824,21 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Bike + Station Rounds",
+          "title": "Bike + station rounds",
           "minutes": 26,
           "versions": [
-            "5 rounds, about 20 min. Each: 5/6 cal bike, steady, then a station:\n150 m row · 25 m sled push (empty or 1 light plate) · 10 wall balls (4/6 lb), low target · 50 m carry (2 × 13/18 lb) · 10 low step-ups\nNo machine free? March 40 s (row), 20 s (bike).",
-            "5 rounds, about 20 min. Each: 6/8 cal bike, hard pace, then a station:\n200 m row · 25 m sled push (light plates) · 15 wall balls (6/10 lb) · 50 m carry (2 × 18/26 lb) · 16 lunges, sandbag 13/22 lb or none\nNo machine free? 50 jumping jacks (row), 30 (bike).",
-            "5 rounds, about 20 min. Each: 8/10 cal bike, hard pace, then a station:\n250 m row · 25 m sled push (25% under Full) · 20 wall balls (6/10 lb) · 50 m carry (2 × 26/35 lb) · 16 sandbag lunges (22/33 lb)\nNo machine free? 120 single-unders (row), 70 (bike).",
-            "5 rounds, about 20 min. Each: 8/10 cal bike, hard pace, then a station:\n250 m row · 25 m heavy sled push (12.5 m nonstop) · 20 wall balls (10/14 lb) · 50 m carry (2 × 35/53 lb) · 16 sandbag lunges (22/44 lb)\nNo machine free? 120 single-unders (row), 70 (bike)."
+            "5 rounds. Each round: 5/6 cal bike, steady, then the next station:\n1. 150 m row\n2. 25 m sled push (empty or 1 light plate)\n3. 10 wall balls (4/6 lb), low target\n4. 50 m carry (2 × 13/18 lb)\n5. 10 low step-ups\nNo rower free? March 40 s. No bike free? March 20 s.",
+            "5 rounds. Each round: 6/8 cal bike, hard pace, then the next station:\n1. 200 m row\n2. 25 m sled push (light plates)\n3. 15 wall balls (6/10 lb)\n4. 50 m carry (2 × 18/26 lb)\n5. 16 lunges, sandbag 13/22 lb or none\nNo rower free? 50 jumping jacks. No bike free? 30 jumping jacks.",
+            "5 rounds. Each round: 8/10 cal bike, hard pace, then the next station:\n1. 250 m row\n2. 25 m sled push (moderate)\n3. 20 wall balls (6/10 lb)\n4. 50 m carry (2 × 26/35 lb)\n5. 16 sandbag lunges (22/33 lb)\nNo rower free? 120 single-unders. No bike free? 70 single-unders.",
+            "5 rounds. Each round: 8/10 cal bike, hard pace, then the next station:\n1. 250 m row\n2. 25 m sled push (heavy, keep it moving)\n3. 20 wall balls (10/14 lb)\n4. 50 m carry (2 × 35/53 lb)\n5. 16 sandbag lunges (22/44 lb)\nNo rower free? 120 single-unders. No bike free? 70 single-unders."
           ],
           "outdoor": {
-            "title": "Run + Station Rounds",
+            "title": "Run + station rounds",
             "versions": [
-              "5 rounds, about 20 min. Each: 100 m walk/jog, then a station:\n150 m row · 25 m sled push (empty or 1 light plate) · 10 wall balls (4/6 lb), low target · 50 m carry (2 × 13/18 lb) · 10 low step-ups\nNo rower free? 100 m walk/jog.",
-              "5 rounds, about 20 min. Each: 150 m run/walk, then a station:\n200 m row · 25 m sled push (light plates) · 15 wall balls (6/10 lb) · 50 m carry (2 × 18/26 lb) · 16 lunges, sandbag 13/22 lb or none\nNo rower free? 150 m run.",
-              "5 rounds, about 20 min. Each: 200 m run, then a station:\n250 m row · 25 m sled push (25% under Full) · 20 wall balls (6/10 lb) · 50 m carry (2 × 26/35 lb) · 16 sandbag lunges (22/33 lb)\nNo rower free? 200 m run.",
-              "5 rounds, about 20 min. Each: 200 m run, then a station:\n250 m row · 25 m heavy sled push (12.5 m nonstop) · 20 wall balls (10/14 lb) · 50 m carry (2 × 35/53 lb) · 16 sandbag lunges (22/44 lb)\nNo rower free? 200 m run."
+              "5 rounds. Each round: 100 m walk/jog, then the next station:\n1. 150 m row\n2. 25 m sled push (empty or 1 light plate)\n3. 10 wall balls (4/6 lb), low target\n4. 50 m carry (2 × 13/18 lb)\n5. 10 low step-ups\nNo rower free? 100 m walk/jog.",
+              "5 rounds. Each round: 150 m run/walk, then the next station:\n1. 200 m row\n2. 25 m sled push (light plates)\n3. 15 wall balls (6/10 lb)\n4. 50 m carry (2 × 18/26 lb)\n5. 16 lunges, sandbag 13/22 lb or none\nNo rower free? 150 m run.",
+              "5 rounds. Each round: 200 m run, then the next station:\n1. 250 m row\n2. 25 m sled push (moderate)\n3. 20 wall balls (6/10 lb)\n4. 50 m carry (2 × 26/35 lb)\n5. 16 sandbag lunges (22/33 lb)\nNo rower free? 200 m run.",
+              "5 rounds. Each round: 200 m run, then the next station:\n1. 250 m row\n2. 25 m sled push (heavy, keep it moving)\n3. 20 wall balls (10/14 lb)\n4. 50 m carry (2 × 35/53 lb)\n5. 16 sandbag lunges (22/44 lb)\nNo rower free? 200 m run."
             ]
           }
         },
@@ -1870,8 +1870,8 @@
     },
     {
       "class_date": "2026-11-19",
-      "title": "Easy Day: Strength + Row/Bike",
-      "focus": "Accessory strength · easy cardio",
+      "title": "Accessories + Easy Row/Bike",
+      "focus": "Accessory strength · easy intervals",
       "why": "The easy day: strength work for joints and posture, then easy row and bike intervals. Nobody should breathe hard today.",
       "coach_notes": "If there aren't enough rowers and bikes, run the class in two waves: wave 1 does the intervals while wave 2 does the accessory strength, then swap at about minute 31; or send the overflow to the 'No machine free' bodyweight rounds. The intervals have no outside version on purpose: Thursday is machine-only so weekly running volume stays as planned.\nWarm-up: general 4 min, specific 3 min. Easier warm-up: step instead of jump, walk instead of jog, comfortable range.\nIntervals: RPE 3–4 (Gentle), 4 (Steady), 4–5 (Strong), 5 (Full). Zone 2: if they can only say a few words, slow down. Cap 19:00 (fixed). Aim: Gentle same easy pace, could keep going; others row split 0:15–0:25 per 500 m slower than their 1 km test split, bike same calories each round (±1). Feel cardio (easy) · Pace sustain.\nMasters or injury: best day for extra mobility or rehab work.\nNo machine (warm-up/cool-down): jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
       "parts": [
@@ -1905,10 +1905,10 @@
           "title": "Easy row/bike intervals",
           "minutes": 21,
           "versions": [
-            "2 rounds: 9 min easy, 1 min rest (19 min). Switch between row and air bike.\nVery easy: full sentences the whole time. Rounds can be 1–2 min shorter; slow pedalling is fine.\nNo machine free? Easy 1 min each: marching · low step-ups · wall push-ups. Repeat.",
-            "2 rounds: 9 min easy, 1 min rest (19 min). Switch between row and air bike.\nEasy and chatty. Rounds can be 1 min shorter.\nNo machine free? Easy 1 min each: step-ups to a low box · jumping jacks · air squats. Repeat.",
-            "2 rounds: 9 min easy, 1 min rest (19 min). Switch between row and air bike.\nEasy to steady, still able to talk in full sentences.\nNo machine free? Easy 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat.",
-            "2 rounds: 9 min easy, 1 min rest (19 min). Switch between row and air bike.\nSteady, still able to talk in full sentences.\nNo machine free? Easy 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat."
+            "2 rounds: 9 min easy, 1 min rest. Switch between row and air bike.\nVery easy: full sentences the whole time. Rounds can be 1–2 min shorter; slow pedalling is fine.\nNo machine free? Easy 1 min each: marching · low step-ups · wall push-ups. Repeat.",
+            "2 rounds: 9 min easy, 1 min rest. Switch between row and air bike.\nEasy and chatty. Rounds can be 1 min shorter.\nNo machine free? Easy 1 min each: step-ups to a low box · jumping jacks · air squats. Repeat.",
+            "2 rounds: 9 min easy, 1 min rest. Switch between row and air bike.\nEasy to steady, still able to talk in full sentences.\nNo machine free? Easy 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat.",
+            "2 rounds: 9 min easy, 1 min rest. Switch between row and air bike.\nSteady, still able to talk in full sentences.\nNo machine free? Easy 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat."
           ]
         },
         {
@@ -1946,11 +1946,11 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
-          "title": "Power clean technique",
+          "label": "Skill",
+          "title": "Power clean practice",
           "minutes": 8,
           "versions": [
-            "Dumbbell hang clean: every 2 min, same clock\nOne light dumbbell or kettlebell to your shoulder, then 1–2 goblet squats. Half the reps is fine; smooth reps only.",
+            "Dumbbell clean: every 2 min × 6\nOne light dumbbell or kettlebell: 2 hang cleans to the shoulder. Smooth reps only.",
             "Power clean: every 2 min × 6, 2 reps\nStay light: empty bar or light plates. Start from above the knee if the floor feels rushed. Fast, crisp reps.",
             "Power clean: every 2 min × 6, 2 reps\nBuild by feel, no percentages today. Fast, crisp reps; stop adding weight when they slow down.",
             "Power clean: every 2 min × 6, 2 reps\nBuild by feel, no percentages today. Fast, crisp reps; stop adding weight when they slow down."
@@ -1959,7 +1959,7 @@
         {
           "kind": "strength",
           "label": "Strength",
-          "title": "Strict press 5×3 @ 77.5%",
+          "title": "Strict press 5 × 3",
           "minutes": 10,
           "lift": {
             "movement": "Strict press",
@@ -1985,7 +1985,7 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "3 Rounds Row/Snatch/Burpee",
+          "title": "Row/snatch/burpee, 3 rounds",
           "minutes": 19,
           "versions": [
             "3 rounds for time (12 min cap), rest when you need to:\n150 m row · 8 alternating dumbbell hang snatches (10/15 lb) · 6 incline step-back burpees (hands on a box)\nNo rower free? 40 s step-jacks or marching.",
@@ -2029,8 +2029,8 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
-          "title": "Back squat 1 × 3 @ 80%",
+          "label": "Strength · lighter set",
+          "title": "Back squat 1 × 3",
           "minutes": 6,
           "lift": {
             "movement": "Back squat",
@@ -2055,8 +2055,8 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
-          "title": "Back squat 3 × 3 @ 85%",
+          "label": "Strength · top sets",
+          "title": "Back squat 3 × 3",
           "minutes": 14,
           "lift": {
             "movement": "Back squat",
@@ -2074,21 +2074,21 @@
           },
           "versions": [
             "Goblet box squat: 3 × 3, easy weight\nKettlebell or dumbbell at your chest, sit to a box at knee height. Leave 3–4 reps in the tank. Rest 2:30–3 min.",
-            "Back squat: 3 × 3 @ 85%\nTop sets, after the ramp set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Back squat: 3 × 3 @ 85%\nTop sets, after the ramp set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Back squat: 3 × 3 @ 85%\nTop sets, after the ramp set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%."
+            "Back squat: 3 × 3 @ 85%\nTop sets, after the lighter set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Back squat: 3 × 3 @ 85%\nTop sets, after the lighter set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Back squat: 3 × 3 @ 85%\nTop sets, after the lighter set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%."
           ]
         },
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Bike/Burpee Rounds",
+          "title": "Bike/burpee rounds",
           "minutes": 15,
           "versions": [
-            "3 rounds (12 min):\n1 min max cal air bike · 1 min rest · 1 min max incline step-back burpees (hands on a box) · 1 min rest\nModerate effort. Score = total calories + reps.\nNo bike free? 1 min fast marching or step-jacks.",
-            "3 rounds (12 min):\n1 min max cal air bike · 1 min rest · 1 min max step-back burpees · 1 min rest\nFairly hard. Score = total calories + reps.\nNo bike free? 1 min max jumping jacks.",
-            "3 rounds (12 min):\n1 min max cal air bike · 1 min rest · 1 min max burpees · 1 min rest\nHard. Score = total calories + reps. Knees or back? Step-back burpees.\nNo bike free? 1 min max single-unders.",
-            "3 rounds (12 min):\n1 min max cal air bike · 1 min rest · 1 min max burpees · 1 min rest\nVery hard. Score = total calories + reps. Knees or back? Step-back burpees.\nNo bike free? 1 min max single-unders."
+            "3 rounds:\n1 min max cal air bike · 1 min rest · 1 min max incline step-back burpees (hands on a box) · 1 min rest\nModerate effort. Score = total calories + reps.\nNo bike free? 1 min fast marching or step-jacks.",
+            "3 rounds:\n1 min max cal air bike · 1 min rest · 1 min max step-back burpees · 1 min rest\nFairly hard. Score = total calories + reps.\nNo bike free? 1 min max jumping jacks.",
+            "3 rounds:\n1 min max cal air bike · 1 min rest · 1 min max burpees · 1 min rest\nHard. Score = total calories + reps. Knees or back? Step-back burpees.\nNo bike free? 1 min max single-unders.",
+            "3 rounds:\n1 min max cal air bike · 1 min rest · 1 min max burpees · 1 min rest\nVery hard. Score = total calories + reps. Knees or back? Step-back burpees.\nNo bike free? 1 min max single-unders."
           ]
         },
         {
@@ -2139,33 +2139,33 @@
         {
           "kind": "skill",
           "label": "Skill",
-          "title": "Toes-to-bar EMOM",
+          "title": "Toes-to-bar, every minute",
           "minutes": 13,
           "versions": [
             "Toes-to-bar level 5: every minute for 8 min\nOdd minutes: 30 s easy row or bike\nEven minutes: 6 lying bent-knee raises",
             "Toes-to-bar level 5: every minute for 8 min\nOdd minutes: 30 s easy row or bike\nEven minutes: 6 hanging knee raises",
-            "Toes-to-bar level 5: every minute for 8 min\nOdd minutes: 30 s easy row or bike\nEven minutes: kipping knee raises + toes-to-bar singles",
+            "Toes-to-bar level 5: every minute for 8 min\nOdd minutes: 30 s easy row or bike\nEven minutes: 3 kipping knee raises + 1–2 toes-to-bar",
             "Toes-to-bar level 5: every minute for 8 min\nOdd minutes: 30 s easy row or bike\nEven minutes: 4–6 toes-to-bar unbroken"
           ]
         },
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Row/Bike Rounds",
+          "title": "Row/bike rounds",
           "minutes": 28,
           "versions": [
-            "3 rounds, not for time (about 28 min), talk-able pace:\n250 m row · 6/8 cal row · 10 crunches · 5/6 cal air bike\nNo machine free? Step-jacks or marching: 1 min, 30 s, 20 s.",
-            "3 rounds, not for time (about 28 min), talk-able pace:\n400 m row · 12/15 cal row · 15 sit-ups · 10/12 cal air bike\nNo machine free? 100, 55, 45 jumping jacks.",
-            "3 rounds, not for time (about 28 min), talk-able pace:\n500 m row · 12/15 cal row · 15 sit-ups · 10/12 cal air bike\nNo machine free? 250, 110, 90 single-unders.",
-            "3 rounds, not for time (about 28 min), talk-able pace:\n500 m row · 12/15 cal row · 15 sit-ups · 10/12 cal air bike\nNo machine free? 250, 110, 90 single-unders."
+            "3 rounds, not for time, talk-able pace:\n350 m row · 10 crunches · 5/6 cal air bike\nNo rower free? 1:30 step-jacks or marching. No bike free? 20 s.",
+            "3 rounds, not for time, talk-able pace:\n650 m row · 15 sit-ups · 10/12 cal air bike\nNo rower free? 155 jumping jacks. No bike free? 45 jumping jacks.",
+            "3 rounds, not for time, talk-able pace:\n750 m row · 15 sit-ups · 10/12 cal air bike\nNo rower free? 360 single-unders. No bike free? 90 single-unders.",
+            "3 rounds, not for time, talk-able pace:\n750 m row · 15 sit-ups · 10/12 cal air bike\nNo rower free? 360 single-unders. No bike free? 90 single-unders."
           ],
           "outdoor": {
-            "title": "Run/Row/Bike Rounds",
+            "title": "Run/row/bike rounds",
             "versions": [
-              "3 rounds, not for time (about 28 min), talk-able pace:\n200 m walk/jog · 6/8 cal row · 10 crunches · 5/6 cal air bike\nNo machine free? 150 m walk/jog for the row, 100 m for the bike.",
-              "3 rounds, not for time (about 28 min), talk-able pace:\n300 m run/walk · 12/15 cal row · 15 sit-ups · 10/12 cal air bike\nNo machine free? 250 m run for the row, 200 m for the bike.",
-              "3 rounds, not for time (about 28 min), talk-able pace:\n400 m run · 12/15 cal row · 15 sit-ups · 10/12 cal air bike\nNo machine free? 250 m run for the row, 200 m for the bike.",
-              "3 rounds, not for time (about 28 min), talk-able pace:\n400 m run · 12/15 cal row · 15 sit-ups · 10/12 cal air bike\nNo machine free? 250 m run for the row, 200 m for the bike."
+              "3 rounds, not for time, talk-able pace:\n200 m walk/jog · 6/8 cal row · 10 crunches · 5/6 cal air bike\nNo rower free? 150 m walk/jog. No bike free? 100 m walk/jog.",
+              "3 rounds, not for time, talk-able pace:\n300 m run/walk · 12/15 cal row · 15 sit-ups · 10/12 cal air bike\nNo rower free? 250 m run. No bike free? 200 m run.",
+              "3 rounds, not for time, talk-able pace:\n400 m run · 12/15 cal row · 15 sit-ups · 10/12 cal air bike\nNo rower free? 250 m run. No bike free? 200 m run.",
+              "3 rounds, not for time, talk-able pace:\n400 m run · 12/15 cal row · 15 sit-ups · 10/12 cal air bike\nNo rower free? 250 m run. No bike free? 200 m run."
             ]
           }
         },
@@ -2196,16 +2196,16 @@
           "title": "Warm-up",
           "minutes": 11,
           "versions": [
-            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\n5 slow RDLs · 3 deadlifts at 40–50% · ramp sets",
-            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\n5 slow RDLs · 3 deadlifts at 40–50% · ramp sets",
-            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\n5 slow RDLs · 3 deadlifts at 40–50% · ramp sets",
-            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\n5 slow RDLs · 3 deadlifts at 40–50% · ramp sets"
+            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\n5 slow Romanian deadlifts · 3 deadlifts at 40–50% · ramp sets",
+            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\n5 slow Romanian deadlifts · 3 deadlifts at 40–50% · ramp sets",
+            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\n5 slow Romanian deadlifts · 3 deadlifts at 40–50% · ramp sets",
+            "3 min easy row, then 2 rounds: 10 banded hip hinges · 10 dead bugs each side · 10 ring rows\n5 slow Romanian deadlifts · 3 deadlifts at 40–50% · ramp sets"
           ]
         },
         {
           "kind": "strength",
-          "label": "Strength",
-          "title": "Deadlift 1 × 3 @ 80%",
+          "label": "Strength · lighter set",
+          "title": "Deadlift 1 × 3",
           "minutes": 5,
           "lift": {
             "movement": "Deadlift",
@@ -2230,8 +2230,8 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
-          "title": "Deadlift 2 × 3 @ 85%",
+          "label": "Strength · top sets",
+          "title": "Deadlift 2 × 3",
           "minutes": 11,
           "lift": {
             "movement": "Deadlift",
@@ -2249,29 +2249,29 @@
           },
           "versions": [
             "Kettlebell deadlift: 2 × 3, easy weight\nOne light kettlebell between your feet (on a low step if the floor is far). Leave 3–4 reps in the tank. Rest 2:30–3 min.",
-            "Deadlift: 2 × 3 @ 85%\nTop sets, after the ramp set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Deadlift: 2 × 3 @ 85%\nTop sets, after the ramp set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Deadlift: 2 × 3 @ 85%\nTop sets, after the ramp set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%."
+            "Deadlift: 2 × 3 @ 85%\nTop sets, after the lighter set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Deadlift: 2 × 3 @ 85%\nTop sets, after the lighter set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Deadlift: 2 × 3 @ 85%\nTop sets, after the lighter set. Rest 2:30–3 min. If a set feels harder than 2 reps left, drop 5–10%."
           ]
         },
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Bike + Station Doubles",
+          "title": "Bike + station doubles",
           "minutes": 24,
           "versions": [
-            "4 rounds: 5/6 cal bike, then 2 stations:\nR1: 25 m sled push + 10 wall balls 4/6 lb, low target\nR2: 150 m row + 4 incline step-back burpees\nR3: 50 m farmer carry 2 × 13/18 lb + 10 low step-ups\nR4: 25 m sled pull + same wall balls\nSled: empty or 1 light plate.\nNo machine? Step-jacks: row 40 s, bike 20 s.",
-            "4 rounds: 6/8 cal bike, then 2 stations:\nR1: 25 m sled push + 15 wall balls 6/10 lb\nR2: 200 m row + 6 step-back burpee broad jumps\nR3: 50 m farmer carry 2 × 18/26 lb + 16 lunges (13/22 lb sandbag optional)\nR4: 25 m sled pull + same wall balls\nSled: light plates.\nNo machine? Jumping jacks: row 50, bike 30.",
-            "4 rounds: 8/10 cal bike, then 2 stations:\nR1: 25 m sled push + 20 wall balls 6/10 lb\nR2: 250 m row + 6 burpee broad jumps\nR3: 50 m farmer carry 2 × 26/35 lb + 16 sandbag lunges 22/33 lb\nR4: 25 m sled pull + same wall balls\nSled: about 25% lighter than Full.\nNo machine? Single-unders: row 120, bike 70.",
-            "4 rounds: 8/10 cal bike, then 2 stations:\nR1: 25 m sled push + 20 wall balls 10/14 lb\nR2: 250 m row + 6 burpee broad jumps\nR3: 50 m farmer carry 2 × 35/53 lb + 16 sandbag lunges 22/44 lb\nR4: 25 m sled pull + same wall balls\nSled: heavy, but moving nonstop for 12.5 m.\nNo machine? Single-unders: row 120, bike 70."
+            "4 rounds: 5/6 cal bike, then 2 stations:\nRound 1: 25 m sled push + 10 wall balls 4/6 lb, low target\nRound 2: 150 m row + 4 incline step-back burpees\nRound 3: 50 m farmer carry 2 × 13/18 lb + 10 low step-ups\nRound 4: 25 m sled pull + same wall balls\nSled: empty or 1 light plate.\nNo rower free? 40 s step-jacks. No bike free? 20 s step-jacks.",
+            "4 rounds: 6/8 cal bike, then 2 stations:\nRound 1: 25 m sled push + 15 wall balls 6/10 lb\nRound 2: 200 m row + 6 step-back burpee broad jumps\nRound 3: 50 m farmer carry 2 × 18/26 lb + 16 lunges (13/22 lb sandbag optional)\nRound 4: 25 m sled pull + same wall balls\nSled: light plates.\nNo rower free? 50 jumping jacks. No bike free? 30 jumping jacks.",
+            "4 rounds: 8/10 cal bike, then 2 stations:\nRound 1: 25 m sled push + 20 wall balls 6/10 lb\nRound 2: 250 m row + 6 burpee broad jumps\nRound 3: 50 m farmer carry 2 × 26/35 lb + 16 sandbag lunges 22/33 lb\nRound 4: 25 m sled pull + same wall balls\nSled: moderate.\nNo rower free? 120 single-unders. No bike free? 70 single-unders.",
+            "4 rounds: 8/10 cal bike, then 2 stations:\nRound 1: 25 m sled push + 20 wall balls 10/14 lb\nRound 2: 250 m row + 6 burpee broad jumps\nRound 3: 50 m farmer carry 2 × 35/53 lb + 16 sandbag lunges 22/44 lb\nRound 4: 25 m sled pull + same wall balls\nSled: heavy, but keep it moving.\nNo rower free? 120 single-unders. No bike free? 70 single-unders."
           ],
           "outdoor": {
-            "title": "Run + Station Doubles",
+            "title": "Run + station doubles",
             "versions": [
-              "4 rounds: 100 m walk/jog, then 2 stations:\nR1: 25 m sled push + 10 wall balls 4/6 lb, low target\nR2: 150 m row + 4 incline step-back burpees\nR3: 50 m farmer carry 2 × 13/18 lb + 10 low step-ups\nR4: 25 m sled pull + same wall balls\nSled: empty or 1 light plate.\nNo rower? 100 m walk/jog.",
-              "4 rounds: 150 m run/walk, then 2 stations:\nR1: 25 m sled push + 15 wall balls 6/10 lb\nR2: 200 m row + 6 step-back burpee broad jumps\nR3: 50 m farmer carry 2 × 18/26 lb + 16 lunges (13/22 lb sandbag optional)\nR4: 25 m sled pull + same wall balls\nSled: light plates.\nNo rower? 150 m run.",
-              "4 rounds: 200 m run, then 2 stations:\nR1: 25 m sled push + 20 wall balls 6/10 lb\nR2: 250 m row + 6 burpee broad jumps\nR3: 50 m farmer carry 2 × 26/35 lb + 16 sandbag lunges 22/33 lb\nR4: 25 m sled pull + same wall balls\nSled: about 25% lighter than Full.\nNo rower? 200 m run.",
-              "4 rounds: 200 m run, then 2 stations:\nR1: 25 m sled push + 20 wall balls 10/14 lb\nR2: 250 m row + 6 burpee broad jumps\nR3: 50 m farmer carry 2 × 35/53 lb + 16 sandbag lunges 22/44 lb\nR4: 25 m sled pull + same wall balls\nSled: heavy, but moving nonstop for 12.5 m.\nNo rower? 200 m run."
+              "4 rounds: 100 m walk/jog, then 2 stations:\nRound 1: 25 m sled push + 10 wall balls 4/6 lb, low target\nRound 2: 150 m row + 4 incline step-back burpees\nRound 3: 50 m farmer carry 2 × 13/18 lb + 10 low step-ups\nRound 4: 25 m sled pull + same wall balls\nSled: empty or 1 light plate.\nNo rower free? 100 m walk/jog.",
+              "4 rounds: 150 m run/walk, then 2 stations:\nRound 1: 25 m sled push + 15 wall balls 6/10 lb\nRound 2: 200 m row + 6 step-back burpee broad jumps\nRound 3: 50 m farmer carry 2 × 18/26 lb + 16 lunges (13/22 lb sandbag optional)\nRound 4: 25 m sled pull + same wall balls\nSled: light plates.\nNo rower free? 150 m run.",
+              "4 rounds: 200 m run, then 2 stations:\nRound 1: 25 m sled push + 20 wall balls 6/10 lb\nRound 2: 250 m row + 6 burpee broad jumps\nRound 3: 50 m farmer carry 2 × 26/35 lb + 16 sandbag lunges 22/33 lb\nRound 4: 25 m sled pull + same wall balls\nSled: moderate.\nNo rower free? 200 m run.",
+              "4 rounds: 200 m run, then 2 stations:\nRound 1: 25 m sled push + 20 wall balls 10/14 lb\nRound 2: 250 m row + 6 burpee broad jumps\nRound 3: 50 m farmer carry 2 × 35/53 lb + 16 sandbag lunges 22/44 lb\nRound 4: 25 m sled pull + same wall balls\nSled: heavy, but keep it moving.\nNo rower free? 200 m run."
             ]
           }
         },
@@ -2303,7 +2303,7 @@
     },
     {
       "class_date": "2026-11-26",
-      "title": "Accessory + Easy Row/Bike",
+      "title": "Accessories + Easy Row/Bike",
       "focus": "Accessory strength · easy intervals",
       "why": "The easy day: strength work for joints and posture, then easy intervals. Nobody should be breathing hard today.",
       "coach_notes": "If there aren't enough rowers and bikes, run the class in two waves: wave 1 does the intervals while wave 2 does the accessory strength, then swap at about minute 31; or send the overflow to the 'No machine free' bodyweight rounds. The intervals have no outside version on purpose: Thursday is machine-only so weekly running volume stays as planned.\nWarm-up for Gentle: step instead of jumping, walk instead of jogging, stay in a comfortable range.\nIntervals: Cap 19:00 (fixed) · Effort RPE Gentle 3–4, Steady 4, Strong 4–5, Full 5 · Zone 2 · Aim same pace every round: row split 0:15–0:25 per 500 m slower than 1 km test split; bike same calories each round (±1); Gentle: you could keep going · Feel cardio (easy) · Pace sustain.\nMasters or injury: today is the best day for extra mobility or rehab work.\nNo machine (warm-up/cool-down): jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
@@ -2335,13 +2335,13 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Easy Row/Bike Intervals",
+          "title": "Easy row/bike intervals",
           "minutes": 21,
           "versions": [
-            "2 × 9 min easy, 1 min rest (19 min). Switch row and bike each round.\nVery easy: full sentences the whole time. Rounds can be 1–2 min shorter.\nNo machine free? Same clock, 1 min each: marching · low step-ups · wall push-ups.",
-            "2 × 9 min easy, 1 min rest (19 min). Switch row and bike each round.\nEasy and chatty: full sentences the whole time. Rounds can be 1 min shorter.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
-            "2 × 9 min easy, 1 min rest (19 min). Switch row and bike each round.\nEasy: full sentences the whole time. Too breathless to talk? Slow down.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · single-unders.",
-            "2 × 9 min easy, 1 min rest (19 min). Switch row and bike each round.\nEasy: full sentences the whole time. Too breathless to talk? Slow down.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · single-unders."
+            "2 × 9 min easy, 1 min rest. Switch row and bike each round.\nVery easy: full sentences the whole time. Rounds can be 1–2 min shorter.\nNo machine free? Same clock, 1 min each: marching · low step-ups · wall push-ups.",
+            "2 × 9 min easy, 1 min rest. Switch row and bike each round.\nEasy and chatty: full sentences the whole time. Rounds can be 1 min shorter.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
+            "2 × 9 min easy, 1 min rest. Switch row and bike each round.\nEasy: full sentences the whole time. Too breathless to talk? Slow down.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · single-unders.",
+            "2 × 9 min easy, 1 min rest. Switch row and bike each round.\nEasy: full sentences the whole time. Too breathless to talk? Slow down.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · single-unders."
           ]
         },
         {
@@ -2380,10 +2380,10 @@
         {
           "kind": "strength",
           "label": "Skill",
-          "title": "Power clean technique",
+          "title": "Power clean practice",
           "minutes": 8,
           "versions": [
-            "Dumbbell clean: every 2 min, 5 rounds\nOne light dumbbell or kettlebell: hang clean to your shoulder, then 1–2 goblet squats. Half the reps is fine. Easy, smooth reps.",
+            "Dumbbell clean: every 2 min × 5\nOne light dumbbell or kettlebell: 1 hang clean to the shoulder + 2 goblet squats. Easy, smooth reps.",
             "Power clean: every 2 min × 5\n1 power clean + 2 front squats. Stay light: empty bar or light plates; start from the hang if the floor feels rushed. Fast, crisp reps.",
             "Power clean: every 2 min × 5\n1 power clean + 2 front squats. Build by feel, no percentages. Stop adding weight when reps slow down.",
             "Power clean: every 2 min × 5\n1 power clean + 2 front squats. Build by feel, no percentages. Stop adding weight when reps slow down."
@@ -2391,8 +2391,8 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
-          "title": "Strict press 1 × 3 @ 80%",
+          "label": "Strength · lighter set",
+          "title": "Strict press 1 × 3",
           "minutes": 4,
           "lift": {
             "movement": "Strict press",
@@ -2417,8 +2417,8 @@
         },
         {
           "kind": "strength",
-          "label": "Strength",
-          "title": "Strict press 3 × 3 @ 82.5%",
+          "label": "Strength · top sets",
+          "title": "Strict press 3 × 3",
           "minutes": 6,
           "lift": {
             "movement": "Strict press",
@@ -2436,15 +2436,15 @@
           },
           "versions": [
             "Seated dumbbell press: 3 × 3, easy weight\nBack against a bench. Leave 3–4 reps in the tank. Rest 1:30–2 min, 10 light dumbbell rear-delt flys between sets.",
-            "Strict press: 3 × 3 @ 82.5%\nTop sets, after the ramp set. Rest 1:30–2 min, 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Strict press: 3 × 3 @ 82.5%\nTop sets, after the ramp set. Rest 1:30–2 min, 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Strict press: 3 × 3 @ 82.5%\nTop sets, after the ramp set. Rest 1:30–2 min, 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%."
+            "Strict press: 3 × 3 @ 82.5%\nTop sets, after the lighter set. Rest 1:30–2 min, 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Strict press: 3 × 3 @ 82.5%\nTop sets, after the lighter set. Rest 1:30–2 min, 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Strict press: 3 × 3 @ 82.5%\nTop sets, after the lighter set. Rest 1:30–2 min, 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%."
           ]
         },
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Row/Swing/Thruster, 2 Rounds",
+          "title": "Row/swing/thruster, 2 rounds",
           "minutes": 19,
           "versions": [
             "2 rounds for time, 14 min cap:\n250 m row · 12 Russian kettlebell swings to chest height (13/18 lb) · 10 wall push-ups · 8 dumbbell thrusters (2 × 5 lb)\nNo rower free? 1 min step-jacks or marching.",
@@ -2453,7 +2453,7 @@
             "2 rounds for time, 14 min cap:\n500 m row · 20 kettlebell swings (35/53 lb) · 15 push-ups · 10 dumbbell thrusters (2 × 25/35 lb)\nNo rower free? 250 single-unders."
           ],
           "outdoor": {
-            "title": "Run/Swing/Thruster, 2 Rounds",
+            "title": "Run/swing/thruster, 2 rounds",
             "versions": [
               "2 rounds for time, 14 min cap:\n200 m walk/jog · 12 Russian kettlebell swings to chest height (13/18 lb) · 10 wall push-ups · 8 dumbbell thrusters (2 × 5 lb)",
               "2 rounds for time, 14 min cap:\n300 m run · 20 kettlebell swings (18/26 lb) · 15 incline push-ups · 10 dumbbell thrusters (2 × 10 lb)",
@@ -2497,8 +2497,8 @@
         },
         {
           "kind": "strength",
-          "label": "Strength · ramp sets",
-          "title": "Back squat 2 × 3 @ 75%",
+          "label": "Strength · lighter sets",
+          "title": "Back squat 2 × 3",
           "minutes": 6,
           "lift": {
             "movement": "Back squat",
@@ -2516,15 +2516,15 @@
           },
           "versions": [
             "Goblet box squat: 2 × 3, easy weight\nSit to a box at knee height. Leave 3–4 reps in the tank. Same weight every set. Rest 2 min.",
-            "Back squat: 2 × 3 @ 75%\nLight sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Back squat: 2 × 3 @ 75%\nLight sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Back squat: 2 × 3 @ 75%\nLight sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%."
+            "Back squat: 2 × 3 @ 75%\nLighter sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Back squat: 2 × 3 @ 75%\nLighter sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Back squat: 2 × 3 @ 75%\nLighter sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%."
           ]
         },
         {
           "kind": "strength",
           "label": "Strength · top set",
-          "title": "Back squat 1 × 2 @ 85%",
+          "title": "Back squat 1 × 2",
           "minutes": 14,
           "lift": {
             "movement": "Back squat",
@@ -2550,13 +2550,13 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Row Sprints",
+          "title": "Row sprints",
           "minutes": 15,
           "versions": [
-            "4 rounds: 45 s row sprint, then 2 min 15 s easy (12 min)\nFairly hard; sprints can be 30 s. Score: total metres.\nNo rower free? Fast marching or step-jacks, walk the easy part.",
-            "4 rounds: 45 s row sprint, then 2 min 15 s easy (12 min)\nHard effort. Score: total metres.\nNo rower free? Fast jumping jacks, walk the easy part.",
-            "4 rounds: 45 s row sprint, then 2 min 15 s easy (12 min)\nVery hard effort. Score: total metres.\nNo rower free? Fast single-unders or high knees, walk the easy part.",
-            "4 rounds: 45 s row sprint, then 2 min 15 s easy (12 min)\nAll-out effort. Score: total metres.\nNo rower free? Max single-unders or high knees, walk the easy part."
+            "4 rounds: 45 s row sprint, then 2 min 15 s easy\nFairly hard; sprints can be 30 s. Score: total metres.\nNo rower free? Fast marching or step-jacks, walk the easy part.",
+            "4 rounds: 45 s row sprint, then 2 min 15 s easy\nHard effort. Score: total metres.\nNo rower free? Fast jumping jacks, walk the easy part.",
+            "4 rounds: 45 s row sprint, then 2 min 15 s easy\nVery hard effort. Score: total metres.\nNo rower free? Fast single-unders or high knees, walk the easy part.",
+            "4 rounds: 45 s row sprint, then 2 min 15 s easy\nAll-out effort. Score: total metres.\nNo rower free? Max single-unders or high knees, walk the easy part."
           ]
         },
         {
@@ -2619,21 +2619,21 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Easy Bike/Row/Wall Ball",
+          "title": "Easy bike/row/wall ball",
           "minutes": 28,
           "versions": [
-            "2 rounds, easy (22 min):\n12/15 cal air bike · 300 m row · 8 light wall balls (4/6 lb)\nTalk-able pace the whole time. No score.\nNo machines free? 1:15 step-jacks for the row, 0:55 for the bike.",
-            "2 rounds, easy (22 min):\n16/20 cal air bike · 400 m row · 10 light wall balls (6/10 lb)\nTalk-able pace the whole time. No score.\nNo machines free? 100 jumping jacks for the row, 70 for the bike.",
-            "2 rounds, easy (22 min):\n24/30 cal air bike · 400 m row · 10 light wall balls (6/10 lb)\nTalk-able pace the whole time. No score.\nNo machines free? 200 single-unders for the row, 220 for the bike.",
-            "2 rounds, easy (22 min):\n32/40 cal air bike · 400 m row · 10 light wall balls (10/14 lb)\nTalk-able pace the whole time. No score.\nNo machines free? 200 single-unders for the row, 290 for the bike."
+            "2 rounds, easy:\n12/15 cal air bike · 300 m row · 8 light wall balls (4/6 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 1:15 step-jacks. No bike free? 55 s step-jacks.",
+            "2 rounds, easy:\n16/20 cal air bike · 400 m row · 10 light wall balls (6/10 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 100 jumping jacks. No bike free? 70 jumping jacks.",
+            "2 rounds, easy:\n24/30 cal air bike · 400 m row · 10 light wall balls (6/10 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 200 single-unders. No bike free? 220 single-unders.",
+            "2 rounds, easy:\n32/40 cal air bike · 400 m row · 10 light wall balls (10/14 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 200 single-unders. No bike free? 290 single-unders."
           ],
           "outdoor": {
-            "title": "Easy Run/Row/Wall Ball",
+            "title": "Easy run/row/wall ball",
             "versions": [
-              "2 rounds, easy (22 min):\n300 m walk/jog · 300 m row · 8 light wall balls (4/6 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 250 m walk/jog.",
-              "2 rounds, easy (22 min):\n400 m run/walk · 400 m row · 10 light wall balls (6/10 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 300 m run.",
-              "2 rounds, easy (22 min):\n600 m run · 400 m row · 10 light wall balls (6/10 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 300 m run.",
-              "2 rounds, easy (22 min):\n800 m run · 400 m row · 10 light wall balls (10/14 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 300 m run."
+              "2 rounds, easy:\n300 m walk/jog · 300 m row · 8 light wall balls (4/6 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 250 m walk/jog.",
+              "2 rounds, easy:\n400 m run/walk · 400 m row · 10 light wall balls (6/10 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 300 m run.",
+              "2 rounds, easy:\n600 m run · 400 m row · 10 light wall balls (6/10 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 300 m run.",
+              "2 rounds, easy:\n800 m run · 400 m row · 10 light wall balls (10/14 lb)\nTalk-able pace the whole time. No score.\nNo rower free? 300 m run."
             ]
           }
         },
@@ -2672,8 +2672,8 @@
         },
         {
           "kind": "strength",
-          "label": "Strength · ramp sets",
-          "title": "Deadlift 2 × 3 @ 75%",
+          "label": "Strength · lighter sets",
+          "title": "Deadlift 2 × 3",
           "minutes": 5,
           "lift": {
             "movement": "Deadlift",
@@ -2691,15 +2691,15 @@
           },
           "versions": [
             "Kettlebell deadlift: 2 × 3, easy weight\nOne light kettlebell between your feet. Leave 3–4 reps in the tank. Rest 2 min.",
-            "Deadlift: 2 × 3 @ 75%\nLight sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Deadlift: 2 × 3 @ 75%\nLight sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Deadlift: 2 × 3 @ 75%\nLight sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%."
+            "Deadlift: 2 × 3 @ 75%\nLighter sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Deadlift: 2 × 3 @ 75%\nLighter sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Deadlift: 2 × 3 @ 75%\nLighter sets before the top set. Rest 2 min. If a set feels harder than 2 reps left, drop 5–10%."
           ]
         },
         {
           "kind": "strength",
           "label": "Strength · top set",
-          "title": "Deadlift 1 × 1 @ 85%",
+          "title": "Deadlift 1 × 1",
           "minutes": 11,
           "lift": {
             "movement": "Deadlift",
@@ -2725,7 +2725,7 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Station Blocks",
+          "title": "Station blocks",
           "minutes": 22,
           "versions": [
             "2 × 8 min: as many rounds as you can, rest 2 min between\n5/6 cal row · 8 wall balls (4/6 lb) to a low target · 20 m farmers carry (2 × 13/18 lb)\nHard but smooth, about 7/10.\nNo rower free? 20 s step-jacks or marching.",
@@ -2797,10 +2797,10 @@
           "title": "Easy row/bike intervals",
           "minutes": 21,
           "versions": [
-            "3 rounds: 4 min very easy, 1 min rest (14 min)\nSwap row and air bike each round. Rounds can be 1–2 min shorter; slow pedalling is fine. Talk in full sentences.\nNo machine free? 1 min each: marching · step-ups to a low step · wall push-ups. Repeat.",
-            "3 rounds: 4 min easy, 1 min rest (14 min)\nSwap row and air bike each round. Rounds can be 1 min shorter. Talk in full sentences.\nNo machine free? 1 min each: step-ups to a low box · jumping jacks · air squats. Repeat.",
-            "3 rounds: 4 min easy, 1 min rest (14 min)\nSwap row and air bike each round. Talk in full sentences, same pace every round.\nNo machine free? 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat.",
-            "3 rounds: 4 min easy, 1 min rest (14 min)\nSwap row and air bike each round. Talk in full sentences, same pace every round.\nNo machine free? 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat."
+            "3 rounds: 4 min very easy, 1 min rest\nSwap row and air bike each round. Rounds can be 1–2 min shorter; slow pedalling is fine. Talk in full sentences.\nNo machine free? 1 min each: marching · step-ups to a low step · wall push-ups. Repeat.",
+            "3 rounds: 4 min easy, 1 min rest\nSwap row and air bike each round. Rounds can be 1 min shorter. Talk in full sentences.\nNo machine free? 1 min each: step-ups to a low box · jumping jacks · air squats. Repeat.",
+            "3 rounds: 4 min easy, 1 min rest\nSwap row and air bike each round. Talk in full sentences, same pace every round.\nNo machine free? 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat.",
+            "3 rounds: 4 min easy, 1 min rest\nSwap row and air bike each round. Talk in full sentences, same pace every round.\nNo machine free? 1 min each: step-ups · jumping jacks · air squats · easy single-unders. Repeat."
           ]
         },
         {
@@ -2839,10 +2839,10 @@
         {
           "kind": "strength",
           "label": "Skill",
-          "title": "Power clean EMOM",
+          "title": "Power clean practice",
           "minutes": 8,
           "versions": [
-            "Dumbbell clean: every minute for 6 min\nHang clean a light dumbbell or kettlebell to your shoulder, then 1–2 goblet squats. Half the reps is fine; smooth reps only.",
+            "Dumbbell clean: every minute for 6 min\nOne light dumbbell or kettlebell: 2 hang cleans to the shoulder. Smooth reps only.",
             "Power clean: every minute for 6 min, 2 reps\nLight and fast: empty bar or light plates. Start from above the knee if the floor feels rushed.",
             "Power clean: every minute for 6 min, 2 reps\nLight and fast. Build by feel; stop adding weight when the bar slows down.",
             "Power clean: every minute for 6 min, 2 reps\nLight and fast. Build by feel; stop adding weight when the bar slows down."
@@ -2850,8 +2850,8 @@
         },
         {
           "kind": "strength",
-          "label": "Strength · ramp sets",
-          "title": "Strict press 2 × 3 @ 75%",
+          "label": "Strength · lighter sets",
+          "title": "Strict press 2 × 3",
           "minutes": 4,
           "lift": {
             "movement": "Strict press",
@@ -2869,15 +2869,15 @@
           },
           "versions": [
             "Seated dumbbell press: 2 × 3, easy weight\nBack against a bench. Leave 3–4 reps in the tank. Rest 1:30–2 min; 10 light rear-delt flys between sets.",
-            "Strict press: 2 × 3 @ 75%\nLight sets before the top set. Rest 1:30–2 min; 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Strict press: 2 × 3 @ 75%\nLight sets before the top set. Rest 1:30–2 min; 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%.",
-            "Strict press: 2 × 3 @ 75%\nLight sets before the top set. Rest 1:30–2 min; 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%."
+            "Strict press: 2 × 3 @ 75%\nLighter sets before the top set. Rest 1:30–2 min; 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Strict press: 2 × 3 @ 75%\nLighter sets before the top set. Rest 1:30–2 min; 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%.",
+            "Strict press: 2 × 3 @ 75%\nLighter sets before the top set. Rest 1:30–2 min; 10 light dumbbell rear-delt flys between sets. If a set feels harder than 2 reps left, drop 5–10%."
           ]
         },
         {
           "kind": "strength",
           "label": "Strength · top set",
-          "title": "Strict press 1 × 2 @ 82.5%",
+          "title": "Strict press 1 × 2",
           "minutes": 6,
           "lift": {
             "movement": "Strict press",
@@ -2903,7 +2903,7 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Bike/Core/Wall Ball Sprint",
+          "title": "Bike/core/wall ball sprint",
           "minutes": 19,
           "versions": [
             "2 rounds for time (10 min cap):\n5/6 cal air bike · 8 lying bent-knee raises · 10 wall balls (4/6 lb) to a low target\nNo bike free? 20 s step-jacks or marching.",
@@ -2928,9 +2928,9 @@
     },
     {
       "class_date": "2026-12-07",
-      "title": "Squat Test + Bike Intervals",
-      "focus": "Squat test · bike intervals",
-      "why": "Same squat test as Week 1, so you can see how far you've come. Then short, fast bike intervals to open up the lungs.",
+      "title": "Squat Retest + Bike/Row Intervals",
+      "focus": "Squat retest · intervals",
+      "why": "Same squat test as Week 1, so you can see how far you've come. Then short, fast intervals to open up the lungs.",
       "coach_notes": "Two coaches on test days if possible. Watch depth and back position; you call the set. Steady, Strong and Full test the barbell back squat (smaller jumps at Steady); only Gentle tests the goblet squat (bell at chest, sit to a box for a depth guide if needed). Machine-only intervals: Monday has no running on purpose (heavy-leg day), so no outside version.\nTest: 3RM in 18 min. Barbell ladder: bar × 8, ~50% × 5, ~65% × 3, ~75% × 3, then 2–4 attempts at 3. Gentle: light × 8, 3 sets of 3, then 2–4 attempts, stop at RPE 8. No RPE 9–10 grinders. Use Week 1 result as the second-to-last attempt. Record 3RM in lb, level, change from Week 1. Week 1 3RM × 1.06 = e1RM for every squat % this block.\nScaling: Newer lifters / first 4 weeks after on-ramp: empty or training bar, no max attempt; stop at first RPE 8 set and record that. Masters (40+): RPE 8 max on the hard pieces. Knee or back pain: air bike only. Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range.\nConditioning targets: Cap 12:00 (fixed) · Aim: beat Week 1 average calories per hard piece · Feel: gas · Pace: reach. Hard = RPE 6 / 7 / 8 / 9 (Gentle to Full). No-machine score = reps instead of calories.\nNo machine: warm-up/cool-down machine → jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
       "parts": [
         {
@@ -2948,7 +2948,7 @@
         {
           "kind": "strength",
           "label": "Test",
-          "title": "Back squat test: heavy 3",
+          "title": "Squat retest: heavy 3",
           "minutes": 20,
           "lift": {
             "movement": "Back squat",
@@ -2965,22 +2965,22 @@
             "note": "No grinders. Week 1 3RM × 1.06 = e1RM this block."
           },
           "versions": [
-            "Goblet squat test: build to a heavy set of 3\nLight × 8, then 3 sets of 3, then 2–4 tries at 3. Stop at RPE 8 (2 reps left). 18 min.\nWrite down your weight and the change from Week 1.",
-            "Back squat test: build to a heavy set of 3\nEmpty bar × 8, then build in 3s, then 2–4 tries at 3, adding 5–10 lb each time. Stop when form slips. 18 min.\nWrite down your weight and the change from Week 1.",
-            "Back squat test: build to a heavy set of 3\nEmpty bar × 8, then build in 3s, then 2–4 tries at 3, adding 5–15 lb each time. Stop when form slips. 18 min.\nWrite down your weight and the change from Week 1.",
-            "Back squat test: build to a heavy set of 3\nEmpty bar × 8, then build in 3s, then 2–4 tries at 3, adding 5–20 lb each time. Stop when form slips. 18 min.\nWrite down your weight and the change from Week 1."
+            "Goblet squat: build to a heavy 3\nLight × 8, then 3 sets of 3 getting heavier, then 2–4 tries at 3. Stop with 2 reps left.\nWrite down your best 3 (lb) and the change from Week 1.",
+            "Back squat: build to a heavy 3\nEmpty bar × 8, then build in small jumps, then 2–4 tries at 3, adding 5–10 lb each time.\nCoach calls the set if depth or position breaks. Use your Week 1 weight as your second-to-last try.\nWrite down your best 3 (lb) and the change from Week 1.",
+            "Back squat: build to a heavy 3\nEmpty bar × 8, then build in small jumps, then 2–4 tries at 3, adding 5–15 lb each time.\nCoach calls the set if depth or position breaks. Use your Week 1 weight as your second-to-last try.\nWrite down your best 3 (lb) and the change from Week 1.",
+            "Back squat: build to a heavy 3\nEmpty bar × 8, then build in small jumps, then 2–4 tries at 3, adding 5–20 lb each time.\nCoach calls the set if depth or position breaks. Use your Week 1 weight as your second-to-last try.\nWrite down your best 3 (lb) and the change from Week 1."
           ]
         },
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Bike intervals",
+          "title": "Bike/row intervals",
           "minutes": 13,
           "versions": [
-            "6 rounds: 0:30 hard / 1:30 easy (12 min)\nAir bike or rower, whichever feels easier; same machine as Week 1. Smooth, not all-out. Hard pieces can be 0:20.\nNo machine free? Fast marching or step-jacks, then a slow walk.",
-            "6 rounds: 0:30 hard / 1:30 easy (12 min)\nAir bike or rower; same machine as Week 1. Hard but smooth. Try to beat your Week 1 calories.\nNo machine free? Jumping jacks, then walk.",
-            "6 rounds: 0:30 hard / 1:30 easy (12 min)\nRower; same machine as Week 1. Hard. Try to beat your Week 1 calories.\nNo rower free? Fast single-unders or high knees, then walk.",
-            "6 rounds: 0:30 hard / 1:30 easy (12 min)\nAir bike; same machine as Week 1. All-out on the hard pieces. Try to beat your Week 1 calories.\nNo bike free? Max-effort single-unders or high knees, then walk."
+            "6 rounds: 0:30 hard, 1:30 easy\nSame machine as Week 1. Hard but comfortable. Hard pieces can be 0:20.\nWrite down your total calories and compare with Week 1.\nNo machine free? Fast marching, then slow walk.",
+            "6 rounds: 0:30 hard, 1:30 easy\nSame machine as Week 1. Hard but smooth.\nWrite down your total calories and compare with Week 1.\nNo machine free? Jumping jacks, then walk.",
+            "6 rounds: 0:30 hard, 1:30 easy\nRower, same as Week 1. Hard, but keep good form.\nWrite down your total calories and compare with Week 1.\nNo rower free? Fast single-unders or high knees, then walk.",
+            "6 rounds: 0:30 hard, 1:30 easy\nAir bike, same as Week 1. Close to all-out.\nWrite down your total calories and compare with Week 1.\nNo bike free? All-out single-unders or high knees, then walk."
           ]
         },
         {
@@ -3011,8 +3011,8 @@
     },
     {
       "class_date": "2026-12-08",
-      "title": "1 km Test + Toes-to-Bar",
-      "focus": "1 km test · toes-to-bar",
+      "title": "1 km Retest + Toes-to-Bar",
+      "focus": "1 km retest · toes-to-bar",
       "why": "Same 1 km test as Week 1, so compare your time. Toes-to-bar stays light today.",
       "coach_notes": "Start the 1 km in waves of 4–6 and read times out as they finish; if rowers run out inside, the next wave rows when a machine frees up (don't swap the test). Members choose run or row once and repeat the same option in Week 8. The easy flush after the test needs no machines inside (jump ropes, floor space), so finished waves start it while the next wave rows. Record each member's Week 1 vs Week 8 time on their scorecard.\nTest targets: Cap 15:00 · Aim: beat Week 1 time on the same machine or route · Feel: cardio · Pace: reach. Gentle run option: jog 1:00 / walk 1:00 or brisk walk, same plan as Week 1. No rower free: next free rower, or the 1 km run outside if safe; a bodyweight swap can't be compared with Week 1.\nFlush targets: Cap 12:00 · RPE 4 Gentle, RPE 5 others · Aim: smooth and easy · Feel: cardio (easy) · Pace: sustain.\nScaling: Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range.\nNo machine: warm-up/cool-down machine → jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
       "parts": [
@@ -3048,7 +3048,7 @@
           "versions": [
             "1,000 m row, steady and comfortable-hard. A short pause at 500 m is fine (note it).\nSame rower as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.\nNo rower free? Take the next one, or run 1 km outside.",
             "1,000 m row, as fast as you can hold the whole way.\nSame rower as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.\nNo rower free? Take the next one, or run 1 km outside.",
-            "1,000 m row, even pace.\nSame rower as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.\nNo rower free? Take the next one, or run 1 km outside.",
+            "1,000 m row, as fast as you can at an even pace.\nSame rower as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.\nNo rower free? Take the next one, or run 1 km outside.",
             "1,000 m row, hard but even: same split every 250 m.\nSame rower as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.\nNo rower free? Take the next one, or run 1 km outside."
           ],
           "outdoor": {
@@ -3056,7 +3056,7 @@
             "versions": [
               "1 km walk/jog: jog 1 min, walk 1 min, repeat (or brisk walk the whole way).\nSame route as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.",
               "1 km run/walk, as fast as you can hold the whole way.\nSame route as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.",
-              "1 km run, even pace.\nSame route as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.",
+              "1 km run, as fast as you can at an even pace.\nSame route as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.",
               "1 km run, hard but even: same pace every 200 m.\nSame route as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed."
             ]
           }
@@ -3064,21 +3064,21 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Easy jump rope flush",
+          "title": "Easy flush",
           "minutes": 13,
           "versions": [
-            "3 rounds, not for time (12 min), talk-able pace:\n1 min step-jacks or marching · 8 incline push-ups (box or wall) · 8 air squats to a box",
-            "3 rounds, not for time (12 min), talk-able pace:\n1 min easy jumping jacks or single-unders · 8 incline push-ups (hands on a box) · 12 air squats",
-            "3 rounds, not for time (12 min), talk-able pace:\n1:30 easy single-unders (break when you like) · 10 push-ups (knees if needed) · 15 air squats",
-            "3 rounds, not for time (12 min), talk-able pace:\n1:30 easy single-unders (break when you like) · 10 push-ups · 15 air squats"
+            "3 rounds, not for time, talk-able pace:\n1 min step-jacks or marching · 8 incline push-ups (box or wall) · 8 air squats to a box",
+            "3 rounds, not for time, talk-able pace:\n1 min easy jumping jacks or single-unders · 8 incline push-ups (hands on a box) · 12 air squats",
+            "3 rounds, not for time, talk-able pace:\n1:30 easy single-unders (break when you like) · 10 push-ups (knees if needed) · 15 air squats",
+            "3 rounds, not for time, talk-able pace:\n1:30 easy single-unders (break when you like) · 10 push-ups · 15 air squats"
           ],
           "outdoor": {
             "title": "Easy run flush",
             "versions": [
-              "3 rounds, not for time (12 min), talk-able pace:\n300 m walk/jog · 8 incline push-ups (box or wall) · 8 air squats to a box",
-              "3 rounds, not for time (12 min), talk-able pace:\n400 m easy run/walk · 8 incline push-ups (hands on a box) · 12 air squats",
-              "3 rounds, not for time (12 min), talk-able pace:\n400 m easy run · 10 push-ups (knees if needed) · 15 air squats",
-              "3 rounds, not for time (12 min), talk-able pace:\n400 m easy run · 10 push-ups · 15 air squats"
+              "3 rounds, not for time, talk-able pace:\n300 m walk/jog · 8 incline push-ups (box or wall) · 8 air squats to a box",
+              "3 rounds, not for time, talk-able pace:\n400 m easy run/walk · 8 incline push-ups (hands on a box) · 12 air squats",
+              "3 rounds, not for time, talk-able pace:\n400 m easy run · 10 push-ups (knees if needed) · 15 air squats",
+              "3 rounds, not for time, talk-able pace:\n400 m easy run · 10 push-ups · 15 air squats"
             ]
           }
         },
@@ -3098,9 +3098,9 @@
     },
     {
       "class_date": "2026-12-09",
-      "title": "Deadlift Test + Easy Bike",
-      "focus": "Deadlift test · easy bike",
-      "why": "Deadlift retest, so compare with Week 1. Then an easy bike workout to move and breathe: no hinging, nothing like yesterday.",
+      "title": "Deadlift Retest + Easy Bike",
+      "focus": "Deadlift retest · easy bike",
+      "why": "Deadlift retest: compare with Week 1. Then an easy bike workout to move and breathe.",
       "coach_notes": "Coach stops any set where the back rounds. Steady, Strong and Full test the barbell deadlift; only Gentle tests the kettlebell deadlift (bell between the feet, on a low step if the floor is too far). Week 8's outside version uses a 100 m easy jog in each bike minute (600 m) to keep weekly running at the planned level. Stagger starts by 1:00 if bikes are short: half the class starts on Minute 2.\nTest: 3RM in 16 min. Barbell ladder: 40% × 5, 55% × 3, 65% × 3, 75% × 3, then 2–4 attempts at 3. Gentle: light × 5, 3 sets of 3, then 2–4 attempts, stop at RPE 8. No touch-and-go. Use Week 1 result as the second-to-last attempt. Record 3RM in lb, level, change from Week 1. Week 1 3RM × 1.06 = e1RM for every deadlift % this block.\nScaling: Newer lifters / first 4 weeks after on-ramp: start light (bar plus small plates on blocks), no max attempt; stop at first RPE 8 set and record that. Low back sore after the test: keep the bike very easy (or walk the jog minutes) and skip the bear crawl (glute bridges only). Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range.\nConditioning targets: not for score · RPE 4–5 Gentle, 5–6 others · Cap 12:00 (fixed) · Aim: smooth and easy, breathing stays calm · Feel: cardio (easy) · Pace: sustain.\nNo machine: warm-up/cool-down machine → jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
       "parts": [
         {
@@ -3118,7 +3118,7 @@
         {
           "kind": "strength",
           "label": "Test",
-          "title": "Deadlift test: heavy 3",
+          "title": "Deadlift retest: heavy 3",
           "minutes": 18,
           "lift": {
             "movement": "Deadlift",
@@ -3135,16 +3135,16 @@
             "note": "Reset every rep. Week 1 3RM × 1.06 = e1RM this block."
           },
           "versions": [
-            "Kettlebell deadlift test: build to a heavy set of 3\nLight × 5, then 3 sets of 3, then 2–4 tries at 3. Reset each rep. Stop at RPE 8 (2 reps left). 16 min.\nWrite down your weight and the change from Week 1.",
-            "Deadlift test: build to a heavy set of 3\nLight × 5, then build in 3s, then 2–4 tries at 3, adding 5–15 lb each time. Reset each rep. 16 min.\nWrite down your weight and the change from Week 1.",
-            "Deadlift test: build to a heavy set of 3\nLight × 5, then build in 3s, then 2–4 tries at 3, adding 10–20 lb each time. Reset each rep. 16 min.\nWrite down your weight and the change from Week 1.",
-            "Deadlift test: build to a heavy set of 3\nLight × 5, then build in 3s, then 2–4 tries at 3, adding 10–30 lb each time. Reset each rep. 16 min.\nWrite down your weight and the change from Week 1."
+            "Kettlebell deadlift: build to a heavy 3\nLight × 5, then 3 sets of 3 getting heavier, then 2–4 tries at 3. Stop with 2 reps left. Reset each rep.\nWrite down your best 3 (lb) and the change from Week 1.",
+            "Deadlift: build to a heavy 3\nLight × 5, then build in small jumps, then 2–4 tries at 3, adding 5–15 lb each time.\nReset each rep. Coach stops the set if your back rounds. Use your Week 1 weight as your second-to-last try.\nWrite down your best 3 (lb) and the change from Week 1.",
+            "Deadlift: build to a heavy 3\nLight × 5, then build in small jumps, then 2–4 tries at 3, adding 10–20 lb each time.\nReset each rep. Coach stops the set if your back rounds. Use your Week 1 weight as your second-to-last try.\nWrite down your best 3 (lb) and the change from Week 1.",
+            "Deadlift: build to a heavy 3\nLight × 5, then build in small jumps, then 2–4 tries at 3, adding 10–30 lb each time.\nReset each rep. Coach stops the set if your back rounds. Use your Week 1 weight as your second-to-last try.\nWrite down your best 3 (lb) and the change from Week 1."
           ]
         },
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Easy bike EMOM",
+          "title": "Easy bike, every minute",
           "minutes": 14,
           "versions": [
             "Every minute for 12 min (3 rounds), easy, not for score:\nMin 1 and 3: 0:30 very easy air bike · Min 2: 6 reverse lunges each side, holding the rig · Min 4: 10 m hands-and-knees crawl + 8 glute bridges\nNo bike free? 0:30 step-jacks or marching.",
@@ -3153,7 +3153,7 @@
             "Every minute for 12 min (3 rounds), easy, not for score:\nMin 1 and 3: 0:40 easy air bike · Min 2: 10 reverse lunges each side · Min 4: 20 m bear crawl + 12 glute bridges\nNo bike free? 0:40 easy single-unders."
           ],
           "outdoor": {
-            "title": "Easy jog EMOM",
+            "title": "Easy jog, every minute",
             "versions": [
               "Every minute for 12 min (3 rounds), easy, not for score:\nMin 1 and 3: 100 m walk/jog, walk the rest · Min 2: 6 reverse lunges each side, holding the rig · Min 4: 10 m hands-and-knees crawl + 8 glute bridges",
               "Every minute for 12 min (3 rounds), easy, not for score:\nMin 1 and 3: 100 m easy jog/walk, walk the rest · Min 2: 8 reverse lunges each side · Min 4: 15 m bear crawl + 10 glute bridges",
@@ -3190,7 +3190,7 @@
     },
     {
       "class_date": "2026-12-10",
-      "title": "Accessory + Easy Intervals",
+      "title": "Accessories + Easy Intervals",
       "focus": "Accessory strength · easy intervals",
       "why": "The easy day: strength work for joints and posture, then easy row and bike intervals. Nobody should breathe hard today.",
       "coach_notes": "If there aren't enough rowers and bikes, run the class in two waves: wave 1 does the intervals while wave 2 does the accessory strength, then swap at about minute 31; or send the overflow to the 'No machine free' bodyweight rounds. The intervals have no outside version on purpose: Thursday is machine-only so weekly running volume stays as planned.\nIntervals: Zone 2 (Gentle: slow pedalling fine), full sentences the whole time; if only a few words, slow down. RPE 3–4 Gentle, 4 Steady, 4–5 Strong, 5 Full. Cap 14:00 (fixed) · Aim: same easy pace every round; Steady/Strong/Full row split 0:15–0:25 per 500 m slower than their 1 km test split, bike same calories each round (±1) · Feel: cardio (easy) · Pace: sustain.\nScaling: Masters or injury: today is the best day for extra mobility or rehab work. Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range.\nNo machine: warm-up/cool-down machine → jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
@@ -3225,10 +3225,10 @@
           "title": "Easy row/bike intervals",
           "minutes": 21,
           "versions": [
-            "3 rounds: 4 min easy / 1 min rest (14 min), switch between row and air bike each round\nVery easy: talk in full sentences. Rounds can be 1–2 min shorter.\nNo machine free? Same clock, 1 min each: marching · low step-ups · wall push-ups.",
-            "3 rounds: 4 min easy / 1 min rest (14 min), switch between row and air bike each round\nEasy and chatty: talk in full sentences. Rounds can be 1 min shorter.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
-            "3 rounds: 4 min easy / 1 min rest (14 min), switch between row and air bike each round\nEasy: talk in full sentences. Same pace every round.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders.",
-            "3 rounds: 4 min easy / 1 min rest (14 min), switch between row and air bike each round\nEasy: talk in full sentences. Same pace every round.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders."
+            "3 rounds: 4 min easy, 1 min rest, switch between row and air bike each round\nVery easy: talk in full sentences. Rounds can be 1–2 min shorter.\nNo machine free? Same clock, 1 min each: marching · low step-ups · wall push-ups.",
+            "3 rounds: 4 min easy, 1 min rest, switch between row and air bike each round\nEasy and chatty: talk in full sentences. Rounds can be 1 min shorter.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
+            "3 rounds: 4 min easy, 1 min rest, switch between row and air bike each round\nEasy: talk in full sentences. Same pace every round.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders.",
+            "3 rounds: 4 min easy, 1 min rest, switch between row and air bike each round\nEasy: talk in full sentences. Same pace every round.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders."
           ]
         },
         {
@@ -3247,8 +3247,8 @@
     },
     {
       "class_date": "2026-12-11",
-      "title": "Press Test + Station AMRAP",
-      "focus": "Press test · stations",
+      "title": "Press Retest + Station Retest",
+      "focus": "Press retest · stations",
       "why": "Press retest, then the Week 1 station workout again, so you can compare both. The stations are steady, not all-out.",
       "coach_notes": "Demo the wall ball, farmers carry, sandbag lunge and burpee broad jump standards before the AMRAP (4 min). Start members on different stations if kit is short. Steady, Strong and Full test the barbell strict press; only Gentle tests the seated dumbbell press (back against a bench, record weight per hand). Benchmark: Full is the Rx standard; members record their level. No outside version: no running in this piece.\nTest: 5RM in 15 min. Barbell ladder: bar × 10, ~50% × 5, ~65% × 5, then 2–4 attempts at 5. Gentle: light × 10, 2 sets of 5, then 2–4 attempts, stop at RPE 8. No leg drive. Use Week 1 result as the second-to-last attempt. Record 5RM in lb, level, change from Week 1. Week 1 5RM × 1.13 = e1RM for every press % this block.\nScaling: Newer lifters / first 4 weeks after on-ramp: empty or training bar, no max attempt; stop at first RPE 8 set and record that. Shoulder sore after the press: goblet squats instead of wall balls. Knees: step-ups instead of lunges. Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range.\nAMRAP targets: steady, RPE 6 · Cap 10:00 · Aim: beat Week 1 rounds · Feel: cardio · Pace: sustain.",
       "parts": [
@@ -3267,7 +3267,7 @@
         {
           "kind": "strength",
           "label": "Test",
-          "title": "Strict press test: heavy 5",
+          "title": "Press retest: heavy 5",
           "minutes": 17,
           "lift": {
             "movement": "Strict press",
@@ -3284,16 +3284,16 @@
             "note": "No leg drive. Week 1 5RM × 1.13 = e1RM this block."
           },
           "versions": [
-            "Seated dumbbell press test: build to a heavy set of 5\nLight × 10, then 2 sets of 5, then 2–4 tries at 5. Stop at RPE 8 (2 reps left). 15 min.\nWrite down the weight per hand and the change from Week 1.",
-            "Strict press test: build to a heavy set of 5\nEmpty bar × 10, then build in 5s, then 2–4 tries at 5, adding 2.5–5 lb each time. No leg drive, ribs down. 15 min.\nWrite down your weight and the change from Week 1.",
-            "Strict press test: build to a heavy set of 5\nEmpty bar × 10, then build in 5s, then 2–4 tries at 5, adding 5 lb each time. No leg drive, ribs down. 15 min.\nWrite down your weight and the change from Week 1.",
-            "Strict press test: build to a heavy set of 5\nEmpty bar × 10, then build in 5s, then 2–4 tries at 5, adding 5–10 lb each time. No leg drive, ribs down. 15 min.\nWrite down your weight and the change from Week 1."
+            "Seated dumbbell press: build to a heavy 5\nBack against a bench. Light × 10, then 2 sets of 5 getting heavier, then 2–4 tries at 5. Stop with 2 reps left.\nWrite down the weight per hand (lb) and the change from Week 1.",
+            "Strict press: build to a heavy 5\nEmpty bar × 10, then build in small jumps, then 2–4 tries at 5, adding 2.5–5 lb each time.\nNo leg drive, ribs down. Use your Week 1 weight as your second-to-last try.\nWrite down your best 5 (lb) and the change from Week 1.",
+            "Strict press: build to a heavy 5\nEmpty bar × 10, then build in small jumps, then 2–4 tries at 5, adding 5 lb each time.\nNo leg drive, ribs down. Use your Week 1 weight as your second-to-last try.\nWrite down your best 5 (lb) and the change from Week 1.",
+            "Strict press: build to a heavy 5\nEmpty bar × 10, then build in small jumps, then 2–4 tries at 5, adding 5–10 lb each time.\nNo leg drive, ribs down. Use your Week 1 weight as your second-to-last try.\nWrite down your best 5 (lb) and the change from Week 1."
           ]
         },
         {
           "kind": "conditioning",
           "label": "Test",
-          "title": "Station AMRAP",
+          "title": "Station retest",
           "minutes": 16,
           "versions": [
             "As many rounds as you can in 10 min, steady:\n10 wall balls 4/6 lb, low target (7 ft) · 20 m farmers carry 2 × 13/18 lb · 10 step-ups to a low step · 4 incline step-back burpees + 2 long strides each\nWrite down rounds + reps and your level; compare with Week 1.",
@@ -3330,8 +3330,8 @@
     },
     {
       "class_date": "2026-12-14",
-      "title": "Light Squat + Community AMRAP",
-      "focus": "Squat technique · steady AMRAP",
+      "title": "Light Squat + Steady Rounds",
+      "focus": "Squat technique · steady rounds",
       "why": "Light squat practice, then a steady workout everyone does at their own level. A great day to bring a friend.",
       "coach_notes": "Flex week: every session is optional (members pick 3–4); guests and on-ramp members join at Steady (Foundations), or Gentle if they need an easier start. Machine-only intervals (no running on squat day by design), so no outside version.\nScaling: Gentle warm-up: step instead of jumping, walk instead of jogging, comfortable range. Newer lifters / first 4 weeks: same sets and reps with empty bar or light plates at RPE 7. Gentle goblet box squat at RPE 5–6.\nStrength: optional technique work, stop well short of RPE 8. Not a test. Warm-up ends with ramp sets.\nConditioning targets: AMRAP 20:00 at RPE 6–7. Cap 20:00 (fixed) · Aim: steady rounds, same pace (Gentle: rest when needed; Full: 6–8 rounds) · Feel cardio · Pace sustain. New or visiting: Steady, or Gentle for an easier start; coach demos every movement.\nNo machine (warm-up/cool-down): jumping jacks, marching or jump rope, ~1:00 per 250 m or 5 cal.",
       "parts": [
@@ -3376,13 +3376,13 @@
         {
           "kind": "conditioning",
           "label": "Conditioning",
-          "title": "Community AMRAP",
+          "title": "Steady rounds",
           "minutes": 15,
           "versions": [
-            "As many rounds as you can in 20 min, steady, rest when you need to:\n5/6 cal row · 8 wall balls (4/6 lb, low target) · 8 Russian KB swings to chest height (13/18 lb)\nNo rower free? 20 s step-jacks or marching.",
-            "As many rounds as you can in 20 min, steady pace:\n6/8 cal row · 12 wall balls (6/10 lb) · 12 KB swings (18/26 lb)\nNo rower free? 30 jumping jacks.",
-            "As many rounds as you can in 20 min, steady pace:\n9/12 cal row · 12 wall balls (10/14 lb) · 12 KB swings (26/35 lb)\nNo rower free? 80 single-unders.",
-            "As many rounds as you can in 20 min, steady pace:\n9/12 cal row · 12 wall balls (14/20 lb) · 12 KB swings (35/53 lb)\nNo rower free? 80 single-unders."
+            "As many rounds as you can in 20 min, steady, rest when you need to:\n5/6 cal row · 8 wall balls (4/6 lb, low target) · 8 Russian kettlebell swings to chest height (13/18 lb)\nNo rower free? 20 s step-jacks or marching.",
+            "As many rounds as you can in 20 min, steady pace:\n6/8 cal row · 12 wall balls (6/10 lb) · 12 kettlebell swings (18/26 lb)\nNo rower free? 30 jumping jacks.",
+            "As many rounds as you can in 20 min, steady pace:\n9/12 cal row · 12 wall balls (10/14 lb) · 12 kettlebell swings (26/35 lb)\nNo rower free? 80 single-unders.",
+            "As many rounds as you can in 20 min, steady pace:\n9/12 cal row · 12 wall balls (14/20 lb) · 12 kettlebell swings (35/53 lb)\nNo rower free? 80 single-unders."
           ]
         },
         {
@@ -3448,10 +3448,10 @@
           "title": "Easy bike flow",
           "minutes": 28,
           "versions": [
-            "4 easy rounds, not for time (about 20 min):\n2 min very easy air bike · 6 step-ups each leg to a low step (hold the rig) · 15 s side plank on knees, each side\nTalk-able pace. Bodyweight only: save your legs.\nNo bike free? 2 min easy marching or step-jacks.",
-            "4 easy rounds, not for time (about 20 min):\n2½ min easy air bike · 8 step-ups each leg to a low box · 20 s side plank from the knees each side\nTalk-able pace. Bodyweight only: save your legs.\nNo bike free? 2½ min easy jumping jacks and marching.",
-            "4 easy rounds, not for time (about 20 min):\n3 min easy air bike · 8 step-ups each leg to a knee-height box · 20 s side plank each side\nTalk-able pace. Bodyweight only: save your legs.\nNo bike free? 3 min easy single-unders and jumping jacks.",
-            "4 easy rounds, not for time (about 20 min):\n3 min easy air bike · 10 step-ups each leg to a knee-height box · 30 s side plank each side\nTalk-able pace. Bodyweight only: save your legs.\nNo bike free? 3 min easy single-unders and jumping jacks."
+            "4 easy rounds, not for time:\n2 min very easy air bike · 6 step-ups each leg to a low step (hold the rig) · 15 s side plank on knees, each side\nTalk-able pace. Bodyweight only: save your legs.\nNo bike free? 2 min easy marching or step-jacks.",
+            "4 easy rounds, not for time:\n2½ min easy air bike · 8 step-ups each leg to a low box · 20 s side plank from the knees each side\nTalk-able pace. Bodyweight only: save your legs.\nNo bike free? 2½ min easy jumping jacks and marching.",
+            "4 easy rounds, not for time:\n3 min easy air bike · 8 step-ups each leg to a knee-height box · 20 s side plank each side\nTalk-able pace. Bodyweight only: save your legs.\nNo bike free? 3 min easy single-unders and jumping jacks.",
+            "4 easy rounds, not for time:\n3 min easy air bike · 10 step-ups each leg to a knee-height box · 30 s side plank each side\nTalk-able pace. Bodyweight only: save your legs.\nNo bike free? 3 min easy single-unders and jumping jacks."
           ]
         },
         {
@@ -3481,10 +3481,10 @@
           "title": "Warm-up",
           "minutes": 11,
           "versions": [
-            "400 m easy row · 10 jumping jacks · 5 supported hip airplanes each side\n2 × 5 deadlifts, building · 5 KB swings · then your warm-up sets",
-            "400 m easy row · 10 jumping jacks · 5 supported hip airplanes each side\n2 × 5 deadlifts, building · 5 KB swings · then your warm-up sets",
-            "400 m easy row · 10 jumping jacks · 5 supported hip airplanes each side\n2 × 5 deadlifts, building · 5 KB swings · then your warm-up sets",
-            "400 m easy row · 10 jumping jacks · 5 supported hip airplanes each side\n2 × 5 deadlifts, building · 5 KB swings · then your warm-up sets"
+            "400 m easy row · 10 jumping jacks · 5 supported hip airplanes each side\n2 × 5 deadlifts, building · 5 kettlebell swings · then your warm-up sets",
+            "400 m easy row · 10 jumping jacks · 5 supported hip airplanes each side\n2 × 5 deadlifts, building · 5 kettlebell swings · then your warm-up sets",
+            "400 m easy row · 10 jumping jacks · 5 supported hip airplanes each side\n2 × 5 deadlifts, building · 5 kettlebell swings · then your warm-up sets",
+            "400 m easy row · 10 jumping jacks · 5 supported hip airplanes each side\n2 × 5 deadlifts, building · 5 kettlebell swings · then your warm-up sets"
           ]
         },
         {
@@ -3519,18 +3519,18 @@
           "title": "Helen (row version)",
           "minutes": 24,
           "versions": [
-            "3 rounds for time, 15 min cap:\n250 m row · 12 Russian KB swings, chest height (13/18 lb) · 8 ring rows (high bar, nearly upright)\nLighter: 2 rounds, easy pace.\nNo rower free? 1 min step-jacks or marching.\nWrite down time, level, and run or row.",
-            "3 rounds for time, 15 min cap:\n400 m row · 21 KB swings (18/26 lb) · 12 ring rows\nLighter: 2 rounds at Gentle.\nNo rower free? 100 jumping jacks.\nWrite down time, level, and run or row.",
-            "3 rounds for time, 15 min cap:\n500 m row · 21 KB swings (26/35 lb) · 12 banded or jumping pull-ups\nLighter: 2 rounds at Gentle.\nNo rower free? 250 single-unders.\nWrite down time, level, and run or row.",
-            "3 rounds for time, 15 min cap:\n500 m row · 21 KB swings (35/53 lb) · 12 pull-ups (kipping OK)\nLighter: 2 rounds at Gentle.\nNo rower free? 250 single-unders.\nWrite down time, level, and run or row."
+            "3 rounds for time, 15 min cap:\n250 m row · 12 Russian kettlebell swings, chest height (13/18 lb) · 8 ring rows (high bar, nearly upright)\nNeed it lighter? 2 rounds, easy pace.\nNo rower free? 1 min step-jacks or marching.\nWrite down time, level, and run or row.",
+            "3 rounds for time, 15 min cap:\n400 m row · 21 kettlebell swings (18/26 lb) · 12 ring rows\nNeed it lighter? 2 rounds at Gentle.\nNo rower free? 100 jumping jacks.\nWrite down time, level, and run or row.",
+            "3 rounds for time, 15 min cap:\n500 m row · 21 kettlebell swings (26/35 lb) · 12 banded or jumping pull-ups\nNeed it lighter? 2 rounds at Gentle.\nNo rower free? 250 single-unders.\nWrite down time, level, and run or row.",
+            "3 rounds for time, 15 min cap:\n500 m row · 21 kettlebell swings (35/53 lb) · 12 pull-ups (kipping OK)\nNeed it lighter? 2 rounds at Gentle.\nNo rower free? 250 single-unders.\nWrite down time, level, and run or row."
           ],
           "outdoor": {
-            "title": "Helen",
+            "title": "Helen (run version)",
             "versions": [
-              "3 rounds for time, 15 min cap:\n200 m walk/jog · 12 Russian KB swings, chest height (13/18 lb) · 8 ring rows (high bar, nearly upright)\nLighter: 2 rounds, easy pace.\nWrite down time, level, and run or row.",
-              "3 rounds for time, 15 min cap:\n300 m run · 21 KB swings (18/26 lb) · 12 ring rows\nLighter: 2 rounds at Gentle.\nWrite down time, level, and run or row.",
-              "3 rounds for time, 15 min cap:\n400 m run · 21 KB swings (26/35 lb) · 12 banded or jumping pull-ups\nLighter: 2 rounds at Gentle.\nWrite down time, level, and run or row.",
-              "3 rounds for time, 15 min cap:\n400 m run · 21 KB swings (35/53 lb) · 12 pull-ups (kipping OK)\nLighter: 2 rounds at Gentle.\nWrite down time, level, and run or row."
+              "3 rounds for time, 15 min cap:\n200 m walk/jog · 12 Russian kettlebell swings, chest height (13/18 lb) · 8 ring rows (high bar, nearly upright)\nNeed it lighter? 2 rounds, easy pace.\nWrite down time, level, and run or row.",
+              "3 rounds for time, 15 min cap:\n300 m run · 21 kettlebell swings (18/26 lb) · 12 ring rows\nNeed it lighter? 2 rounds at Gentle.\nWrite down time, level, and run or row.",
+              "3 rounds for time, 15 min cap:\n400 m run · 21 kettlebell swings (26/35 lb) · 12 banded or jumping pull-ups\nNeed it lighter? 2 rounds at Gentle.\nWrite down time, level, and run or row.",
+              "3 rounds for time, 15 min cap:\n400 m run · 21 kettlebell swings (35/53 lb) · 12 pull-ups (kipping OK)\nNeed it lighter? 2 rounds at Gentle.\nWrite down time, level, and run or row."
             ]
           }
         },
@@ -3585,10 +3585,10 @@
           "title": "Easy row/bike intervals",
           "minutes": 21,
           "versions": [
-            "4 rounds: 4 min easy, 1 min rest (19 min). Alternate row and air bike.\nVery easy, talk-able pace. Rounds can be 1–2 min shorter; slow pedalling is fine.\nNo machine free? Same clock, 1 min each: marching · step-ups to a low step · wall push-ups.",
-            "4 rounds: 4 min easy, 1 min rest (19 min). Alternate row and air bike.\nEasy, chatty pace. Rounds can be 1 min shorter.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
-            "4 rounds: 4 min easy, 1 min rest (19 min). Alternate row and air bike.\nEasy, talk-able pace. Same pace every round.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders.",
-            "4 rounds: 4 min easy, 1 min rest (19 min). Alternate row and air bike.\nEasy but steady, still talk-able. Same pace every round.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders."
+            "4 rounds: 4 min easy, 1 min rest. Alternate row and air bike.\nVery easy, talk-able pace. Rounds can be 1–2 min shorter; slow pedalling is fine.\nNo machine free? Same clock, 1 min each: marching · step-ups to a low step · wall push-ups.",
+            "4 rounds: 4 min easy, 1 min rest. Alternate row and air bike.\nEasy, chatty pace. Rounds can be 1 min shorter.\nNo machine free? Same clock, 1 min each: step-ups to a low box · jumping jacks · air squats.",
+            "4 rounds: 4 min easy, 1 min rest. Alternate row and air bike.\nEasy, talk-able pace. Same pace every round.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders.",
+            "4 rounds: 4 min easy, 1 min rest. Alternate row and air bike.\nEasy but steady, still talk-able. Same pace every round.\nNo machine free? Same clock, 1 min each: step-ups · jumping jacks · air squats · easy single-unders."
           ]
         },
         {
@@ -3618,10 +3618,10 @@
           "title": "Warm-up",
           "minutes": 12,
           "versions": [
-            "600 m easy jog or row · leg swings · arm circles\nwalk the course and standards, then 1 round at challenge pace, 10–15 s each: row · burpee broad jump · sandbag lunges · wall balls. Then 10 empty-bar strict presses.",
-            "600 m easy jog or row · leg swings · arm circles\nwalk the course and standards, then 1 round at challenge pace, 10–15 s each: row · burpee broad jump · sandbag lunges · wall balls. Then 10 empty-bar strict presses.",
-            "600 m easy jog or row · leg swings · arm circles\nwalk the course and standards, then 1 round at challenge pace, 10–15 s each: row · burpee broad jump · sandbag lunges · wall balls. Then 10 empty-bar strict presses.",
-            "600 m easy jog or row · leg swings · arm circles\nwalk the course and standards, then 1 round at challenge pace, 10–15 s each: row · burpee broad jump · sandbag lunges · wall balls. Then 10 empty-bar strict presses."
+            "600 m easy jog or row · leg swings · arm circles\nWalk the course and standards, then 1 round at challenge pace, 10–15 s each: row · burpee broad jump · sandbag lunges · wall balls. Then 10 empty-bar strict presses.",
+            "600 m easy jog or row · leg swings · arm circles\nWalk the course and standards, then 1 round at challenge pace, 10–15 s each: row · burpee broad jump · sandbag lunges · wall balls. Then 10 empty-bar strict presses.",
+            "600 m easy jog or row · leg swings · arm circles\nWalk the course and standards, then 1 round at challenge pace, 10–15 s each: row · burpee broad jump · sandbag lunges · wall balls. Then 10 empty-bar strict presses.",
+            "600 m easy jog or row · leg swings · arm circles\nWalk the course and standards, then 1 round at challenge pace, 10–15 s each: row · burpee broad jump · sandbag lunges · wall balls. Then 10 empty-bar strict presses."
           ]
         },
         {
@@ -3653,21 +3653,21 @@
         {
           "kind": "conditioning",
           "label": "Test",
-          "title": "Mini Challenge (bike version)",
+          "title": "Mini Challenge",
           "minutes": 30,
           "versions": [
-            "For time, 26 min cap. 8/10 cal bike before each:\n200 m row · 10 step-back burpees (hands on box) · 16 low step-ups · 20 wall balls (4/6 lb, low target)\nEasy pace.\nNo machine? Row → 50 s step-jacks, bike → 35 s.\nLog time, level, leg 1 + 4 splits, run or bike.",
-            "For time, 26 min cap. 12/15 cal bike before each:\n300 m row · 20 m step-back burpee broad jumps · 30 lunges (13/22 lb sandbag optional) · 30 wall balls (6/10 lb)\nNo machine? Row → 75 jumping jacks, bike → 55.\nLog time, level, leg 1 + 4 splits, run or bike.",
-            "For time, 26 min cap. 16/20 cal bike before each:\n500 m row · 20 m burpee broad jumps · 30 sandbag lunges (22/33 lb) · 40 wall balls (6/10 lb, 9 ft)\nNo machine? Row → 250 single-unders, bike → 140.\nLog time, level, leg 1 + 4 splits, run or bike.",
-            "For time, 26 min cap. 16/20 cal bike before each:\n500 m row · 20 m burpee broad jumps · 30 sandbag lunges (22/44 lb) · 40 wall balls (10/14 lb, 9/10 ft)\nNo machine? Row → 250 single-unders, bike → 140.\nLog time, level, leg 1 + 4 splits, run or bike."
+            "4 legs for time, 26 min cap. Each leg: 8/10 cal air bike, then the next station:\n1. 200 m row\n2. 10 step-back burpees (hands on a box)\n3. 16 low step-ups\n4. 20 wall balls (4/6 lb, low target)\nEasy pace.\nNo rower free? 50 s step-jacks. No bike free? 35 s step-jacks.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran.",
+            "4 legs for time, 26 min cap. Each leg: 12/15 cal air bike, then the next station:\n1. 300 m row\n2. 20 m step-back burpee broad jumps\n3. 30 lunges (13/22 lb sandbag optional)\n4. 30 wall balls (6/10 lb)\nNo rower free? 75 jumping jacks. No bike free? 55 jumping jacks.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran.",
+            "4 legs for time, 26 min cap. Each leg: 16/20 cal air bike, then the next station:\n1. 500 m row\n2. 20 m burpee broad jumps\n3. 30 sandbag lunges (22/33 lb)\n4. 40 wall balls (6/10 lb, 9 ft)\nNo rower free? 250 single-unders. No bike free? 140 single-unders.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran.",
+            "4 legs for time, 26 min cap. Each leg: 16/20 cal air bike, then the next station:\n1. 500 m row\n2. 20 m burpee broad jumps\n3. 30 sandbag lunges (22/44 lb)\n4. 40 wall balls (10/14 lb, 9/10 ft)\nNo rower free? 250 single-unders. No bike free? 140 single-unders.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran."
           ],
           "outdoor": {
-            "title": "Mini Challenge",
+            "title": "Mini Challenge (run version)",
             "versions": [
-              "For time, 26 min cap. 200 m walk/jog before each:\n200 m row · 10 step-back burpees (hands on box) · 16 low step-ups · 20 wall balls (4/6 lb, low target)\nEasy pace.\nNo rower free? 150 m walk/jog instead.\nLog time, level, leg 1 + 4 splits, run or bike.",
-              "For time, 26 min cap. 300 m run before each:\n300 m row · 20 m step-back burpee broad jumps · 30 lunges (13/22 lb sandbag optional) · 30 wall balls (6/10 lb)\nNo rower free? 250 m run instead.\nLog time, level, leg 1 + 4 splits, run or bike.",
-              "For time, 26 min cap. 400 m run before each:\n500 m row · 20 m burpee broad jumps · 30 sandbag lunges (22/33 lb) · 40 wall balls (6/10 lb, 9 ft)\nNo rower free? 400 m run instead.\nLog time, level, leg 1 + 4 splits, run or bike.",
-              "For time, 26 min cap. 400 m run before each:\n500 m row · 20 m burpee broad jumps · 30 sandbag lunges (22/44 lb) · 40 wall balls (10/14 lb, 9/10 ft)\nNo rower free? 400 m run instead.\nLog time, level, leg 1 + 4 splits, run or bike."
+              "4 legs for time, 26 min cap. Each leg: 200 m walk/jog, then the next station:\n1. 200 m row\n2. 10 step-back burpees (hands on a box)\n3. 16 low step-ups\n4. 20 wall balls (4/6 lb, low target)\nEasy pace.\nNo rower free? 150 m walk/jog instead.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran.",
+              "4 legs for time, 26 min cap. Each leg: 300 m run, then the next station:\n1. 300 m row\n2. 20 m step-back burpee broad jumps\n3. 30 lunges (13/22 lb sandbag optional)\n4. 30 wall balls (6/10 lb)\nNo rower free? 250 m run instead.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran.",
+              "4 legs for time, 26 min cap. Each leg: 400 m run, then the next station:\n1. 500 m row\n2. 20 m burpee broad jumps\n3. 30 sandbag lunges (22/33 lb)\n4. 40 wall balls (6/10 lb, 9 ft)\nNo rower free? 400 m run instead.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran.",
+              "4 legs for time, 26 min cap. Each leg: 400 m run, then the next station:\n1. 500 m row\n2. 20 m burpee broad jumps\n3. 30 sandbag lunges (22/44 lb)\n4. 40 wall balls (10/14 lb, 9/10 ft)\nNo rower free? 400 m run instead.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran."
             ]
           }
         },
