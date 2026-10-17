@@ -1,7 +1,7 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { addDays, mondayOf, todayLocal, weekday, TIME_ZONE, shortDate } from './dates';
-import { positionOn } from './programming/engine';
+import { nextTestIndex, positionOn } from './programming/engine';
 import { aiEnabled, writeRecap } from './ai';
 import { getSchedule } from './data';
 import { firstName } from './ui';
@@ -48,7 +48,7 @@ export async function maybePostRecap(supabase: SupabaseClient) {
       : next.week.kind === 'deload'
         ? 'An ease-off week: lighter weights so everyone recovers.'
         : `${next.week.index === 0 ? `A new cycle starts${cyc.name ? ` (${cyc.name})` : ''}. ` : ''}Week ${next.week.index + 1} of ${next.totalWeeks}: ${next.week.label.toLowerCase()} week, main lifts around ${next.week.pct}%.`;
-  const testIndex = cyc.weeks.findIndex((w) => w.kind === 'test');
+  const testIndex = nextTestIndex(cyc.weeks, next.week.index);
   const testLine = testIndex >= 0 ? `Test week starts ${shortDate(addDays(cyc.start, testIndex * 7))}.` : '';
 
   const facts = `Week of ${shortDate(monday)}.
