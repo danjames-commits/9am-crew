@@ -21,9 +21,8 @@ export async function supabaseServer() {
   });
 }
 
-/** The signed-in member. Sends people who aren't signed in to /login and
- *  people waiting for approval to /waiting. */
-export const requireMember = cache(async (opts: { admin?: boolean } = {}) => {
+// Looked up once per request, however many layouts and pages ask.
+const getMember = cache(async () => {
   const supabase = await supabaseServer();
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
@@ -35,6 +34,13 @@ export const requireMember = cache(async (opts: { admin?: boolean } = {}) => {
     .single<Profile>();
   if (!profile) redirect('/login');
   if (!profile.approved) redirect('/waiting');
-  if (opts.admin && !profile.is_admin) redirect('/');
   return { supabase, me: profile };
 });
+
+/** The signed-in member. Sends people who aren't signed in to /login and
+ *  people waiting for approval to /waiting. */
+export async function requireMember(opts: { admin?: boolean } = {}) {
+  const member = await getMember();
+  if (opts.admin && !member.me.is_admin) redirect('/');
+  return member;
+}

@@ -18,19 +18,14 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) notFound();
   const { supabase, me } = await requireMember();
 
-  const { data: w } = await supabase
-    .from('workouts')
-    .select('id, class_date, title, focus, why, parts, status')
-    .eq('class_date', date)
-    .maybeSingle();
-  if (!w) notFound();
-
-  const [{ names, animals }, { bests }, weather, { data: attendance }] = await Promise.all([
+  const [{ data: w }, { names, animals }, { bests }, { data: attendance }] = await Promise.all([
+    supabase.from('workouts').select('id, class_date, title, focus, why, parts, status').eq('class_date', date).maybeSingle(),
     getPeople(supabase),
     getBests(supabase, me.id),
-    (w.parts as Part[]).some((p) => p.outdoor) ? classWeather(w.class_date) : Promise.resolve(null),
-    supabase.from('attendance').select('user_id').eq('class_date', w.class_date).order('created_at'),
+    supabase.from('attendance').select('user_id').eq('class_date', date).order('created_at'),
   ]);
+  if (!w) notFound();
+  const weather = (w.parts as Part[]).some((p) => p.outdoor) ? await classWeather(w.class_date) : null;
   const upcoming = w.class_date >= todayLocal();
   const going = (attendance ?? []).some((a) => a.user_id === me.id);
   const others = (attendance ?? []).filter((a) => a.user_id !== me.id).map((a) => ({ id: a.user_id, name: names[a.user_id] ?? 'Member', animal: animals[a.user_id] }));

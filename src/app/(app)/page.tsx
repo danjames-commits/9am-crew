@@ -22,7 +22,7 @@ export default async function TodayPage() {
   after(() => maybePostRecap(supabase));
   const classDate = nextClassDate();
 
-  const [{ data: workout }, { data: attendance }, { names, animals }, prs, { count: pending }, weather] = await Promise.all([
+  const [{ data: workout }, { data: attendance }, { names, animals }, prs, { count: pending }, weather, schedule] = await Promise.all([
     supabase.from('workouts').select('id, title, focus, status, parts').eq('class_date', classDate).maybeSingle(),
     supabase.from('attendance').select('user_id').eq('class_date', classDate).order('created_at'),
     getPeople(supabase),
@@ -31,14 +31,13 @@ export default async function TodayPage() {
       ? supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false)
       : Promise.resolve({ count: 0 }),
     classWeather(classDate),
+    me.is_admin ? getSchedule(supabase) : null,
   ]);
   const hasOutdoor = Boolean(workout && (workout.parts as Part[] | null)?.some((p) => p.outdoor));
 
-  let planNext = false;
-  if (me.is_admin) {
-    const schedule = await getSchedule(supabase);
-    planNext = daysBetween(classDate, positionOn(classDate, schedule).resolved.end) <= 14 && !nextCycle(classDate, schedule).saved;
-  }
+  const planNext = schedule
+    ? daysBetween(classDate, positionOn(classDate, schedule).resolved.end) <= 14 && !nextCycle(classDate, schedule).saved
+    : false;
   const going = (attendance ?? []).some((a) => a.user_id === me.id);
   const others = (attendance ?? [])
     .filter((a) => a.user_id !== me.id)

@@ -13,8 +13,8 @@
   --teal-soft: #d3eae6;
   --teal-ink: #17423d;
   --danger: #a33a1f;
-  --display: 'Bricolage Grotesque', system-ui, sans-serif;
-  --body: 'Figtree', system-ui, sans-serif;
+  --display: var(--font-display), system-ui, sans-serif;
+  --body: var(--font-body), system-ui, sans-serif;
   --nav-h: 76px;
 }
 
@@ -69,6 +69,9 @@ p { margin: 0; }
 .card.gold { background: var(--gold-soft); color: var(--gold-ink); }
 .card.outline-gold { border: 2px solid var(--gold); }
 .card.flush { padding: 0; overflow: hidden; }
+.skeleton { background: var(--card); border-radius: 18px; animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.5; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
 .list > * + * { border-top: 1px solid #ecebe4; }
 .list-item { padding: 14px 16px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
 a.list-item:hover { background: #faf9f5; color: inherit; }
