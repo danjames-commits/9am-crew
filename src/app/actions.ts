@@ -59,6 +59,17 @@ export async function updateMe(input: {
   return { ok: true };
 }
 
+/** Change just your level (from the My lifts page). */
+export async function setLevel(level: number) {
+  const { supabase, me } = await requireMember();
+  const n = Math.round(level);
+  if (!(n >= 1 && n <= 4)) return { error: 'Pick a level from 1 to 4.' };
+  const { error } = await supabase.from('profiles').update({ level: n }).eq('id', me.id);
+  if (error) return { error: 'Couldn’t save that. Try again.' };
+  revalidatePath('/', 'layout');
+  return { ok: true };
+}
+
 /** Claude draws a spirit animal from a description. Nothing is saved until they press Save. */
 export async function drawAvatar(prompt: string) {
   const { supabase, me } = await requireMember();

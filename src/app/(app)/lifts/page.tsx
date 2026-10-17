@@ -2,9 +2,9 @@ import Link from 'next/link';
 import { requireMember } from '@/lib/supabase/server';
 import { getBests } from '@/lib/data';
 import { todayLocal, shortDate } from '@/lib/dates';
-import { levelName } from '@/lib/types';
 import { lb } from '@/lib/ui';
 import { LogLiftForm } from '@/components/LogLiftForm';
+import { LevelCard } from '@/components/LevelCard';
 import { Icon } from '@/components/Icon';
 
 export const dynamic = 'force-dynamic';
@@ -18,17 +18,7 @@ export default async function LiftsPage() {
     <main className="screen">
       <h1>My lifts</h1>
 
-      <div className="card row">
-        <div className="grow">
-          <div className="eyebrow">My level</div>
-          <div style={{ fontFamily: 'var(--display)', fontWeight: 800, fontSize: 22 }}>
-            {levelName(me.level)} <span className="muted" style={{ fontFamily: 'var(--body)', fontWeight: 500 }}>· {me.level} of 4</span>
-          </div>
-        </div>
-        <Link href="/me" className="btn outline small">
-          Change
-        </Link>
-      </div>
+      <LevelCard level={me.level} />
 
       <LogLiftForm movements={movements} today={todayLocal()} />
 

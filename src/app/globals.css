@@ -246,3 +246,9 @@ details.part > summary::-webkit-details-marker { display: none; }
   width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
   background: var(--ink); color: #fff; font-size: 12px; font-weight: 800;
 }
+
+/* Level choices that open inside the My level card. */
+.level-option {
+  display: block; width: 100%; text-align: left; cursor: pointer; font: inherit; color: var(--ink);
+  background: var(--ground); border: 2px solid transparent; border-radius: 14px; padding: 12px 14px; min-height: 0;
+}
