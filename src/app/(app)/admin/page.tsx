@@ -15,20 +15,19 @@ export const maxDuration = 60;
 
 export default async function AdminPage() {
   const { supabase } = await requireMember({ admin: true });
-  const schedule = await getSchedule(supabase);
   const today = nextClassDate();
-  const pos = positionOn(today, schedule);
-  const following = nextCycle(today, schedule);
-  const planSoon = daysBetween(today, pos.resolved.end) <= 14 && !following.saved;
   const ai = aiEnabled();
-  // Claude keeps about a week of drafts ready.
-  const autoDates = ai ? await emptyDays(supabase, today, addDays(today, 6)) : [];
-
   const days = classDays(today, 10);
-  const [{ data: workouts }, { count: pending }] = await Promise.all([
+  const [schedule, autoDates, { data: workouts }, { count: pending }] = await Promise.all([
+    getSchedule(supabase),
+    // Claude keeps about a week of drafts ready.
+    ai ? emptyDays(supabase, today, addDays(today, 6)) : [],
     supabase.from('workouts').select('class_date, title, status').gte('class_date', days[0]).lte('class_date', days[days.length - 1]),
     supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false),
   ]);
+  const pos = positionOn(today, schedule);
+  const following = nextCycle(today, schedule);
+  const planSoon = daysBetween(today, pos.resolved.end) <= 14 && !following.saved;
   const byDate = new Map((workouts ?? []).map((w) => [w.class_date, w]));
   const nextToBuild = days.find((d) => !byDate.has(d));
   const thisMonday = mondayOf(today);

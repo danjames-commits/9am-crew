@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from 'next';
+import { Bricolage_Grotesque, Figtree } from 'next/font/google';
 import './globals.css';
+
+// Served from our own site, so the page doesn't wait on Google before drawing.
+const display = Bricolage_Grotesque({ subsets: ['latin'], axes: ['opsz'], variable: '--font-display' });
+const body = Figtree({ subsets: ['latin'], variable: '--font-body' });
 
 export const metadata: Metadata = {
   title: '9AM Crew',
@@ -16,15 +21,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap"
-        />
-      </head>
+    <html lang="en" className={`${display.variable} ${body.variable}`}>
       <body>
         <div className="shell">{children}</div>
       </body>
