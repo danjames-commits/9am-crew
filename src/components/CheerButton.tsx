@@ -1,17 +1,15 @@
 'use client';
-import { useOptimistic, useTransition } from 'react';
+import { useState } from 'react';
 import { setCheer } from '@/app/actions';
 
 export function CheerButton({ liftLogId, count, mine, name, disabled }: { liftLogId: number; count: number; mine: boolean; name: string; disabled?: boolean }) {
-  const [, start] = useTransition();
-  const [state, setState] = useOptimistic({ count, mine });
+  const [state, setState] = useState({ count, mine });
 
-  function toggle() {
-    start(async () => {
-      const on = !state.mine;
-      setState({ mine: on, count: state.count + (on ? 1 : -1) });
-      await setCheer(liftLogId, on);
-    });
+  async function toggle() {
+    const on = !state.mine;
+    setState({ mine: on, count: state.count + (on ? 1 : -1) });
+    const r = await setCheer(liftLogId, on);
+    if (r?.error) setState((s) => ({ mine: !on, count: s.count + (on ? -1 : 1) }));
   }
 
   return (

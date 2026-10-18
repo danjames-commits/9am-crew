@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { after } from 'next/server';
-import { requireMember } from '@/lib/supabase/server';
+import { requireMember, signedIn } from '@/lib/supabase/server';
 import { maybePostRecap } from '@/lib/recap';
-import { getPeople, getSchedule, recentPrs } from '@/lib/data';
+import { getPeople, getSchedule, recentPrs, type PrPost } from '@/lib/data';
 import { daysBetween } from '@/lib/dates';
 import { nextCycle, positionOn } from '@/lib/programming/engine';
 import { nextClassDate, relativeDay, longDate, timeAgo, todayLocal } from '@/lib/dates';
@@ -18,21 +19,26 @@ import type { Part } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 
 export default async function TodayPage() {
-  const { supabase, me } = await requireMember();
-  after(() => maybePostRecap(supabase));
+  const { supabase, userId } = await signedIn();
   const classDate = nextClassDate();
 
-  const [{ data: workout }, { data: attendance }, { names, animals }, prs, { count: pending }, weather, schedule] = await Promise.all([
+  // Started now, shown later: weather and personal bests stream in (Suspense), so they never hold up the page.
+  const weatherP = classWeather(classDate);
+  const prsP = recentPrs(supabase, userId);
+  const [{ me }, { data: workout }, { data: attendance }, { names, animals }, admin] = await Promise.all([
+    requireMember(),
     supabase.from('workouts').select('id, title, focus, status, parts').eq('class_date', classDate).maybeSingle(),
     supabase.from('attendance').select('user_id').eq('class_date', classDate).order('created_at'),
     getPeople(supabase),
-    recentPrs(supabase, me.id),
-    me.is_admin
-      ? supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false)
-      : Promise.resolve({ count: 0 }),
-    classWeather(classDate),
-    me.is_admin ? getSchedule(supabase) : null,
+    requireMember().then(({ me }) =>
+      me.is_admin
+        ? Promise.all([supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('approved', false), getSchedule(supabase)])
+        : null,
+    ),
   ]);
+  after(() => maybePostRecap(supabase));
+  const pending = admin?.[0].count ?? 0;
+  const schedule = admin?.[1] ?? null;
   const hasOutdoor = Boolean(workout && (workout.parts as Part[] | null)?.some((p) => p.outdoor));
 
   const planNext = schedule
@@ -81,13 +87,9 @@ export default async function TodayPage() {
               {visibleWorkout.focus}
               {visibleWorkout.status === 'draft' ? ' · draft, only admins see this' : ''}
             </p>
-            {weather && (
-              <p className="small" style={{ marginTop: 8 }}>
-                <b>{hasOutdoor ? weather.headline : weather.outside ? 'Nice morning' : weather.headline.replace('Inside today: ', 'Heads up: ')}</b>
-                <br />
-                <span className="muted">{weather.detail}</span>
-              </p>
-            )}
+            <Suspense fallback={null}>
+              <WeatherLine weather={weatherP} hasOutdoor={hasOutdoor} />
+            </Suspense>
             <p className="small" style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 6 }}>See your version →</p>
           </Link>
         ) : (
@@ -101,28 +103,46 @@ export default async function TodayPage() {
 
       <section className="stack">
         <h2>Personal bests</h2>
-        {prs.length === 0 ? (
-          <div className="card muted">No new bests this week yet. Log your lifts on the My lifts tab and they’ll show up here.</div>
-        ) : (
-          prs.map((p) => {
-            const name = names[p.user_id] ?? 'Someone';
-            return (
-              <div key={p.id} className="card row">
-                <span className="avatar" style={{ background: 'var(--gold-soft)', color: 'var(--gold-ink)', borderRadius: 14 }}>
-                  <Icon name="trophy" />
-                </span>
-                <div className="grow">
-                  <div style={{ fontWeight: 700 }}>{p.user_id === me.id ? 'You' : firstName(name)} hit a new best</div>
-                  <div className="muted">
-                    {p.body} · {timeAgo(p.created_at)}
-                  </div>
-                </div>
-                <CheerButton liftLogId={p.lift_log_id} count={p.cheers} mine={p.cheeredByMe} name={name} disabled={p.user_id === me.id} />
-              </div>
-            );
-          })
-        )}
+        <Suspense fallback={<div className="card muted">Loading…</div>}>
+          <RecentBests prs={prsP} meId={userId} names={names} />
+        </Suspense>
       </section>
     </main>
   );
+}
+
+async function WeatherLine({ weather: weatherP, hasOutdoor }: { weather: ReturnType<typeof classWeather>; hasOutdoor: boolean }) {
+  const weather = await weatherP;
+  if (!weather) return null;
+  return (
+    <p className="small" style={{ marginTop: 8 }}>
+      <b>{hasOutdoor ? weather.headline : weather.outside ? 'Nice morning' : weather.headline.replace('Inside today: ', 'Heads up: ')}</b>
+      <br />
+      <span className="muted">{weather.detail}</span>
+    </p>
+  );
+}
+
+async function RecentBests({ prs: prsP, meId, names }: { prs: Promise<PrPost[]>; meId: string; names: Record<string, string> }) {
+  const prs = await prsP;
+  if (prs.length === 0) {
+    return <div className="card muted">No new bests this week yet. Log your lifts on the My lifts tab and they’ll show up here.</div>;
+  }
+  return prs.map((p) => {
+    const name = names[p.user_id] ?? 'Someone';
+    return (
+      <div key={p.id} className="card row">
+        <span className="avatar" style={{ background: 'var(--gold-soft)', color: 'var(--gold-ink)', borderRadius: 14 }}>
+          <Icon name="trophy" />
+        </span>
+        <div className="grow">
+          <div style={{ fontWeight: 700 }}>{p.user_id === meId ? 'You' : firstName(name)} hit a new best</div>
+          <div className="muted">
+            {p.body} · {timeAgo(p.created_at)}
+          </div>
+        </div>
+        <CheerButton liftLogId={p.lift_log_id} count={p.cheers} mine={p.cheeredByMe} name={name} disabled={p.user_id === meId} />
+      </div>
+    );
+  });
 }

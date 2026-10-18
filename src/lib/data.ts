@@ -118,21 +118,21 @@ export async function recentPrs(supabase: SupabaseClient, meId: string, sinceDay
   const since = new Date(Date.now() - sinceDays * 86400000).toISOString();
   const { data } = await supabase
     .from('messages')
-    .select('id, user_id, body, lift_log_id, created_at')
+    // Cheers ride along through the shared lift log, so it's one request.
+    .select('id, user_id, body, lift_log_id, created_at, lift_logs(cheers(user_id))')
     .eq('kind', 'pr')
     .gte('created_at', since)
     .order('created_at', { ascending: false })
     .limit(limit);
-  const posts = data ?? [];
-  if (!posts.length) return [];
-  const { data: cheers } = await supabase
-    .from('cheers')
-    .select('lift_log_id, user_id')
-    .in('lift_log_id', posts.map((p) => p.lift_log_id));
-  return posts.map((p) => {
-    const mine = (cheers ?? []).filter((c) => c.lift_log_id === p.lift_log_id);
-    return { ...p, cheers: mine.length, cheeredByMe: mine.some((c) => c.user_id === meId) };
+  return (data ?? []).map(({ lift_logs, ...p }) => {
+    const cheers = embeddedCheers(lift_logs);
+    return { ...p, cheers: cheers.length, cheeredByMe: cheers.some((c) => c.user_id === meId) };
   });
+}
+
+/** The cheers embedded by a `lift_logs(cheers(user_id))` select. */
+export function embeddedCheers(liftLog: unknown): { user_id: string }[] {
+  return (liftLog as { cheers?: { user_id: string }[] } | null)?.cheers ?? [];
 }
 
 /** Weekdays between two dates (inclusive) that don't have a workout yet. */

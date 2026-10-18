@@ -22,11 +22,17 @@ export async function supabaseServer() {
 }
 
 // Looked up once per request, however many layouts and pages ask.
-const getMember = cache(async () => {
+// getClaims checks the token locally, so this costs no round trip.
+const getAuth = cache(async () => {
   const supabase = await supabaseServer();
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims?.sub;
   if (!userId) redirect('/login');
+  return { supabase, userId };
+});
+
+const getMember = cache(async () => {
+  const { supabase, userId } = await getAuth();
   const { data: profile } = await supabase
     .from('profiles')
     .select('id, display_name, level, is_admin, approved, animal')
@@ -36,6 +42,13 @@ const getMember = cache(async () => {
   if (!profile.approved) redirect('/waiting');
   return { supabase, me: profile };
 });
+
+/** Signed in, but not yet checked for approval. Lets a page start its own
+ *  queries while requireMember() looks up the profile: await both together.
+ *  RLS shows nothing to members who aren't approved. */
+export async function signedIn() {
+  return getAuth();
+}
 
 /** The signed-in member. Sends people who aren't signed in to /login and
  *  people waiting for approval to /waiting. */
