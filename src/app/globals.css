@@ -255,3 +255,13 @@ details.part > summary::-webkit-details-marker { display: none; }
   display: block; width: 100%; text-align: left; cursor: pointer; font: inherit; color: var(--ink);
   background: var(--ground); border: 2px solid transparent; border-radius: 14px; padding: 12px 14px; min-height: 0;
 }
+
+/* Coach notes on a workout: collapsed by default, one labeled row per section. */
+.coach-notes > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+.coach-notes > summary::-webkit-details-marker { display: none; }
+.coach-notes .chev { display: flex; color: var(--ink-3); transform: rotate(90deg); transition: transform 0.15s; }
+.coach-notes[open] .chev { transform: rotate(-90deg); }
+.coach-notes dl { margin: 10px 0 0; }
+.coach-notes .note-row { display: grid; align-items: start; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.coach-notes dt { font-size: 13px; font-weight: 700; color: var(--ink-3); }
+.coach-notes dd { margin: 0; font-size: 15px; }
