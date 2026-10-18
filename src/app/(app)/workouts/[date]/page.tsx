@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { requireMember } from '@/lib/supabase/server';
+import { requireMember, signedIn } from '@/lib/supabase/server';
 import { getBests, getPeople } from '@/lib/data';
 import { longDate, todayLocal } from '@/lib/dates';
 import { CheckIn } from '@/components/CheckIn';
@@ -16,19 +16,21 @@ export const maxDuration = 60;
 export default async function WorkoutPage({ params }: { params: Promise<{ date: string }> }) {
   const { date } = await params;
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) notFound();
-  const { supabase, me } = await requireMember();
+  const { supabase, userId } = await signedIn();
+  const weatherP = classWeather(date); // cached, so fetching it when nothing's outdoors costs little
 
-  const [{ data: w }, { names, animals }, { bests }, { data: attendance }, { data: coachNote }] = await Promise.all([
+  const [{ me }, { data: w }, { names, animals }, { bests }, { data: attendance }, coachNote] = await Promise.all([
+    requireMember(),
     supabase.from('workouts').select('id, class_date, title, focus, why, parts, status').eq('class_date', date).maybeSingle(),
     getPeople(supabase),
-    getBests(supabase, me.id),
+    getBests(supabase, userId),
     supabase.from('attendance').select('user_id').eq('class_date', date).order('created_at'),
-    me.is_admin
-      ? supabase.from('workout_coach_notes').select('body').eq('class_date', date).maybeSingle()
-      : Promise.resolve({ data: null as { body: string } | null }),
+    requireMember().then(async ({ me }) =>
+      me.is_admin ? (await supabase.from('workout_coach_notes').select('body').eq('class_date', date).maybeSingle<{ body: string }>()).data : null,
+    ),
   ]);
   if (!w) notFound();
-  const weather = (w.parts as Part[]).some((p) => p.outdoor) ? await classWeather(w.class_date) : null;
+  const weather = (w.parts as Part[]).some((p) => p.outdoor) ? await weatherP : null;
   const upcoming = w.class_date >= todayLocal();
   const going = (attendance ?? []).some((a) => a.user_id === me.id);
   const others = (attendance ?? []).filter((a) => a.user_id !== me.id).map((a) => ({ id: a.user_id, name: names[a.user_id] ?? 'Member', animal: animals[a.user_id] }));

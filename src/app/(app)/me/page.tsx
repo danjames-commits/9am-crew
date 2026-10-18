@@ -1,11 +1,14 @@
-import { requireMember } from '@/lib/supabase/server';
+import { requireMember, signedIn } from '@/lib/supabase/server';
 import { MeForm } from '@/components/MeForm';
 import { svgVersion } from '@/lib/svg-clean';
 import { signOut } from '@/app/actions';
 
 export default async function MePage() {
-  const { supabase, me } = await requireMember();
-  const { data: drawn } = await supabase.from('avatars').select('name, prompt, svg').eq('user_id', me.id).maybeSingle();
+  const { supabase, userId } = await signedIn();
+  const [{ me }, { data: drawn }] = await Promise.all([
+    requireMember(),
+    supabase.from('avatars').select('name, prompt, svg').eq('user_id', userId).maybeSingle(),
+  ]);
   return (
     <main className="screen">
       <MeForm id={me.id} name={me.display_name} level={me.level} animal={me.animal ?? null} drawn={drawn ? { name: drawn.name, prompt: drawn.prompt, version: svgVersion(drawn.svg) } : null} />

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { requireMember } from '@/lib/supabase/server';
+import { requireMember, signedIn } from '@/lib/supabase/server';
 import { getBests } from '@/lib/data';
 import { todayLocal, shortDate } from '@/lib/dates';
 import { lb } from '@/lib/ui';
@@ -10,8 +10,8 @@ import { Icon } from '@/components/Icon';
 export const dynamic = 'force-dynamic';
 
 export default async function LiftsPage() {
-  const { supabase, me } = await requireMember();
-  const { bests, movements } = await getBests(supabase, me.id);
+  const { supabase, userId } = await signedIn();
+  const [{ me }, { bests, movements }] = await Promise.all([requireMember(), getBests(supabase, userId)]);
   const latestPr = bests.filter((b) => b.lastPr).sort((a, b) => (b.lastPr! > a.lastPr! ? 1 : -1))[0];
 
   return (

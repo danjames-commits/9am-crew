@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { requireMember } from '@/lib/supabase/server';
+import { requireMember, signedIn } from '@/lib/supabase/server';
 import { classDays, nextClassDate, shortDate, relativeDay } from '@/lib/dates';
 import { Icon } from '@/components/Icon';
 import { CycleCard } from '@/components/CycleCard';
@@ -8,9 +8,10 @@ import { getSchedule } from '@/lib/data';
 export const dynamic = 'force-dynamic';
 
 export default async function WorkoutsPage() {
-  const { supabase, me } = await requireMember();
+  const { supabase } = await signedIn();
   const days = classDays(nextClassDate(), 15);
-  const [{ data: workouts }, schedule] = await Promise.all([
+  const [{ me }, { data: workouts }, schedule] = await Promise.all([
+    requireMember(),
     supabase.from('workouts').select('id, class_date, title, focus, status').gte('class_date', days[0]).lte('class_date', days[days.length - 1]),
     getSchedule(supabase),
   ]);

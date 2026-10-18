@@ -1,5 +1,5 @@
 'use client';
-import { useOptimistic, useTransition, useState } from 'react';
+import { useState } from 'react';
 import { setAttendance } from '@/app/actions';
 import { Avatar } from './Avatar';
 
@@ -22,18 +22,20 @@ export function CheckIn({
   going: boolean;
   compact?: boolean;
 }) {
-  const [pending, start] = useTransition();
-  const [optimistic, setOptimistic] = useOptimistic(going);
+  // Flips straight away and stays tappable while the save runs in the background.
+  const [optimistic, setGoing] = useState(going);
   const [error, setError] = useState('');
   const crew = optimistic ? [...others, me] : others;
 
-  function toggle() {
+  async function toggle() {
+    const next = !optimistic;
     setError('');
-    start(async () => {
-      setOptimistic(!optimistic);
-      const r = await setAttendance(classDate, !optimistic);
-      if (r?.error) setError('Couldn’t save that. Try again.');
-    });
+    setGoing(next);
+    const r = await setAttendance(classDate, next);
+    if (r?.error) {
+      setGoing(!next);
+      setError('Couldn’t save that. Try again.');
+    }
   }
 
   if (compact) {
@@ -45,11 +47,11 @@ export function CheckIn({
           <span className="muted"> · {crew.length} going</span>
         </div>
         {optimistic ? (
-          <button className="btn small ghost" onClick={toggle} disabled={pending}>
+          <button className="btn small ghost" onClick={toggle}>
             Cancel
           </button>
         ) : (
-          <button className="btn small primary" onClick={toggle} disabled={pending}>
+          <button className="btn small primary" onClick={toggle}>
             I’m coming
           </button>
         )}
@@ -74,11 +76,11 @@ export function CheckIn({
         <span className="muted">{crew.length} going</span>
       </div>
       {optimistic ? (
-        <button className="btn outline-gold big" onClick={toggle} disabled={pending}>
+        <button className="btn outline-gold big" onClick={toggle}>
           You’re in · tap to cancel
         </button>
       ) : (
-        <button className="btn primary big" onClick={toggle} disabled={pending}>
+        <button className="btn primary big" onClick={toggle}>
           I’m coming
         </button>
       )}

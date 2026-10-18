@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { requireMember } from '@/lib/supabase/server';
+import { requireMember, signedIn } from '@/lib/supabase/server';
 import { shortDate, todayLocal } from '@/lib/dates';
 import { lb } from '@/lib/ui';
 import { estimateMax } from '@/lib/programming/engine';
@@ -13,13 +13,14 @@ export const dynamic = 'force-dynamic';
 export default async function MovementPage({ params }: { params: Promise<{ movement: string }> }) {
   const id = Number((await params).movement);
   if (!Number.isInteger(id)) notFound();
-  const { supabase, me } = await requireMember();
-  const [{ data: movement }, { data: logs }, { data: movements }] = await Promise.all([
+  const { supabase, userId } = await signedIn();
+  const [, { data: movement }, { data: logs }, { data: movements }] = await Promise.all([
+    requireMember(),
     supabase.from('movements').select('id, name').eq('id', id).maybeSingle(),
     supabase
       .from('lift_logs')
       .select('id, weight, reps, logged_on, is_pr')
-      .eq('user_id', me.id)
+      .eq('user_id', userId)
       .eq('movement_id', id)
       .order('logged_on', { ascending: false, nullsFirst: false })
       .order('id', { ascending: false }),

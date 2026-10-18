@@ -136,8 +136,8 @@ export async function setCheer(liftLogId: number, on: boolean) {
     ? await supabase.from('cheers').upsert({ lift_log_id: liftLogId, user_id: me.id }, { ignoreDuplicates: true })
     : await supabase.from('cheers').delete().eq('lift_log_id', liftLogId).eq('user_id', me.id);
   if (error) return { error: error.message };
-  revalidatePath('/');
-  revalidatePath('/chat');
+  // No revalidatePath: the button already shows the change, and re-rendering
+  // the whole page just to confirm it made every tap wait.
   return { ok: true };
 }
 
