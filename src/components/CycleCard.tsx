@@ -11,7 +11,7 @@ function describe(w: WeekPlan) {
 }
 
 /** The cycle at a glance: where we are, what's next, when test week is. Shared by members and admins. */
-export function CycleCard({ schedule, showGoals = true, showExplainer = true }: { schedule: Schedule; showGoals?: boolean; showExplainer?: boolean }) {
+export function CycleCard({ schedule, showGoals = true }: { schedule: Schedule; showGoals?: boolean }) {
   const today = nextClassDate();
   const pos = positionOn(today, schedule);
   const c = pos.resolved;
@@ -74,14 +74,6 @@ export function CycleCard({ schedule, showGoals = true, showExplainer = true }: 
             ))}
           </div>
         </div>
-      )}
-
-      {showExplainer && (
-        <p className="muted small">
-          {c.why ? `${c.why} ` : 'Weights climb, ease off every fourth week so bodies recover, then the last week is test week. '}
-          Percentages are for the Strong level; Steady is 10% lighter, Full is 5% heavier, Gentle uses lighter tools. Your own weights show on each
-          workout.
-        </p>
       )}
     </section>
   );
