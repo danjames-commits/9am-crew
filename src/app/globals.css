@@ -265,3 +265,15 @@ details.part > summary::-webkit-details-marker { display: none; }
 .coach-notes .note-row { display: grid; align-items: start; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
 .coach-notes dt { font-size: 13px; font-weight: 700; color: var(--ink-3); }
 .coach-notes dd { margin: 0; font-size: 15px; }
+
+/* Workout part text: lines with "·" show as short lists. */
+.part-body { display: flex; flex-direction: column; gap: 8px; }
+.part-body p { margin: 0; }
+.part-body ul { margin: 0; padding-left: 20px; }
+.part-body li { margin: 2px 0; }
+.part-sub { font-size: 13px; font-weight: 700; color: var(--ink-3); margin-bottom: 2px; }
+.part-fold > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.part-fold > summary::-webkit-details-marker { display: none; }
+.part-fold .chev { display: flex; color: var(--ink-3); transform: rotate(90deg); transition: transform 0.15s; }
+.part-fold[open] .chev { transform: rotate(-90deg); }
+.part-fold[open] > summary { margin-bottom: 6px; }

@@ -4,6 +4,8 @@ import { LEVELS, type Level, type Part } from '@/lib/types';
 import { YourNumbers } from './YourNumbers';
 import { ScaleHelper } from './ScaleHelper';
 import type { WeatherCall } from '@/lib/weather-rules';
+import { splitPartText } from '@/lib/part-text';
+import { Icon } from './Icon';
 
 export function WorkoutView({
   parts,
@@ -42,18 +44,22 @@ export function WorkoutView({
         const partTitle = useOutdoor ? p.outdoor!.title : p.title;
         const text = versions[i];
         // Strength and skill: the level's first line is the headline.
+        // A first line that is a "·" list stays in the body instead.
         const lines = text.split('\n');
-        const headline = p.kind === 'strength' || p.kind === 'skill' ? lines[0] : p.kind === 'conditioning' ? partTitle : '';
-        const body = p.kind === 'strength' || p.kind === 'skill' ? lines.slice(1).join('\n') : text;
-        return (
-          <section key={k} className={`card stack tight ${p.kind === 'strength' ? 'outline-gold' : ''}`}>
-            <div className="row between">
-              <div className="eyebrow">
-                {p.label}
-                {useOutdoor ? ' · outside' : ''}
-              </div>
-              {p.minutes ? <span className="muted small">{p.minutes} min</span> : null}
+        const firstIsHeadline = (p.kind === 'strength' || p.kind === 'skill') && !lines[0].includes(' · ');
+        const headline = firstIsHeadline ? lines[0] : p.kind === 'conditioning' ? partTitle : '';
+        const body = firstIsHeadline ? lines.slice(1).join('\n') : text;
+        const header = (
+          <div className="row between" style={{ flex: 1 }}>
+            <div className="eyebrow">
+              {p.label}
+              {useOutdoor ? ' · outside' : ''}
             </div>
+            {p.minutes ? <span className="muted small">{p.minutes} min</span> : null}
+          </div>
+        );
+        const content = (
+          <>
             {p.outdoor && (
               <div className="stack tight">
                 <div
@@ -81,8 +87,45 @@ export function WorkoutView({
               </div>
             )}
             {headline && <h3 style={{ fontSize: 20 }}>{headline}</h3>}
-            {body && <p className="pre">{body}</p>}
+            {body && (
+              <div className="part-body">
+                {splitPartText(body).map((b, n) =>
+                  b.kind === 'text' ? (
+                    <p key={n}>{b.text}</p>
+                  ) : (
+                    <div key={n}>
+                      {b.label && <div className="part-sub">{b.label}</div>}
+                      <ul>
+                        {b.items.map((item, j) => (
+                          <li key={j}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ),
+                )}
+              </div>
+            )}
             {p.lift && <YourNumbers part={useOutdoor ? { ...p, versions } : p} level={level} maxes={maxes} />}
+          </>
+        );
+        // The warm-up folds away once you're done with it; open by default.
+        if (p.kind === 'warmup') {
+          return (
+            <details key={k} open className="card part-fold">
+              <summary>
+                {header}
+                <span className="chev">
+                  <Icon name="next" size={18} />
+                </span>
+              </summary>
+              <div className="stack tight">{content}</div>
+            </details>
+          );
+        }
+        return (
+          <section key={k} className={`card stack tight ${p.kind === 'strength' ? 'outline-gold' : ''}`}>
+            {header}
+            {content}
           </section>
         );
       })}
