@@ -9,6 +9,7 @@ import { WorkoutView } from '@/components/WorkoutView';
 import { classWeather } from '@/lib/weather';
 import { Icon } from '@/components/Icon';
 import { aiEnabled } from '@/lib/ai';
+import { splitCoachNotes } from '@/lib/coach-notes';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -55,10 +56,20 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
       {w.status === 'draft' && <div className="notice bad">Draft. Only admins can see this until it’s published.</div>}
       <p className="muted">{w.focus}</p>
       {coachNote?.body && (
-        <section className="card stack tight">
-          <div className="eyebrow">Coach notes · admins only</div>
-          <p className="pre">{coachNote.body}</p>
-        </section>
+        <details className="card coach-notes">
+          <summary>
+            <span className="eyebrow">Coach notes · admins only</span>
+            <span className="chev"><Icon name="next" size={18} /></span>
+          </summary>
+          <dl>
+            {splitCoachNotes(coachNote.body).map((s, i) => (
+              <div key={i} className="note-row">
+                <dt>{s.label}</dt>
+                <dd className="pre">{s.text}</dd>
+              </div>
+            ))}
+          </dl>
+        </details>
       )}
       {upcoming && (
         <section className="card" style={{ padding: '10px 14px' }} aria-label="Who's coming">
