@@ -281,7 +281,7 @@ function PartScreen({
         <h2 className="follow-h">{isCoach ? shown.title || part.label : shown.headline || shown.title || part.label}</h2>
       </div>
 
-      {part.minutes ? <Timer minutes={part.minutes} key={`t${index}`} /> : null}
+      {/* Timers are off for now; <Timer> below is kept so they can come back. */}
 
       {isCoach ? (
         <>
@@ -329,8 +329,8 @@ function NoteList({ sections, heading }: { sections: CoachNoteSection[]; heading
   );
 }
 
-/** A simple countdown for a part's minutes. Buzzes and beeps at zero. */
-function Timer({ minutes }: { minutes: number }) {
+/** A simple countdown for a part's minutes. Buzzes and beeps at zero. (Not shown for now.) */
+export function Timer({ minutes }: { minutes: number }) {
   const total = minutes * 60;
   const [left, setLeft] = useState(total);
   const [running, setRunning] = useState(false);

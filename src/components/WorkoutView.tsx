@@ -20,7 +20,6 @@ export function WorkoutView({
   canScale = false,
   log,
   coach,
-  checkIn,
 }: {
   title: string;
   parts: Part[];
@@ -33,8 +32,6 @@ export function WorkoutView({
   log: Omit<QuickLogContext, 'classDate' | 'maxes'>;
   /** Admins only: notes and who's coming, for coach mode. */
   coach?: CoachInfo;
-  /** Who's coming, shown in the same card as the mode buttons. */
-  checkIn?: React.ReactNode;
 }) {
   const [level, setLevel] = useState<Level>(Math.min(4, Math.max(1, myLevel)) as Level);
   // Your saved level; you can make the level you're looking at your own from here.
@@ -51,9 +48,7 @@ export function WorkoutView({
 
   return (
     <div className="stack loose">
-      <section className="card class-bar" aria-label="This class">
-        {checkIn}
-        <div className="mode-row">
+      <div className="mode-row">
           <button type="button" className="btn primary" onClick={() => setMode('member')}>
             ▶ Workout mode
           </button>
@@ -62,8 +57,7 @@ export function WorkoutView({
               Coach mode
             </button>
           )}
-        </div>
-      </section>
+      </div>
 
       <div className="segmented" role="group" aria-label="Level">
         {LEVELS.map((l) => (

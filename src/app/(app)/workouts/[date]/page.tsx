@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireMember, signedIn } from '@/lib/supabase/server';
 import { getBenchmarks, getBests, getPeople } from '@/lib/data';
 import { longDate, todayLocal } from '@/lib/dates';
-import { CheckIn } from '@/components/CheckIn';
+import { WhosComing } from '@/components/WhosComing';
 import type { Part } from '@/lib/types';
 import { WorkoutView } from '@/components/WorkoutView';
 import { classWeather } from '@/lib/weather';
@@ -47,7 +47,6 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
         <div className="grow">
           <div className="eyebrow teal">{longDate(w.class_date)} · 9:00</div>
           <h1 style={{ fontSize: 28 }}>{w.title}</h1>
-          {w.focus && <p className="muted small" style={{ marginTop: 2 }}>{w.focus}</p>}
         </div>
         {me.is_admin && (
           <Link href={`/admin/build/${w.class_date}`} className="btn small ghost">
@@ -55,6 +54,12 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
           </Link>
         )}
       </div>
+      {(w.focus || upcoming) && (
+        <div className="title-meta">
+          <span className="muted small">{w.focus}</span>
+          {upcoming && <WhosComing classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />}
+        </div>
+      )}
       {w.status === 'draft' && <div className="notice bad">Draft. Only admins can see this until it’s published.</div>}
       <WorkoutView
         title={w.title}
@@ -65,11 +70,6 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
         classDate={w.class_date}
         canScale={upcoming && aiEnabled()}
         log={{ movements, benchmarks, today: todayLocal() }}
-        checkIn={
-          upcoming ? (
-            <CheckIn compact classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />
-          ) : undefined
-        }
         coach={
           me.is_admin
             ? {

@@ -343,9 +343,7 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .timer-digits { font-family: var(--display); font-weight: 800; font-size: 40px; font-variant-numeric: tabular-nums; line-height: 1; }
 .timer.zero .timer-digits { color: var(--gold); }
 
-/* Workout page: one card for who's coming and the gym modes; a peek line when a part is folded. */
-.class-bar { display: flex; flex-direction: column; gap: 12px; padding: 12px 14px; }
-.class-bar > :not(.mode-row) { padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+/* Workout page: the gym mode buttons; a peek line when a part is folded. */
 .mode-row { display: flex; gap: 8px; }
 .mode-row .btn { flex: 1; min-height: 44px; font-size: 15px; }
 .mode-row .btn.primary { flex: 1.4; }
@@ -390,3 +388,19 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .link-btn.fold-all { align-self: flex-end; margin: -8px 2px -6px; color: var(--ink-3); text-decoration: none; }
 .level-switch { margin-top: -8px; color: var(--ink-3); }
 .level-switch .link-btn { font-size: inherit; }
+
+/* Who's coming: a small avatar row by the workout title. */
+.title-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.title-meta .muted { min-width: 0; }
+.whos-coming { position: relative; display: flex; align-items: center; gap: 8px; flex: none; }
+.who-stack { display: flex; align-items: center; }
+.who-stack { gap: 6px; }
+.who-other, .who-me { display: inline-flex; border-radius: 50%; box-shadow: 0 0 0 2px var(--ground); }
+.who-me { position: relative; padding: 0; border: 0; background: none; cursor: pointer; z-index: 1; min-height: 0; }
+.who-x { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; background: rgba(28, 35, 33, 0.72); color: #fff; font-size: 14px; font-weight: 800; opacity: 0; transition: opacity 0.12s; }
+@media (hover: hover) { .who-me:hover .who-x { opacity: 1; } }
+.who-me[aria-expanded='true'] .who-x { opacity: 1; }
+.who-more { display: inline-grid; place-items: center; min-width: 34px; height: 34px; padding: 0 6px; border-radius: 17px; background: #fff; font-size: 12px; font-weight: 800; color: var(--ink-2); box-shadow: 0 0 0 2px var(--ground); }
+.coming-btn { min-height: 36px; padding: 0 12px; }
+.who-bubble { position: absolute; top: calc(100% + 8px); right: 0; z-index: 20; display: flex; flex-direction: column; gap: 8px; min-width: 180px; padding: 12px; border-radius: 14px; background: #fff; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14); }
+.who-bubble .btn { width: 100%; }
