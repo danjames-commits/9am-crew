@@ -80,17 +80,6 @@ export function WorkoutView({
             </div>
           )}
         </div>
-        <button
-          type="button"
-          className="wv-icon"
-          onClick={() => setOpen(parts.map(() => !allOpen))}
-          aria-label={allOpen ? 'Collapse all parts' : 'Expand all parts'}
-          title={allOpen ? 'Collapse all' : 'Expand all'}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            {allOpen ? <path d="M7 4l5 5 5-5M7 20l5-5 5 5" /> : <path d="M7 9l5-5 5 5M7 15l5 5 5-5" />}
-          </svg>
-        </button>
         <span className="grow" />
         {coach && (
           <button type="button" className="btn small ghost" onClick={() => setMode('coach')}>
@@ -121,6 +110,12 @@ export function WorkoutView({
         </div>
       )}
 
+      <button type="button" className="fold-all" onClick={() => setOpen(parts.map(() => !allOpen))}>
+        {allOpen ? 'Collapse all' : 'Expand all'}
+        <span className={`chev ${allOpen ? 'up' : ''}`} aria-hidden="true">
+          <Icon name="next" size={16} />
+        </span>
+      </button>
       {parts.map((p, k) => {
         const w = partWords(p, i, outside);
         return (
