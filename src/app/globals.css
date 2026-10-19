@@ -387,3 +387,4 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .week-fold[open] .chev { transform: rotate(-90deg); }
 
 .link-btn { align-self: flex-start; background: none; border: 0; padding: 0; min-height: 0; color: var(--teal); font: inherit; font-size: 14px; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.link-btn.fold-all { align-self: flex-end; margin: -8px 2px -6px; color: var(--ink-3); text-decoration: none; }

@@ -70,12 +70,9 @@ export function WorkoutView({
         ))}
       </div>
 
-      <div className="row between">
-        <span className="muted small">{parts.length} parts</span>
-        <button type="button" className="btn small ghost" onClick={() => setOpen(parts.map(() => !allOpen))}>
-          {allOpen ? 'Collapse all' : 'Expand all'}
-        </button>
-      </div>
+      <button type="button" className="link-btn fold-all" onClick={() => setOpen(parts.map(() => !allOpen))}>
+        {allOpen ? 'Collapse all' : 'Expand all'}
+      </button>
 
       {parts.map((p, k) => {
         const w = partWords(p, i, outside);
