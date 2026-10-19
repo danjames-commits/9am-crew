@@ -433,7 +433,7 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 @keyframes cheer-fly { 0% { opacity: 1; transform: translate(-50%, 0) scale(0.6); } 100% { opacity: 0; transform: translate(calc(-50% + var(--x)), -70px) scale(1.2); } }
 @media (prefers-reduced-motion: reduce) { .cheer-burst { display: none; } .cheer-pop.on .cheer-hands { animation: none; } }
 
-/* Workout page toolbar: level chip, fold-all, coach, workout mode. One row. */
+/* Workout page toolbar: level chip, coach, workout mode. One row. */
 .wv-toolbar { display: flex; align-items: center; gap: 6px; }
 .wv-toolbar .btn.small { min-height: 40px; padding: 0 12px; }
 .wv-level { position: relative; }
@@ -445,7 +445,3 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .wv-pop-item.on { background: var(--ground); }
 .wv-toolbar .btn { white-space: nowrap; }
 
-/* "Collapse all" sits on the right, lined up with each part's own arrow. */
-.fold-all { align-self: flex-end; display: inline-flex; align-items: center; gap: 4px; margin: -10px 14px -8px 0; padding: 4px 0; min-height: 0; border: 0; background: none; color: var(--ink-3); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
-.fold-all .chev { display: flex; transform: rotate(90deg); transition: transform 0.15s; }
-.fold-all .chev.up { transform: rotate(-90deg); }

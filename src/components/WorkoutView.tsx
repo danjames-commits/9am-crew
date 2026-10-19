@@ -52,7 +52,6 @@ export function WorkoutView({
   }, [levelOpen]);
   const i = level - 1;
   const ctx: QuickLogContext = { ...log, classDate, maxes };
-  const allOpen = open.every(Boolean);
 
   return (
     <div className="stack loose">
@@ -110,12 +109,6 @@ export function WorkoutView({
         </div>
       )}
 
-      <button type="button" className="fold-all" onClick={() => setOpen(parts.map(() => !allOpen))}>
-        {allOpen ? 'Collapse all' : 'Expand all'}
-        <span className={`chev ${allOpen ? 'up' : ''}`} aria-hidden="true">
-          <Icon name="next" size={16} />
-        </span>
-      </button>
       {parts.map((p, k) => {
         const w = partWords(p, i, outside);
         return (
