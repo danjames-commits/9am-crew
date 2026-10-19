@@ -57,6 +57,14 @@ export function FollowMode({
   const screen = screens[at];
   const go = useCallback((d: number) => setAt((a) => Math.max(0, Math.min(screens.length - 1, a + d))), [screens.length]);
   const scroller = useRef<HTMLDivElement>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!settingsOpen) return;
+    const close = (e: PointerEvent) => !settingsRef.current?.contains(e.target as Node) && setSettingsOpen(false);
+    document.addEventListener('pointerdown', close);
+    return () => document.removeEventListener('pointerdown', close);
+  }, [settingsOpen]);
 
   useEffect(() => {
     scroller.current?.scrollTo({ top: 0 });
@@ -129,13 +137,51 @@ export function FollowMode({
           <div className="follow-mode">{isCoach ? 'Coach mode' : 'Workout mode'}</div>
           <div className="follow-title">{title}</div>
         </div>
-        <div className="follow-size" role="group" aria-label="Text size">
-          <button type="button" onClick={() => setSize((s) => Math.max(0, s - 1))} disabled={size === 0} aria-label="Smaller text">
-            A−
+        <div className="follow-settings-wrap" ref={settingsRef}>
+          <button type="button" className="follow-chip" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((o) => !o)}>
+            {[!isCoach ? LEVELS[level - 1].name : null, hasOutdoor ? (outside ? 'Outside' : 'Inside') : null].filter(Boolean).join(' · ') || 'Aa'}
+            <span aria-hidden="true"> ▾</span>
           </button>
-          <button type="button" onClick={() => setSize((s) => Math.min(SIZES.length - 1, s + 1))} disabled={size === SIZES.length - 1} aria-label="Bigger text">
-            A+
-          </button>
+          {settingsOpen && (
+            <div className="follow-settings" role="dialog" aria-label="Settings">
+              {!isCoach && (
+                <div className="stack tight">
+                  <div className="follow-eyebrow">Level</div>
+                  <div className="segmented" role="group" aria-label="Level">
+                    {LEVELS.map((l) => (
+                      <button key={l.n} type="button" aria-pressed={level === l.n} onClick={() => setLevel(l.n)}>
+                        {l.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {hasOutdoor && (
+                <div className="stack tight">
+                  <div className="follow-eyebrow">Where</div>
+                  <div className="segmented" role="group" aria-label="Inside or outside" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                    <button type="button" aria-pressed={!outside} onClick={() => setOutside(false)}>
+                      Inside
+                    </button>
+                    <button type="button" aria-pressed={outside} onClick={() => setOutside(true)}>
+                      Outside
+                    </button>
+                  </div>
+                </div>
+              )}
+              <div className="stack tight">
+                <div className="follow-eyebrow">Text size</div>
+                <div className="follow-size" role="group" aria-label="Text size">
+                  <button type="button" onClick={() => setSize((s) => Math.max(0, s - 1))} disabled={size === 0} aria-label="Smaller text">
+                    A−
+                  </button>
+                  <button type="button" onClick={() => setSize((s) => Math.min(SIZES.length - 1, s + 1))} disabled={size === SIZES.length - 1} aria-label="Bigger text">
+                    A+
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -155,30 +201,6 @@ export function FollowMode({
       </nav>
 
       <div className="follow-body" ref={scroller} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-        {(!isCoach || hasOutdoor) && (screen === 'intro' || part) && (
-          <div className="follow-controls">
-            {!isCoach && (
-              <div className="segmented" role="group" aria-label="Level">
-                {LEVELS.map((l) => (
-                  <button key={l.n} type="button" aria-pressed={level === l.n} onClick={() => setLevel(l.n)}>
-                    {l.name}
-                  </button>
-                ))}
-              </div>
-            )}
-            {hasOutdoor && (
-              <div className="segmented" role="group" aria-label="Inside or outside" style={{ gridTemplateColumns: '1fr 1fr' }}>
-                <button type="button" aria-pressed={!outside} onClick={() => setOutside(false)}>
-                  Inside
-                </button>
-                <button type="button" aria-pressed={outside} onClick={() => setOutside(true)}>
-                  Outside
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
         {screen === 'intro' && (
           <section className="stack loose">
             <h2 className="follow-h">Before class</h2>
