@@ -31,6 +31,7 @@ await db.exec(readFileSync(new URL('../supabase/migration-009-faster-rls.sql', i
 const BENCH_SQL = readFileSync(new URL('../supabase/migration-010-benchmarks.sql', import.meta.url), 'utf8');
 await db.exec(BENCH_SQL);
 await db.exec(readFileSync(new URL('../supabase/migration-011-benchmark-no-date.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-012-chat-reads.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -234,6 +235,26 @@ r = await db.query(`select count(*)::int as n from public.benchmarks where name 
 assert.equal(r.rows[0].n, 1);
 await as(A, `delete from public.workouts where class_date = '2026-11-13'`);
 ok('benchmarks: admins keep the list, members log their own, Cycle 1 parts get tagged');
+
+r = await as(B, `select public.mark_chat_read() as before`);
+assert.equal(r.rows[0].before, null, 'first open has no earlier read');
+r = await as(B, `select public.chat_unread() as u`);
+assert.equal(r.rows[0].u, false);
+await as(A, `insert into public.messages (body) values ('Morning crew')`);
+r = await as(B, `select public.chat_unread() as u`);
+assert.equal(r.rows[0].u, true, 'someone else posted');
+await as(A, `select public.mark_chat_read()`);
+await as(A, `insert into public.messages (body) values ('See you at 9')`);
+r = await as(A, `select public.chat_unread() as u`);
+assert.equal(r.rows[0].u, false, 'your own posts never light the dot');
+r = await as(B, `select public.mark_chat_read() as before`);
+assert.ok(r.rows[0].before, 'returns when you last read');
+r = await as(B, `select public.chat_unread() as u`);
+assert.equal(r.rows[0].u, false);
+r = await as(B, `select user_id from public.chat_reads`);
+assert.deepEqual(r.rows.map((x) => x.user_id), [B], 'you only see your own read marker');
+await fails(B, `update public.chat_reads set read_at = now() where user_id = '${A}'`, 'touch someone else’s marker');
+ok('chat: a dot when others post since you last looked');
 
 await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);

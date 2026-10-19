@@ -212,6 +212,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
   font-weight: 600;
 }
 .nav a[aria-current='page'] { color: var(--ink); font-weight: 800; }
+.nav-icon { position: relative; display: flex; }
+.nav-dot { position: absolute; top: -2px; right: -5px; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: inset 0 0 0 1.5px rgba(92, 68, 0, 0.55), 0 0 0 2px #fff; }
+
+/* Chat: where you left off. */
+.chat-new { display: flex; align-items: center; gap: 10px; color: var(--gold-ink); font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
+.chat-new::before, .chat-new::after { content: ''; flex: 1; height: 1px; background: var(--gold); }
 
 .bubble { background: var(--card); border-radius: 16px 16px 16px 4px; padding: 9px 13px; max-width: 80%; overflow-wrap: anywhere; }
 .bubble.mine { background: var(--ink); color: var(--ground); border-radius: 16px 16px 4px 16px; margin-left: auto; }

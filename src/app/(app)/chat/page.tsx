@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function ChatPage() {
   const { supabase } = await signedIn();
-  const [{ me }, { data: recent }, { names, animals }] = await Promise.all([
+  const [{ me }, { data: recent }, { names, animals }, { data: read }] = await Promise.all([
     requireMember(),
     supabase
       .from('messages')
@@ -16,6 +16,8 @@ export default async function ChatPage() {
       .order('id', { ascending: false })
       .limit(150),
     getPeople(supabase),
+    // When you last looked, so the room can mark where you left off.
+    supabase.from('chat_reads').select('read_at').maybeSingle(),
   ]);
   after(() => maybePostRecap(supabase));
   const rows = (recent ?? []).reverse();
@@ -29,7 +31,7 @@ export default async function ChatPage() {
         <h1>9AM Crew</h1>
         <p className="muted">{count} members</p>
       </header>
-      <ChatRoom initial={messages} initialCheers={cheers} initialNames={names} initialAnimals={animals} meId={me.id} />
+      <ChatRoom initial={messages} initialCheers={cheers} initialNames={names} initialAnimals={animals} meId={me.id} lastRead={read?.read_at ?? null} />
     </main>
   );
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { firstName } from '@/lib/ui';
 import { Avatar } from './Avatar';
@@ -27,12 +27,15 @@ export function ChatRoom({
   initialNames,
   initialAnimals,
   meId,
+  lastRead,
 }: {
   initial: ChatMessage[];
   initialCheers: Cheer[];
   initialNames: Record<string, string>;
   initialAnimals: Record<string, string | null>;
   meId: string;
+  /** When you last opened the chat (null the first time). */
+  lastRead: string | null;
 }) {
   const supabase = useMemo(() => supabaseBrowser(), []);
   const [messages, setMessages] = useState(initial);
@@ -43,6 +46,21 @@ export function ChatRoom({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const bottom = useRef<HTMLDivElement>(null);
+  const newLine = useRef<HTMLDivElement>(null);
+  // Where you left off: the first message from someone else since you last looked.
+  const [firstNewId] = useState(() => {
+    if (!lastRead) return null;
+    const since = new Date(lastRead).getTime();
+    const i = initial.findIndex((m) => m.user_id !== meId && new Date(m.created_at).getTime() > since);
+    return i > 0 ? initial[i].id : null;
+  });
+
+  // Opening the chat (and anything that arrives while it's open) counts as read.
+  useEffect(() => {
+    const timer = setTimeout(() => supabase.rpc('mark_chat_read').then(() => {}), 300);
+    return () => clearTimeout(timer);
+  }, [messages.length, supabase]);
+  useEffect(() => () => void supabase.rpc('mark_chat_read').then(() => {}), [supabase]);
 
   const addMessage = (m: ChatMessage) =>
     setMessages((list) => (list.some((x) => x.id === m.id) ? list : [...list, m].sort((a, b) => a.id - b.id)));
@@ -84,8 +102,11 @@ export function ChatRoom({
       });
   }, [messages, names, supabase]);
 
+  const firstScroll = useRef(true);
   useEffect(() => {
-    bottom.current?.scrollIntoView({ block: 'end' });
+    if (firstScroll.current && newLine.current) newLine.current.scrollIntoView({ block: 'center' });
+    else bottom.current?.scrollIntoView({ block: 'end' });
+    firstScroll.current = false;
   }, [messages.length]);
 
   async function send(e: React.FormEvent) {
@@ -114,47 +135,58 @@ export function ChatRoom({
     }
   }
 
+  function row(m: ChatMessage, i: number) {
+    if (m.kind === 'recap') {
+      return (
+        <div key={m.id} className="card teal stack tight">
+          <div className="eyebrow teal">Friday recap</div>
+          <p className="pre">{m.body}</p>
+        </div>
+      );
+    }
+    const name = names[m.user_id ?? ''] ?? 'Member';
+    const mine = m.user_id === meId;
+    const showName = !mine && (i === 0 || messages[i - 1].user_id !== m.user_id || messages[i - 1].kind === 'pr');
+    if (m.kind === 'pr' && m.lift_log_id) {
+      const these = cheers.filter((c) => c.lift_log_id === m.lift_log_id);
+      const cheered = these.some((c) => c.user_id === meId);
+      return (
+        <PrCard
+          key={m.id}
+          who={mine ? 'You' : firstName(name)}
+          body={m.body}
+          cheerers={these.map((c) => ({ id: c.user_id, name: names[c.user_id] ?? 'Member', animal: animals[c.user_id] }))}
+          cheer={<CheerPop count={these.length} cheered={cheered} disabled={mine} name={name} onToggle={() => toggleCheer(m.lift_log_id!)} />}
+        />
+      );
+    }
+    return (
+      <div key={m.id} className="row top" style={{ justifyContent: mine ? 'flex-end' : 'flex-start' }}>
+        {!mine && (
+          <Avatar id={m.user_id ?? ''} name={name} animal={animals[m.user_id ?? '']} size="sm" hidden={!showName} />
+        )}
+        <div className={`bubble ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)}>
+          {showName && <div className="who">{firstName(name)}</div>}
+          {m.body}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="stack" aria-live="polite">
         {messages.length === 0 && <p className="muted center">No messages yet. Say good morning!</p>}
-        {messages.map((m, i) => {
-          if (m.kind === 'recap') {
-            return (
-              <div key={m.id} className="card teal stack tight">
-                <div className="eyebrow teal">Friday recap</div>
-                <p className="pre">{m.body}</p>
+        {messages.map((m, i) => (
+          <Fragment key={m.id}>
+            {m.id === firstNewId && (
+              <div ref={newLine} className="chat-new" role="separator">
+                New
               </div>
-            );
-          }
-          const name = names[m.user_id ?? ''] ?? 'Member';
-          const mine = m.user_id === meId;
-          const showName = !mine && (i === 0 || messages[i - 1].user_id !== m.user_id || messages[i - 1].kind === 'pr');
-          if (m.kind === 'pr' && m.lift_log_id) {
-            const these = cheers.filter((c) => c.lift_log_id === m.lift_log_id);
-            const cheered = these.some((c) => c.user_id === meId);
-            return (
-              <PrCard
-                key={m.id}
-                who={mine ? 'You' : firstName(name)}
-                body={m.body}
-                cheerers={these.map((c) => ({ id: c.user_id, name: names[c.user_id] ?? 'Member', animal: animals[c.user_id] }))}
-                cheer={<CheerPop count={these.length} cheered={cheered} disabled={mine} name={name} onToggle={() => toggleCheer(m.lift_log_id!)} />}
-              />
-            );
-          }
-          return (
-            <div key={m.id} className="row top" style={{ justifyContent: mine ? 'flex-end' : 'flex-start' }}>
-              {!mine && (
-                <Avatar id={m.user_id ?? ''} name={name} animal={animals[m.user_id ?? '']} size="sm" hidden={!showName} />
-              )}
-              <div className={`bubble ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)}>
-                {showName && <div className="who">{firstName(name)}</div>}
-                {m.body}
-              </div>
-            </div>
-          );
-        })}
+            )}
+            {row(m, i)}
+          </Fragment>
+        ))}
         <div ref={bottom} />
       </div>
       <form
