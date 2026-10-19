@@ -408,3 +408,5 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .follow-chip { min-height: 40px; padding: 0 12px; border: 0; border-radius: 20px; background: #fff; color: var(--ink); font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; white-space: nowrap; }
 .follow-settings { position: absolute; right: 0; top: calc(100% + 8px); z-index: 10; width: min(340px, calc(100vw - 32px)); display: flex; flex-direction: column; gap: 14px; padding: 14px; background: #fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); }
 .follow-settings .segmented { background: var(--ground); }
+.bench-ahead { background: var(--ground); border-radius: 12px; padding: 10px 12px; color: var(--ink-2); }
+.follow .bench-ahead { background: #fff; }

@@ -4,6 +4,7 @@ import { logLift } from '@/app/actions';
 import type { Part } from '@/lib/types';
 import type { Benchmark } from '@/lib/benchmarks';
 import { weightFor } from '@/lib/programming/engine';
+import { shortDate } from '@/lib/dates';
 import { BenchmarkLogForm } from './BenchmarkLogForm';
 
 type LiftResult = { error?: string; ok?: boolean; isPr?: boolean; at?: number } | null;
@@ -24,8 +25,15 @@ export function partBenchmark(p: Part, outside: boolean, benchmarks: Benchmark[]
 
 /** "Log your lift" / "Log your result" right under a part of the workout. */
 export function QuickLog({ part, level, outside, ctx, big = false }: { part: Part; level: number; outside: boolean; ctx: QuickLogContext; big?: boolean }) {
-  if (ctx.classDate > ctx.today) return null; // nothing to log before the day
   const bench = partBenchmark(part, outside, ctx.benchmarks);
+  // Before the day: say it's a benchmark and that logging opens on the day.
+  if (ctx.classDate > ctx.today) {
+    return bench ? (
+      <div className="bench-ahead small">
+        <b>★ Benchmark: {bench.name}.</b> Log your result right here on {shortDate(ctx.classDate).split(' · ')[0]}.
+      </div>
+    ) : null;
+  }
   if (bench) {
     return <QuickBenchmark bench={bench} level={level} ctx={ctx} big={big} />;
   }
