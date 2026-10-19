@@ -29,6 +29,7 @@ export function Builder({
   movements,
   aiOn,
   savedNotes,
+  benchmarks = [],
 }: {
   date: string;
   schedule: Schedule;
@@ -37,6 +38,7 @@ export function Builder({
   movements: string[];
   aiOn: boolean;
   savedNotes: string;
+  benchmarks?: string[];
 }) {
   const router = useRouter();
   const suggest = (swap: number, adjust: number) => suggestWorkout({ date, schedule, swap, adjust });
@@ -230,7 +232,7 @@ export function Builder({
             <p className="muted small">Each member sees their own weight, worked out from their logged {p.lift.movement.toLowerCase()}.</p>
           )}
 
-          {editing === i && <PartEditor part={p} movements={movements} onChange={(np) => setPart(i, np)} onRemove={() => { update({ ...draft, parts: draft.parts.filter((_, j) => j !== i) }); setEditing(null); }} />}
+          {editing === i && <PartEditor part={p} movements={movements} benchmarks={benchmarks} onChange={(np) => setPart(i, np)} onRemove={() => { update({ ...draft, parts: draft.parts.filter((_, j) => j !== i) }); setEditing(null); }} />}
         </section>
         );
       })}
@@ -287,7 +289,38 @@ export function Builder({
   );
 }
 
-function PartEditor({ part, movements, onChange, onRemove }: { part: Part; movements: string[]; onChange: (p: Part) => void; onRemove: () => void }) {
+function BenchmarkPicker({ part, benchmarks, onChange }: { part: Part; benchmarks: string[]; onChange: (p: Part) => void }) {
+  if (!benchmarks.length) return null;
+  return (
+    <div className="row fields">
+      <label className="field grow">
+        Benchmark (members can log a result)
+        <select value={part.benchmark ?? ''} onChange={(e) => onChange({ ...part, benchmark: e.target.value || undefined })}>
+          <option value="">Not a benchmark</option>
+          {benchmarks.map((b) => (
+            <option key={b}>{b}</option>
+          ))}
+        </select>
+      </label>
+      {part.outdoor && (
+        <label className="field grow">
+          Outside version
+          <select
+            value={part.outdoor.benchmark ?? ''}
+            onChange={(e) => onChange({ ...part, outdoor: { ...part.outdoor!, benchmark: e.target.value || undefined } })}
+          >
+            <option value="">Same as inside</option>
+            {benchmarks.map((b) => (
+              <option key={b}>{b}</option>
+            ))}
+          </select>
+        </label>
+      )}
+    </div>
+  );
+}
+
+function PartEditor({ part, movements, benchmarks, onChange, onRemove }: { part: Part; movements: string[]; benchmarks: string[]; onChange: (p: Part) => void; onRemove: () => void }) {
   const setVersion = (i: number, v: string) => onChange({ ...part, versions: part.versions.map((x, j) => (j === i ? v : x)) as LevelText });
   if (part.lift) {
     const lift = part.lift;
@@ -374,6 +407,7 @@ function PartEditor({ part, movements, onChange, onRemove }: { part: Part; movem
           </button>
         )}
       </div>
+      {(part.kind === 'conditioning' || part.kind === 'skill') && <BenchmarkPicker part={part} benchmarks={benchmarks} onChange={onChange} />}
       {part.kind === 'strength' && (
         <button
           type="button"

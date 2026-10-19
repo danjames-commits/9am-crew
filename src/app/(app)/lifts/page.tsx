@@ -5,6 +5,7 @@ import { todayLocal, shortDate } from '@/lib/dates';
 import { lb } from '@/lib/ui';
 import { LogLiftForm } from '@/components/LogLiftForm';
 import { LevelCard } from '@/components/LevelCard';
+import { LiftsTabs } from '@/components/LiftsTabs';
 import { Icon } from '@/components/Icon';
 
 export const dynamic = 'force-dynamic';
@@ -17,6 +18,7 @@ export default async function LiftsPage() {
   return (
     <main className="screen">
       <h1>My lifts</h1>
+      <LiftsTabs current="lifts" />
 
       <LevelCard level={me.level} />
 

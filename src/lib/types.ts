@@ -37,7 +37,9 @@ export interface Part {
   versions: LevelText;
   lift?: LiftSpec;
   /** Version to do outside when the weather is good (running instead of rowing, etc.). */
-  outdoor?: { title: string; versions: LevelText };
+  outdoor?: { title: string; versions: LevelText; benchmark?: string };
+  /** Name of the benchmark this part is (Cindy, 1,000 m row...), so members can log a result right here. */
+  benchmark?: string;
 }
 
 export interface WorkoutDraft {

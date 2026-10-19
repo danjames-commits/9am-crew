@@ -28,6 +28,8 @@ await db.exec(readFileSync(new URL('../supabase/migration-006-animals.sql', impo
 await db.exec(readFileSync(new URL('../supabase/migration-007-custom-avatars.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-008-coach-notes.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-009-faster-rls.sql', import.meta.url), 'utf8'));
+const BENCH_SQL = readFileSync(new URL('../supabase/migration-010-benchmarks.sql', import.meta.url), 'utf8');
+await db.exec(BENCH_SQL);
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -203,6 +205,33 @@ r = await db.query(`select count(*)::int as n from public.workout_coach_notes`);
 assert.equal(r.rows[0].n, 0);
 await as(A, `delete from public.workouts where class_date = '2026-11-04'`);
 ok('coach notes: admins only, need a workout, go when the workout goes');
+
+// Benchmarks.
+const cindy = (await db.query(`select id from public.benchmarks where name = 'Cindy'`)).rows[0].id;
+await as(B, `insert into public.benchmark_results (benchmark_id, rounds, reps, level) values (${cindy}, 12, 7, 2)`);
+await fails(B, `insert into public.benchmark_results (benchmark_id, user_id, rounds) values (${cindy}, '${A}', 30)`, 'log for someone else');
+await fails(B, `insert into public.benchmark_results (benchmark_id) values (${cindy})`, 'result with no score');
+await fails(B, `insert into public.benchmarks (name, score) values ('Murph', 'time')`, 'member adds benchmark');
+await as(A, `insert into public.benchmarks (name, score, better) values ('Murph', 'time', 'lower')`);
+r = await as(C, `select rounds, reps from public.benchmark_results`);
+assert.deepEqual(r.rows.map((x) => [x.rounds, x.reps]), [[12, 7]]);
+await as(B, `update public.benchmark_results set note = 'felt good'`);
+await as(C, `update public.benchmark_results set rounds = 1`);
+r = await db.query(`select rounds, note from public.benchmark_results`);
+assert.deepEqual([r.rows[0].rounds, r.rows[0].note], [12, 'felt good'], 'only you can edit your result');
+await as(C, `delete from public.benchmark_results`); // admins can tidy up
+r = await db.query(`select count(*)::int as n from public.benchmark_results`);
+assert.equal(r.rows[0].n, 0);
+// Running the migration again tags a Cycle 1 workout's part and keeps everything else.
+await as(A, `insert into public.workouts (class_date, title, parts) values ('2026-11-13', 'Cindy day', '[{"kind":"warmup","title":"Warm-up"},{"kind":"conditioning","title":"Cindy"}]')`);
+await db.exec(BENCH_SQL);
+r = await db.query(`select parts from public.workouts where class_date = '2026-11-13'`);
+assert.equal(r.rows[0].parts[1].benchmark, 'Cindy');
+assert.equal(r.rows[0].parts[0].benchmark, undefined);
+r = await db.query(`select count(*)::int as n from public.benchmarks where name = 'Murph'`);
+assert.equal(r.rows[0].n, 1);
+await as(A, `delete from public.workouts where class_date = '2026-11-13'`);
+ok('benchmarks: admins keep the list, members log their own, Cycle 1 parts get tagged');
 
 await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);

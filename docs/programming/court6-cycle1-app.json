@@ -250,8 +250,10 @@
               "1 km run/walk, as fast as you can hold the whole way.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed.",
               "1 km run, as fast as you can at an even pace.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed.",
               "1 km run, hard but even: same pace every 200 m.\nThen walk and drink water, 8–10 min.\nWrite down your time, level, and whether you ran or rowed."
-            ]
-          }
+            ],
+            "benchmark": "1 km run"
+          },
+          "benchmark": "1,000 m row"
         },
         {
           "kind": "conditioning",
@@ -483,7 +485,8 @@
             "Learn the stations. Then 10 min, as many rounds as you can, steady:\n10 wall balls (6/10 lb, lower target) · 20 m farmers carry 2 × 18/26 lb · 10 bodyweight lunges (total) · 4 step-back burpees + broad jump\nWrite down rounds + reps. Redo in week 8.",
             "Learn the stations. Then 10 min, as many rounds as you can, steady:\n10 wall balls (6/10 lb) · 20 m farmers carry 2 × 26/35 lb · 10 sandbag lunges (22/33 lb, total) · 4 burpee broad jumps\nWrite down rounds + reps. Redo in week 8.",
             "Learn the stations. Then 10 min, as many rounds as you can, steady:\n10 wall balls (10/14 lb) · 20 m farmers carry 2 × 35/53 lb · 10 sandbag lunges (22/44 lb, total) · 4 burpee broad jumps\nWrite down rounds + reps. Redo in week 8."
-          ]
+          ],
+          "benchmark": "Station AMRAP (10 min)"
         },
         {
           "kind": "skill",
@@ -623,7 +626,8 @@
             "Test: max hanging knee raises to hip height, unbroken\nOne fresh try. Then every 2 min × 4 (level 1): 20 s tuck hollow hold · 3 hanging knee raises · 3–5 ring rows, feet forward, 3 s down\nWrite down your max and your level.",
             "Test: max hanging knee raises to hip height, unbroken\nOne fresh try. Then every 2 min × 4 (level 1): 20 s hollow hold · 3 hanging knee raises · 3–5 band-assisted strict pull-ups, 3 s down\nWrite down your max and your level.",
             "Test: max toes-to-bar, unbroken\nOne fresh try. Then every 2 min × 4 (level 1): 20 s hollow hold · 3 hanging knee raises · 3–5 strict pull-ups, 3 s down\nWrite down your max and your level."
-          ]
+          ],
+          "benchmark": "Toes-to-bar test"
         },
         {
           "kind": "conditioning",
@@ -1611,7 +1615,8 @@
             "As many rounds as you can in 20 min:\n5 ring rows · 10 incline push-ups · 15 box squats\nWrite down your rounds + reps and your level.",
             "As many rounds as you can in 20 min:\n5 banded or jumping pull-ups · 10 push-ups (hands on a box if needed) · 15 air squats\nKeep pull-up sets unbroken: scale before you break them into singles.\nWrite down your rounds + reps and your level.",
             "As many rounds as you can in 20 min:\n5 pull-ups (kipping OK) · 10 push-ups · 15 air squats\nKeep pull-up sets unbroken: scale before you break them into singles.\nWrite down your rounds + reps and your level."
-          ]
+          ],
+          "benchmark": "Cindy"
         },
         {
           "kind": "cooldown",
@@ -3058,8 +3063,10 @@
               "1 km run/walk, as fast as you can hold the whole way.\nSame route as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.",
               "1 km run, as fast as you can at an even pace.\nSame route as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed.",
               "1 km run, hard but even: same pace every 200 m.\nSame route as Week 1. Walk 8–10 min after.\nWrite down your time, level, and whether you ran or rowed."
-            ]
-          }
+            ],
+            "benchmark": "1 km run"
+          },
+          "benchmark": "1,000 m row"
         },
         {
           "kind": "conditioning",
@@ -3300,7 +3307,8 @@
             "As many rounds as you can in 10 min, steady:\n10 wall balls 6/10 lb, lower target · 20 m farmers carry 2 × 18/26 lb · 10 bodyweight lunges (total) · 4 step-back burpees + a broad jump each\nWrite down rounds + reps and your level; compare with Week 1.",
             "As many rounds as you can in 10 min, steady:\n10 wall balls 6/10 lb · 20 m farmers carry 2 × 26/35 lb · 10 sandbag lunges 22/33 lb (total) · 4 burpee broad jumps\nWrite down rounds + reps and your level; compare with Week 1.",
             "As many rounds as you can in 10 min, steady:\n10 wall balls 10/14 lb · 20 m farmers carry 2 × 35/53 lb · 10 sandbag lunges 22/44 lb (total) · 4 burpee broad jumps\nWrite down rounds + reps and your level; compare with Week 1."
-          ]
+          ],
+          "benchmark": "Station AMRAP (10 min)"
         },
         {
           "kind": "skill",
@@ -3440,7 +3448,8 @@
             "Hanging knee raises to hip height: max unbroken, one try\nWarm up with 3 × 3 easy hanging knee raises.\nWrite down your max, your level and the change from Week 2.",
             "Hanging knee raises to hip height: max unbroken, one try\nWarm up with 3 × 3 easy kipping knee raises.\nWrite down your max, your level and the change from Week 2.\nOptional: one set of max strict pull-ups. Write that down too.",
             "Toes-to-bar: max unbroken, one try\nWarm up with 3 × 3 easy toes-to-bar.\nWrite down your max, your level and the change from Week 2.\nOptional: one set of max strict pull-ups. Write that down too."
-          ]
+          ],
+          "benchmark": "Toes-to-bar test"
         },
         {
           "kind": "conditioning",
@@ -3531,8 +3540,10 @@
               "3 rounds for time, 15 min cap:\n300 m run · 21 kettlebell swings (18/26 lb) · 12 ring rows\nNeed it lighter? 2 rounds at Gentle.\nWrite down time, level, and run or row.",
               "3 rounds for time, 15 min cap:\n400 m run · 21 kettlebell swings (26/35 lb) · 12 banded or jumping pull-ups\nNeed it lighter? 2 rounds at Gentle.\nWrite down time, level, and run or row.",
               "3 rounds for time, 15 min cap:\n400 m run · 21 kettlebell swings (35/53 lb) · 12 pull-ups (kipping OK)\nNeed it lighter? 2 rounds at Gentle.\nWrite down time, level, and run or row."
-            ]
-          }
+            ],
+            "benchmark": "Helen (run)"
+          },
+          "benchmark": "Helen (row)"
         },
         {
           "kind": "cooldown",
@@ -3668,8 +3679,10 @@
               "4 legs for time, 26 min cap. Each leg: 300 m run, then the next station:\n1. 300 m row\n2. 20 m step-back burpee broad jumps\n3. 30 lunges (13/22 lb sandbag optional)\n4. 30 wall balls (6/10 lb)\nNo rower free? 250 m run instead.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran.",
               "4 legs for time, 26 min cap. Each leg: 400 m run, then the next station:\n1. 500 m row\n2. 20 m burpee broad jumps\n3. 30 sandbag lunges (22/33 lb)\n4. 40 wall balls (6/10 lb, 9 ft)\nNo rower free? 400 m run instead.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran.",
               "4 legs for time, 26 min cap. Each leg: 400 m run, then the next station:\n1. 500 m row\n2. 20 m burpee broad jumps\n3. 30 sandbag lunges (22/44 lb)\n4. 40 wall balls (10/14 lb, 9/10 ft)\nNo rower free? 400 m run instead.\nWrite down your time, level, leg 1 and leg 4 splits, and whether you biked or ran."
-            ]
-          }
+            ],
+            "benchmark": "Mini Challenge (run)"
+          },
+          "benchmark": "Mini Challenge (row)"
         },
         {
           "kind": "cooldown",

@@ -2,6 +2,7 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { estimateMax, type SavedCycle, type Schedule } from './programming/engine';
 import { classDays, daysBetween } from './dates';
+import type { Benchmark, BenchResult } from './benchmarks';
 
 export interface Program {
   cycle_start: string;
@@ -143,4 +144,19 @@ export async function emptyDays(supabase: SupabaseClient, from: string, to: stri
   const { data } = await supabase.from('workouts').select('class_date').gte('class_date', all[0]).lte('class_date', all[all.length - 1]);
   const taken = new Set((data ?? []).map((w) => w.class_date as string));
   return all.filter((d) => !taken.has(d));
+}
+
+/** The benchmark list, and one member's results (oldest first). */
+export async function getBenchmarks(supabase: SupabaseClient, userId: string) {
+  const [{ data: benchmarks }, { data: results }] = await Promise.all([
+    supabase.from('benchmarks').select('id, name, score, better, description, sort').order('sort').order('name'),
+    supabase
+      .from('benchmark_results')
+      .select('id, benchmark_id, user_id, done_on, level, time_s, rounds, reps, amount, capped, note, workout_date')
+      .eq('user_id', userId)
+      .order('done_on', { ascending: true })
+      .order('id', { ascending: true }),
+  ]);
+  const mine = ((results ?? []) as BenchResult[]).map((r) => ({ ...r, amount: r.amount == null ? null : Number(r.amount) }));
+  return { benchmarks: (benchmarks ?? []) as Benchmark[], results: mine };
 }

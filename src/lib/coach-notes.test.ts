@@ -39,3 +39,26 @@ describe('splitCoachNotes', () => {
     expect(splitCoachNotes('Cap 12:00 fixed')).toEqual([{ label: 'General', text: 'Cap 12:00 fixed' }]);
   });
 });
+
+import { notesByPart } from './coach-notes';
+
+describe('notesByPart', () => {
+  const parts = [
+    { kind: 'warmup', label: 'Warm-up', title: 'Warm-up' },
+    { kind: 'strength', label: 'Test', title: 'Squat test: heavy 3' },
+    { kind: 'conditioning', label: 'Conditioning', title: 'Cindy' },
+    { kind: 'cooldown', label: 'Cool-down', title: 'Cool-down + log' },
+  ];
+  const s = (label: string) => ({ label, text: 'x' });
+  it('puts each section on the part it is about', () => {
+    const { perPart, general } = notesByPart(
+      [s('Scaling'), s('Warm-up for Gentle'), s('Loads'), s('Test'), s('Cindy targets'), s('Conditioning targets'), s('Flush'), s('No machine (warm-up/cool-down)'), s('Masters or injury')],
+      parts,
+    );
+    expect(general.map((x) => x.label)).toEqual(['Scaling', 'Masters or injury']);
+    expect(perPart[0].map((x) => x.label)).toEqual(['Warm-up for Gentle', 'No machine (warm-up/cool-down)']);
+    expect(perPart[1].map((x) => x.label)).toEqual(['Loads', 'Test']);
+    expect(perPart[2].map((x) => x.label)).toEqual(['Cindy targets', 'Conditioning targets']);
+    expect(perPart[3].map((x) => x.label)).toEqual(['Flush', 'No machine (warm-up/cool-down)']);
+  });
+});

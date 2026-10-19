@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireMember, signedIn } from '@/lib/supabase/server';
-import { getBests, getPeople } from '@/lib/data';
+import { getBenchmarks, getBests, getPeople } from '@/lib/data';
 import { longDate, todayLocal } from '@/lib/dates';
 import { CheckIn } from '@/components/CheckIn';
 import type { Part } from '@/lib/types';
@@ -20,7 +20,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
   const { supabase, userId } = await signedIn();
   const weatherP = classWeather(date); // cached, so fetching it when nothing's outdoors costs little
 
-  const [{ me }, { data: w }, { names, animals }, { bests }, { data: attendance }, coachNote] = await Promise.all([
+  const [{ me }, { data: w }, { names, animals }, { bests, movements }, { data: attendance }, coachNote, { benchmarks }] = await Promise.all([
     requireMember(),
     supabase.from('workouts').select('id, class_date, title, focus, why, parts, status').eq('class_date', date).maybeSingle(),
     getPeople(supabase),
@@ -29,6 +29,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
     requireMember().then(async ({ me }) =>
       me.is_admin ? (await supabase.from('workout_coach_notes').select('body').eq('class_date', date).maybeSingle<{ body: string }>()).data : null,
     ),
+    getBenchmarks(supabase, userId),
   ]);
   if (!w) notFound();
   const weather = (w.parts as Part[]).some((p) => p.outdoor) ? await weatherP : null;
@@ -77,7 +78,24 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
         </section>
       )}
 
-      <WorkoutView parts={w.parts as Part[]} myLevel={me.level} maxes={maxes} weather={weather} classDate={w.class_date} canScale={upcoming && aiEnabled()} />
+      <WorkoutView
+        title={w.title}
+        parts={w.parts as Part[]}
+        myLevel={me.level}
+        maxes={maxes}
+        weather={weather}
+        classDate={w.class_date}
+        canScale={upcoming && aiEnabled()}
+        log={{ movements, benchmarks, today: todayLocal() }}
+        coach={
+          me.is_admin
+            ? {
+                notes: coachNote?.body ?? null,
+                going: (attendance ?? []).map((a) => names[a.user_id] ?? 'Member'),
+              }
+            : undefined
+        }
+      />
 
     </main>
   );
