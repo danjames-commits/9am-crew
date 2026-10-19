@@ -4,7 +4,6 @@ import { getBests } from '@/lib/data';
 import { todayLocal, shortDate } from '@/lib/dates';
 import { lb } from '@/lib/ui';
 import { LogLiftForm } from '@/components/LogLiftForm';
-import { LevelCard } from '@/components/LevelCard';
 import { LiftsTabs } from '@/components/LiftsTabs';
 import { Icon } from '@/components/Icon';
 
@@ -12,15 +11,14 @@ export const dynamic = 'force-dynamic';
 
 export default async function LiftsPage() {
   const { supabase, userId } = await signedIn();
-  const [{ me }, { bests, movements }] = await Promise.all([requireMember(), getBests(supabase, userId)]);
+  // requireMember keeps out people still waiting for approval.
+  const [, { bests, movements }] = await Promise.all([requireMember(), getBests(supabase, userId)]);
   const latestPr = bests.filter((b) => b.lastPr).sort((a, b) => (b.lastPr! > a.lastPr! ? 1 : -1))[0];
 
   return (
     <main className="screen">
       <h1>My lifts</h1>
       <LiftsTabs current="lifts" />
-
-      <LevelCard level={me.level} />
 
       <LogLiftForm movements={movements} today={todayLocal()} />
 

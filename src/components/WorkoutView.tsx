@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { setLevel as saveLevel } from '@/app/actions';
 import { LEVELS, type Level, type Part } from '@/lib/types';
 import { YourNumbers } from './YourNumbers';
 import { ScaleHelper } from './ScaleHelper';
@@ -36,6 +37,9 @@ export function WorkoutView({
   checkIn?: React.ReactNode;
 }) {
   const [level, setLevel] = useState<Level>(Math.min(4, Math.max(1, myLevel)) as Level);
+  // Your saved level; you can make the level you're looking at your own from here.
+  const [mine, setMine] = useState(myLevel);
+  const [savingLevel, startSaving] = useTransition();
   const hasOutdoor = parts.some((p) => p.outdoor);
   const [outside, setOutside] = useState(Boolean(hasOutdoor && weather?.outside));
   // Every part can fold away; all start open.
@@ -65,11 +69,29 @@ export function WorkoutView({
         {LEVELS.map((l) => (
           <button key={l.n} aria-pressed={level === l.n} onClick={() => setLevel(l.n)}>
             {l.name}
-            {l.n === myLevel && <small>your level</small>}
+            {l.n === mine && <small>your level</small>}
           </button>
         ))}
       </div>
 
+      {level !== mine && (
+        <div className="level-switch small">
+          Not your level.{' '}
+          <button
+            type="button"
+            className="link-btn"
+            disabled={savingLevel}
+            onClick={() =>
+              startSaving(async () => {
+                const r = await saveLevel(level);
+                if (r && 'ok' in r) setMine(level);
+              })
+            }
+          >
+            {savingLevel ? 'Saving…' : `Make ${LEVELS[level - 1].name} my level`}
+          </button>
+        </div>
+      )}
       <button type="button" className="link-btn fold-all" onClick={() => setOpen(parts.map(() => !allOpen))}>
         {allOpen ? 'Collapse all' : 'Expand all'}
       </button>
