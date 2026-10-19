@@ -1,9 +1,9 @@
 import Link from 'next/link';
 
-/** Switches between My numbers and Benchmarks. */
+/** Switches between My stats and Benchmarks. */
 export function LiftsTabs({ current }: { current: 'lifts' | 'benchmarks' }) {
   return (
-    <nav className="tabs" aria-label="My numbers sections">
+    <nav className="tabs" aria-label="My stats sections">
       <Link href="/lifts" aria-current={current === 'lifts' ? 'page' : undefined}>
         Lifts
       </Link>

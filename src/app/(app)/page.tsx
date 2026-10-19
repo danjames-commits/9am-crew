@@ -125,7 +125,7 @@ async function WeatherLine({ weather: weatherP, hasOutdoor }: { weather: ReturnT
 async function RecentBests({ prs: prsP, meId, names }: { prs: Promise<PrPost[]>; meId: string; names: Record<string, string> }) {
   const prs = await prsP;
   if (prs.length === 0) {
-    return <div className="card muted">No new bests this week yet. Log your lifts on the My numbers tab and they’ll show up here.</div>;
+    return <div className="card muted">No new bests this week yet. Log your lifts on the My stats tab and they’ll show up here.</div>;
   }
   return prs.map((p) => {
     const name = names[p.user_id] ?? 'Someone';

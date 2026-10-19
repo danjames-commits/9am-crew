@@ -34,10 +34,10 @@ export function YourNumbers({ part, level, maxes, bar = 45 }: { part: Part; leve
       <div className="small" style={box}>
         {pct != null ? (
           <>
-            Log a recent {movement.toLowerCase()} on <Link href="/lifts">My numbers</Link> and your sets will show here in pounds.
+            Log a recent {movement.toLowerCase()} on <Link href="/lifts">My stats</Link> and your sets will show here in pounds.
           </>
         ) : (
-          <>Start light and build up. Afterwards, log your top set on <Link href="/lifts">My numbers</Link> so future workouts use your numbers.</>
+          <>Start light and build up. Afterwards, log your top set on <Link href="/lifts">My stats</Link> so future workouts use your numbers.</>
         )}
       </div>
     );

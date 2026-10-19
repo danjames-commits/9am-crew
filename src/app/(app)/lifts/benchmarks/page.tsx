@@ -21,7 +21,7 @@ export default async function BenchmarksPage() {
 
   return (
     <main className="screen">
-      <h1>My numbers</h1>
+      <h1>My stats</h1>
       <LiftsTabs current="benchmarks" />
       <p className="muted">Timed tests and named workouts. Log a result each time you do one and watch it move.</p>
 

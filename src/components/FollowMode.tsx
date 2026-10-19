@@ -247,7 +247,7 @@ export function FollowMode({
               {isCoach
                 ? 'Remind everyone to log their lifts and any benchmark results.'
                 : ctx.classDate <= ctx.today
-                  ? 'Log your lifts and results on the parts that have a log button, or on My numbers.'
+                  ? 'Log your lifts and results on the parts that have a log button, or on My stats.'
                   : 'See you at 9.'}
             </p>
             <button type="button" className="btn primary big" onClick={onClose}>
