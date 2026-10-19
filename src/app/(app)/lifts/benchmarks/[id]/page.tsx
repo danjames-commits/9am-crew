@@ -38,7 +38,7 @@ export default async function BenchmarkPage({ params }: { params: Promise<{ id: 
             <div key={level.n}>
               <div className="eyebrow gold">Best · {level.name}</div>
               <div style={{ fontFamily: 'var(--display)', fontWeight: 800, fontSize: 24 }}>{formatScore(b, best!)}</div>
-              <div className="muted small">{shortDate(best!.done_on)}</div>
+              <div className="muted small">{best!.done_on ? shortDate(best!.done_on) : 'Date not remembered'}</div>
             </div>
           ))}
         </div>
@@ -57,7 +57,7 @@ export default async function BenchmarkPage({ params }: { params: Promise<{ id: 
                     {formatScore(b, r)} {bestIds.has(r.id) && <span className="badge">BEST</span>}
                   </div>
                   <div className="muted small">
-                    {shortDate(r.done_on)}
+                    {r.done_on ? shortDate(r.done_on) : 'Date not remembered'}
                     {r.level ? ` · ${levelName(r.level)}` : ''}
                     {r.note ? ` · ${r.note}` : ''}
                   </div>

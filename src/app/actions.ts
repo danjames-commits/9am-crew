@@ -128,7 +128,7 @@ export async function logLift(_: unknown, form: FormData) {
 
 export async function logBenchmark(input: {
   benchmark_id: number;
-  done_on: string;
+  done_on: string | null; // null = "I don't remember when"
   level: number | null;
   time?: string;
   rounds?: string;
@@ -139,7 +139,7 @@ export async function logBenchmark(input: {
   workout_date?: string | null;
 }) {
   const { supabase, me } = await requireMember();
-  if (!isDate(input.done_on) || input.done_on > todayLocal()) return { error: 'Pick a date (not in the future).' };
+  if (input.done_on !== null && (!isDate(input.done_on) || input.done_on > todayLocal())) return { error: 'Pick a date (not in the future), or tick “I don’t remember when”.' };
   const level = input.level != null && input.level >= 1 && input.level <= 4 ? Math.round(input.level) : null;
   const { data: b } = await supabase.from('benchmarks').select('id, name, score, better, description, sort').eq('id', input.benchmark_id).maybeSingle<Benchmark>();
   if (!b) return { error: 'That benchmark isn’t on the list any more.' };
@@ -168,7 +168,7 @@ export async function logBenchmark(input: {
   revalidatePath('/lifts/benchmarks');
   revalidatePath(`/lifts/benchmarks/${b.id}`);
   const first = !(earlier ?? []).some((r) => r.level === level);
-  return { ok: true as const, isBest: !first && isNewBest(b, (earlier ?? []) as BenchResult[], row), first };
+  return { ok: true as const, isBest: row.done_on !== null && !first && isNewBest(b, (earlier ?? []) as BenchResult[], row), first };
 }
 
 export async function deleteBenchmarkResult(id: number, benchmarkId: number) {

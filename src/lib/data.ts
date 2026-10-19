@@ -154,7 +154,7 @@ export async function getBenchmarks(supabase: SupabaseClient, userId: string) {
       .from('benchmark_results')
       .select('id, benchmark_id, user_id, done_on, level, time_s, rounds, reps, amount, capped, note, workout_date')
       .eq('user_id', userId)
-      .order('done_on', { ascending: true })
+      .order('done_on', { ascending: true, nullsFirst: true })
       .order('id', { ascending: true }),
   ]);
   const mine = ((results ?? []) as BenchResult[]).map((r) => ({ ...r, amount: r.amount == null ? null : Number(r.amount) }));

@@ -27,6 +27,7 @@ export function BenchmarkLogForm({
   const [benchmarkId, setBenchmarkId] = useState<number>(fixed?.benchmarkId ?? benchmarks[0]?.id);
   const [level, setLevel] = useState<number>(fixed?.level ?? myLevel);
   const [date, setDate] = useState(fixed ? (fixed.date > today ? today : fixed.date) : today);
+  const [unknownDate, setUnknownDate] = useState(false);
   const [min, setMin] = useState('');
   const [sec, setSec] = useState('');
   const [rounds, setRounds] = useState('');
@@ -55,7 +56,7 @@ export function BenchmarkLogForm({
     start(async () => {
       const r = await logBenchmark({
         benchmark_id: b!.id,
-        done_on: date,
+        done_on: unknownDate ? null : date,
         level,
         time: min || sec ? `${Number(min || 0)}:${String(Number(sec || 0)).padStart(2, '0')}` : '',
         rounds,
@@ -167,7 +168,16 @@ export function BenchmarkLogForm({
       {!fixed && (
         <label className="field">
           Date
-          <input type="date" value={date} max={today} onChange={(e) => setDate(e.target.value)} required />
+          <input type="date" value={date} max={today} onChange={(e) => setDate(e.target.value)} required={!unknownDate} disabled={unknownDate} />
+        </label>
+      )}
+      {!fixed && (
+        <label className="row check" style={{ marginTop: -6 }}>
+          <input type="checkbox" checked={unknownDate} onChange={(e) => setUnknownDate(e.target.checked)} />
+          <span>
+            I don’t remember when
+            <span className="muted small" style={{ display: 'block' }}>Counts toward your bests, but isn’t called a new best.</span>
+          </span>
         </label>
       )}
       <label className="field">

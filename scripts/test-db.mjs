@@ -30,6 +30,7 @@ await db.exec(readFileSync(new URL('../supabase/migration-008-coach-notes.sql', 
 await db.exec(readFileSync(new URL('../supabase/migration-009-faster-rls.sql', import.meta.url), 'utf8'));
 const BENCH_SQL = readFileSync(new URL('../supabase/migration-010-benchmarks.sql', import.meta.url), 'utf8');
 await db.exec(BENCH_SQL);
+await db.exec(readFileSync(new URL('../supabase/migration-011-benchmark-no-date.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -219,6 +220,7 @@ await as(B, `update public.benchmark_results set note = 'felt good'`);
 await as(C, `update public.benchmark_results set rounds = 1`);
 r = await db.query(`select rounds, note from public.benchmark_results`);
 assert.deepEqual([r.rows[0].rounds, r.rows[0].note], [12, 'felt good'], 'only you can edit your result');
+await as(B, `insert into public.benchmark_results (benchmark_id, rounds, done_on) values (${cindy}, 9, null)`); // date not remembered
 await as(C, `delete from public.benchmark_results`); // admins can tidy up
 r = await db.query(`select count(*)::int as n from public.benchmark_results`);
 assert.equal(r.rows[0].n, 0);

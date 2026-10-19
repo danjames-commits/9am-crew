@@ -40,7 +40,7 @@ export default async function BenchmarksPage() {
                   <div className="grow">
                     <div style={{ fontWeight: 700 }}>{b.name}</div>
                     <div className="muted small">
-                      {mine.length} {mine.length === 1 ? 'result' : 'results'} · last {day(last.done_on)}
+                      {mine.length} {mine.length === 1 ? 'result' : 'results'} · {last.done_on ? `last ${day(last.done_on)}` : 'date not remembered'}
                       {last.level ? ` · ${levelName(last.level)}` : ''}
                     </div>
                   </div>

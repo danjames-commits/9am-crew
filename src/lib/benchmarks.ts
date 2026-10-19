@@ -15,7 +15,7 @@ export interface BenchResult {
   id: number;
   benchmark_id: number;
   user_id: string;
-  done_on: string;
+  done_on: string | null; // null = date not remembered
   level: number | null;
   time_s: number | null;
   rounds: number | null;
