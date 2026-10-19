@@ -113,7 +113,7 @@ function QuickLift({ part, level, movement, ctx, big }: { part: Part; level: num
           New personal best! The crew has been told.
         </div>
       )}
-      {state?.ok && !state.isPr && <div className="notice good" role="status">Saved to My lifts.</div>}
+      {state?.ok && !state.isPr && <div className="notice good" role="status">Saved to My numbers.</div>}
     </form>
   );
 }

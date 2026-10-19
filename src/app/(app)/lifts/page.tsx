@@ -17,7 +17,7 @@ export default async function LiftsPage() {
 
   return (
     <main className="screen">
-      <h1>My lifts</h1>
+      <h1>My numbers</h1>
       <LiftsTabs current="lifts" />
 
       <LogLiftForm movements={movements} today={todayLocal()} />

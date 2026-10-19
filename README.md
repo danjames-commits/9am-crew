@@ -4,8 +4,8 @@ A phone-friendly web app for a small group that trains together every weekday at
 
 - **Today**: tap "I'm coming" for the next class and see who else is going.
 - **Workouts**: the next three weeks, each at four levels (Gentle, Steady, Strong, Full), with your own weights worked out from your lifts, and inside and outside versions depending on the weather.
-- **My lifts**: log lifts; new personal bests are spotted automatically, posted to the chat and shown on Today for cheering.
-- **Benchmarks** (a tab on My lifts): log timed tests and named workouts (1 km run, Cindy, Helen...). Bests are kept per level. Admins add benchmarks and mark a workout part as a benchmark in the builder.
+- **My numbers**: log lifts; new personal bests are spotted automatically, posted to the chat and shown on Today for cheering.
+- **Benchmarks** (a tab on My numbers): log timed tests and named workouts (1 km run, Cindy, Helen...). Bests are kept per level. Admins add benchmarks and mark a workout part as a benchmark in the builder.
 - **On each workout**: every part folds away, and lift and benchmark parts have a "Log" button, so results go in without leaving the workout.
 - **Workout mode** (everyone) and **Coach mode** (admins): full screen, one part at a time, big text, a timer for each part, and the screen stays awake. Coach mode shows all four levels side by side, who's coming, and the coach notes sorted onto the part they're about.
 - **Chat**: one live group chat.
