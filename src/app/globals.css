@@ -343,9 +343,12 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .timer-digits { font-family: var(--display); font-weight: 800; font-size: 40px; font-variant-numeric: tabular-nums; line-height: 1; }
 .timer.zero .timer-digits { color: var(--gold); }
 
-/* Workout page: big buttons for the gym modes, and a peek line when a part is folded. */
-.mode-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
-.btn.dark { background: var(--ink); color: var(--ground); border-color: var(--ink); }
+/* Workout page: one card for who's coming and the gym modes; a peek line when a part is folded. */
+.class-bar { display: flex; flex-direction: column; gap: 12px; padding: 12px 14px; }
+.class-bar > :not(.mode-row) { padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.mode-row { display: flex; gap: 8px; }
+.mode-row .btn { flex: 1; min-height: 44px; font-size: 15px; }
+.mode-row .btn.primary { flex: 1.4; }
 .fold-peek { font-weight: 700; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .follow .quick-log { background: #fff; }
 

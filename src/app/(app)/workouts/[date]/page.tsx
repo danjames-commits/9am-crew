@@ -47,6 +47,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
         <div className="grow">
           <div className="eyebrow teal">{longDate(w.class_date)} · 9:00</div>
           <h1 style={{ fontSize: 28 }}>{w.title}</h1>
+          {w.focus && <p className="muted small" style={{ marginTop: 2 }}>{w.focus}</p>}
         </div>
         {me.is_admin && (
           <Link href={`/admin/build/${w.class_date}`} className="btn small ghost">
@@ -55,9 +56,31 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
         )}
       </div>
       {w.status === 'draft' && <div className="notice bad">Draft. Only admins can see this until it’s published.</div>}
-      <p className="muted">{w.focus}</p>
+      <WorkoutView
+        title={w.title}
+        parts={w.parts as Part[]}
+        myLevel={me.level}
+        maxes={maxes}
+        weather={weather}
+        classDate={w.class_date}
+        canScale={upcoming && aiEnabled()}
+        log={{ movements, benchmarks, today: todayLocal() }}
+        checkIn={
+          upcoming ? (
+            <CheckIn compact classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />
+          ) : undefined
+        }
+        coach={
+          me.is_admin
+            ? {
+                notes: coachNote?.body ?? null,
+                going: (attendance ?? []).map((a) => names[a.user_id] ?? 'Member'),
+              }
+            : undefined
+        }
+      />
       {coachNote?.body && (
-        <details className="card coach-notes">
+        <details className="card coach-notes" style={{ marginTop: 8 }}>
           <summary>
             <span className="eyebrow">Coach notes · admins only</span>
             <span className="chev"><Icon name="next" size={18} /></span>
@@ -72,31 +95,6 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
           </dl>
         </details>
       )}
-      {upcoming && (
-        <section className="card" style={{ padding: '10px 14px' }} aria-label="Who's coming">
-          <CheckIn compact classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />
-        </section>
-      )}
-
-      <WorkoutView
-        title={w.title}
-        parts={w.parts as Part[]}
-        myLevel={me.level}
-        maxes={maxes}
-        weather={weather}
-        classDate={w.class_date}
-        canScale={upcoming && aiEnabled()}
-        log={{ movements, benchmarks, today: todayLocal() }}
-        coach={
-          me.is_admin
-            ? {
-                notes: coachNote?.body ?? null,
-                going: (attendance ?? []).map((a) => names[a.user_id] ?? 'Member'),
-              }
-            : undefined
-        }
-      />
-
     </main>
   );
 }

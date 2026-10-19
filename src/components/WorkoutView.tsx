@@ -19,6 +19,7 @@ export function WorkoutView({
   canScale = false,
   log,
   coach,
+  checkIn,
 }: {
   title: string;
   parts: Part[];
@@ -31,6 +32,8 @@ export function WorkoutView({
   log: Omit<QuickLogContext, 'classDate' | 'maxes'>;
   /** Admins only: notes and who's coming, for coach mode. */
   coach?: CoachInfo;
+  /** Who's coming, shown in the same card as the mode buttons. */
+  checkIn?: React.ReactNode;
 }) {
   const [level, setLevel] = useState<Level>(Math.min(4, Math.max(1, myLevel)) as Level);
   const hasOutdoor = parts.some((p) => p.outdoor);
@@ -44,16 +47,19 @@ export function WorkoutView({
 
   return (
     <div className="stack loose">
-      <div className="mode-buttons">
-        <button type="button" className="btn primary" onClick={() => setMode('member')}>
-          ▶ Workout mode
-        </button>
-        {coach && (
-          <button type="button" className="btn dark" onClick={() => setMode('coach')}>
-            Coach mode
+      <section className="card class-bar" aria-label="This class">
+        {checkIn}
+        <div className="mode-row">
+          <button type="button" className="btn primary" onClick={() => setMode('member')}>
+            ▶ Workout mode
           </button>
-        )}
-      </div>
+          {coach && (
+            <button type="button" className="btn ghost" onClick={() => setMode('coach')}>
+              Coach mode
+            </button>
+          )}
+        </div>
+      </section>
 
       <div className="segmented" role="group" aria-label="Level">
         {LEVELS.map((l) => (
