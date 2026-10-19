@@ -47,8 +47,8 @@ export function WhosComing({ classDate, me, others, going }: { classDate: string
   return (
     <div className="whos-coming" ref={box}>
       {!isGoing && (
-        <button type="button" className="btn small primary coming-btn" onClick={() => set(true)}>
-          I’m coming
+        <button type="button" className="btn small primary coming-btn" onClick={() => set(true)} aria-label="I’m coming">
+          {crew.length === 0 ? 'Be first in' : 'I’m in'}
         </button>
       )}
       {crew.length > 0 && (
@@ -77,7 +77,6 @@ export function WhosComing({ classDate, me, others, going }: { classDate: string
           {extra > 0 && <span className="who-more">+{extra}</span>}
         </div>
       )}
-      {crew.length === 0 && <span className="muted small">Nobody yet</span>}
       {menu && (
         <div className="who-bubble" role="dialog" aria-label="Your spot">
           <div className="small">
