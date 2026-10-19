@@ -5,6 +5,8 @@ import { firstName } from '@/lib/ui';
 import { Avatar } from './Avatar';
 import { timeAgo } from '@/lib/dates';
 import { Icon } from './Icon';
+import { PrCard } from './PrCard';
+import { CheerPop } from './CheerPop';
 
 export interface ChatMessage {
   id: number;
@@ -129,26 +131,16 @@ export function ChatRoom({
           const mine = m.user_id === meId;
           const showName = !mine && (i === 0 || messages[i - 1].user_id !== m.user_id || messages[i - 1].kind === 'pr');
           if (m.kind === 'pr' && m.lift_log_id) {
-            const count = cheers.filter((c) => c.lift_log_id === m.lift_log_id).length;
-            const cheered = cheers.some((c) => c.lift_log_id === m.lift_log_id && c.user_id === meId);
+            const these = cheers.filter((c) => c.lift_log_id === m.lift_log_id);
+            const cheered = these.some((c) => c.user_id === meId);
             return (
-              <div key={m.id} className="card gold row">
-                <Icon name="trophy" />
-                <div className="grow">
-                  <b>{mine ? 'You' : firstName(name)}</b> set a new best
-                  <div className="small">{m.body}</div>
-                </div>
-                <button
-                  className={`btn small ${cheered ? 'teal' : 'ghost'}`}
-                  style={{ background: cheered ? undefined : '#fff' }}
-                  onClick={() => toggleCheer(m.lift_log_id!)}
-                  disabled={mine}
-                  aria-pressed={cheered}
-                  aria-label={`Cheer for ${name}`}
-                >
-                  Cheer · {count}
-                </button>
-              </div>
+              <PrCard
+                key={m.id}
+                who={mine ? 'You' : firstName(name)}
+                body={m.body}
+                cheerers={these.map((c) => ({ id: c.user_id, name: names[c.user_id] ?? 'Member', animal: animals[c.user_id] }))}
+                cheer={<CheerPop count={these.length} cheered={cheered} disabled={mine} name={name} onToggle={() => toggleCheer(m.lift_log_id!)} />}
+              />
             );
           }
           return (

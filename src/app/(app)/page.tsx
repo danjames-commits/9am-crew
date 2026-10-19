@@ -11,6 +11,7 @@ import { firstName } from '@/lib/ui';
 import { levelName } from '@/lib/types';
 import { CheckIn } from '@/components/CheckIn';
 import { CheerButton } from '@/components/CheerButton';
+import { PrCard } from '@/components/PrCard';
 import { Avatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
 import { classWeather } from '@/lib/weather';
@@ -130,18 +131,13 @@ async function RecentBests({ prs: prsP, meId, names }: { prs: Promise<PrPost[]>;
   return prs.map((p) => {
     const name = names[p.user_id] ?? 'Someone';
     return (
-      <div key={p.id} className="card row">
-        <span className="avatar" style={{ background: 'var(--gold-soft)', color: 'var(--gold-ink)', borderRadius: 14 }}>
-          <Icon name="trophy" />
-        </span>
-        <div className="grow">
-          <div style={{ fontWeight: 700 }}>{p.user_id === meId ? 'You' : firstName(name)} hit a new best</div>
-          <div className="muted">
-            {p.body} · {timeAgo(p.created_at)}
-          </div>
-        </div>
-        <CheerButton liftLogId={p.lift_log_id} count={p.cheers} mine={p.cheeredByMe} name={name} disabled={p.user_id === meId} />
-      </div>
+      <PrCard
+        key={p.id}
+        who={p.user_id === meId ? 'You' : firstName(name)}
+        body={p.body}
+        when={timeAgo(p.created_at)}
+        cheer={<CheerButton liftLogId={p.lift_log_id} count={p.cheers} mine={p.cheeredByMe} name={name} disabled={p.user_id === meId} />}
+      />
     );
   });
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { setLevel as saveLevel } from '@/app/actions';
 import { LEVELS, type Level, type Part } from '@/lib/types';
 import { YourNumbers } from './YourNumbers';
@@ -42,35 +42,69 @@ export function WorkoutView({
   // Every part can fold away; all start open.
   const [open, setOpen] = useState<boolean[]>(() => parts.map(() => true));
   const [mode, setMode] = useState<'member' | 'coach' | null>(null);
+  const [levelOpen, setLevelOpen] = useState(false);
+  const levelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!levelOpen) return;
+    const close = (e: PointerEvent) => !levelRef.current?.contains(e.target as Node) && setLevelOpen(false);
+    document.addEventListener('pointerdown', close);
+    return () => document.removeEventListener('pointerdown', close);
+  }, [levelOpen]);
   const i = level - 1;
   const ctx: QuickLogContext = { ...log, classDate, maxes };
   const allOpen = open.every(Boolean);
 
   return (
     <div className="stack loose">
-      <div className="mode-row">
-          <button type="button" className="btn primary" onClick={() => setMode('member')}>
-            ▶ Workout mode
+      <div className="wv-toolbar">
+        <div className="wv-level" ref={levelRef}>
+          <button type="button" className="wv-chip" aria-expanded={levelOpen} onClick={() => setLevelOpen((o) => !o)}>
+            {LEVELS[level - 1].name} <span aria-hidden="true">▾</span>
           </button>
-          {coach && (
-            <button type="button" className="btn ghost" onClick={() => setMode('coach')}>
-              Coach mode
-            </button>
+          {levelOpen && (
+            <div className="wv-pop" role="dialog" aria-label="Level">
+              {LEVELS.map((l) => (
+                <button
+                  key={l.n}
+                  type="button"
+                  className={`wv-pop-item ${level === l.n ? 'on' : ''}`}
+                  onClick={() => {
+                    setLevel(l.n);
+                    setLevelOpen(false);
+                  }}
+                >
+                  <b>{l.name}</b>
+                  {l.n === mine && <span className="muted small"> · your level</span>}
+                </button>
+              ))}
+            </div>
           )}
-      </div>
-
-      <div className="segmented" role="group" aria-label="Level">
-        {LEVELS.map((l) => (
-          <button key={l.n} aria-pressed={level === l.n} onClick={() => setLevel(l.n)}>
-            {l.name}
-            {l.n === mine && <small>your level</small>}
+        </div>
+        <button
+          type="button"
+          className="wv-icon"
+          onClick={() => setOpen(parts.map(() => !allOpen))}
+          aria-label={allOpen ? 'Collapse all parts' : 'Expand all parts'}
+          title={allOpen ? 'Collapse all' : 'Expand all'}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            {allOpen ? <path d="M7 4l5 5 5-5M7 20l5-5 5 5" /> : <path d="M7 9l5-5 5 5M7 15l5 5 5-5" />}
+          </svg>
+        </button>
+        <span className="grow" />
+        {coach && (
+          <button type="button" className="btn small ghost" onClick={() => setMode('coach')}>
+            Coach
           </button>
-        ))}
+        )}
+        <button type="button" className="btn small primary" onClick={() => setMode('member')} aria-label="Start workout mode">
+          {coach ? '▶ Start' : '▶ Workout mode'}
+        </button>
       </div>
 
       {level !== mine && (
         <div className="level-switch small">
-          Not your level.{' '}
+          Showing {LEVELS[level - 1].name}.{' '}
           <button
             type="button"
             className="link-btn"
@@ -82,13 +116,10 @@ export function WorkoutView({
               })
             }
           >
-            {savingLevel ? 'Saving…' : `Make ${LEVELS[level - 1].name} my level`}
+            {savingLevel ? 'Saving…' : 'Make it my level'}
           </button>
         </div>
       )}
-      <button type="button" className="link-btn fold-all" onClick={() => setOpen(parts.map(() => !allOpen))}>
-        {allOpen ? 'Collapse all' : 'Expand all'}
-      </button>
 
       {parts.map((p, k) => {
         const w = partWords(p, i, outside);
