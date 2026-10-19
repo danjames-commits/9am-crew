@@ -78,7 +78,6 @@ export default async function TodayPage() {
           <div className="eyebrow gold" id="next-class">
             {relativeDay(classDate)} · 9:00 AM
           </div>
-          <span className="badge soft">{levelName(me.level)}</span>
         </div>
         {visibleWorkout ? (
           <Link href={`/workouts/${classDate}`} style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -90,7 +89,7 @@ export default async function TodayPage() {
             <Suspense fallback={null}>
               <WeatherLine weather={weatherP} hasOutdoor={hasOutdoor} />
             </Suspense>
-            <p className="small" style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 6 }}>See your version →</p>
+            <p className="small" style={{ color: 'var(--gold)', fontWeight: 700, marginTop: 6 }}>See it at your level ({levelName(me.level)}) →</p>
           </Link>
         ) : (
           <div>

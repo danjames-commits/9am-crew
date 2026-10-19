@@ -11,6 +11,7 @@ import { getBests, getSchedule } from '@/lib/data';
 import { classWeather } from '@/lib/weather';
 import { isAnimal } from '@/lib/animals';
 import { cleanCoachNotes } from '@/lib/coach-notes';
+import { isNewBest, readScore, type Benchmark, type BenchResult, type ScoreType } from '@/lib/benchmarks';
 
 const isDate = (s: unknown): s is string => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s);
 
@@ -123,6 +124,76 @@ export async function logLift(_: unknown, form: FormData) {
   return { ok: true, isPr: Boolean(data?.is_pr), at: Date.now() };
 }
 
+// ---------------- Benchmarks ----------------
+
+export async function logBenchmark(input: {
+  benchmark_id: number;
+  done_on: string;
+  level: number | null;
+  time?: string;
+  rounds?: string;
+  reps?: string;
+  amount?: string;
+  capped?: boolean;
+  note?: string;
+  workout_date?: string | null;
+}) {
+  const { supabase, me } = await requireMember();
+  if (!isDate(input.done_on) || input.done_on > todayLocal()) return { error: 'Pick a date (not in the future).' };
+  const level = input.level != null && input.level >= 1 && input.level <= 4 ? Math.round(input.level) : null;
+  const { data: b } = await supabase.from('benchmarks').select('id, name, score, better, description, sort').eq('id', input.benchmark_id).maybeSingle<Benchmark>();
+  if (!b) return { error: 'That benchmark isn’t on the list any more.' };
+  const score = readScore(b, input);
+  if (!score.ok) return { error: score.error };
+  const { data: earlier } = await supabase
+    .from('benchmark_results')
+    .select('id, benchmark_id, user_id, done_on, level, time_s, rounds, reps, amount, capped, note, workout_date')
+    .eq('user_id', me.id)
+    .eq('benchmark_id', b.id);
+  const row = {
+    benchmark_id: b.id,
+    user_id: me.id,
+    done_on: input.done_on,
+    level,
+    time_s: score.time_s,
+    rounds: score.rounds,
+    reps: score.reps,
+    amount: score.amount,
+    capped: score.capped,
+    note: input.note?.trim().slice(0, 200) || null,
+    workout_date: input.workout_date && isDate(input.workout_date) ? input.workout_date : null,
+  };
+  const { error } = await supabase.from('benchmark_results').insert(row);
+  if (error) return { error: error.message };
+  revalidatePath('/lifts/benchmarks');
+  revalidatePath(`/lifts/benchmarks/${b.id}`);
+  const first = !(earlier ?? []).some((r) => r.level === level);
+  return { ok: true as const, isBest: !first && isNewBest(b, (earlier ?? []) as BenchResult[], row), first };
+}
+
+export async function deleteBenchmarkResult(id: number, benchmarkId: number) {
+  const { supabase } = await requireMember();
+  await supabase.from('benchmark_results').delete().eq('id', id);
+  revalidatePath('/lifts/benchmarks');
+  revalidatePath(`/lifts/benchmarks/${benchmarkId}`);
+}
+
+const SCORES: ScoreType[] = ['time', 'rounds_reps', 'reps', 'distance', 'weight', 'calories'];
+
+export async function addBenchmark(input: { name: string; score: ScoreType; better: 'higher' | 'lower'; description: string }) {
+  const { supabase } = await requireMember({ admin: true });
+  const name = input.name.trim().replace(/\s+/g, ' ').slice(0, 60);
+  if (!name) return { error: 'Give it a name.' };
+  if (!SCORES.includes(input.score)) return { error: 'Pick how it’s scored.' };
+  const better = input.score === 'time' ? input.better : 'higher';
+  const { error } = await supabase
+    .from('benchmarks')
+    .insert({ name, score: input.score, better, description: input.description.trim().slice(0, 300) || null });
+  if (error) return { error: error.code === '23505' ? 'There’s already a benchmark with that name.' : error.message };
+  revalidatePath('/lifts/benchmarks');
+  return { ok: true };
+}
+
 export async function deleteLift(id: number, movementId: number) {
   const { supabase } = await requireMember();
   await supabase.from('lift_logs').delete().eq('id', id);
@@ -180,7 +251,9 @@ function cleanParts(parts: unknown): Part[] | null {
         title: String(p.outdoor.title ?? '').slice(0, 80),
         versions: p.outdoor.versions.map((v) => String(v ?? '').slice(0, 1500)) as Part['versions'],
       };
+      if (typeof p.outdoor.benchmark === 'string' && p.outdoor.benchmark.trim()) part.outdoor.benchmark = p.outdoor.benchmark.trim().slice(0, 60);
     }
+    if (typeof p.benchmark === 'string' && p.benchmark.trim()) part.benchmark = p.benchmark.trim().slice(0, 60);
     if (p.lift && typeof p.lift.movement === 'string' && Array.isArray(p.lift.pct) && p.lift.pct.length === 4) {
       part.lift = {
         movement: p.lift.movement.slice(0, 60),
