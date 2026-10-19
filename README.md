@@ -64,6 +64,8 @@ npm test                     # programming engine tests
 npm run test:db              # runs schema.sql in an in-memory Postgres and checks the security rules
 ```
 
+The app's server runs in Portland (`pdx1`, set in `vercel.json`) because the Supabase database is in Oregon (us-west-2); keeping them together makes every page faster. If the database ever moves, move this too.
+
 Stack: Next.js 16 (App Router, server actions), Supabase (Postgres with row-level security, email and password sign-in, realtime for chat). Times use `America/Halifax`; set `NEXT_PUBLIC_TIME_ZONE` to change it. Weights are in pounds. Coach notes live in `workout_coach_notes` (admins only).
 
 ### Claude features (optional)
