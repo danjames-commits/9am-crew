@@ -290,7 +290,7 @@ label.row.check { gap: 10px; cursor: pointer; }
 label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: var(--ink); }
 
 /* Lifts / Benchmarks tabs at the top of My lifts. */
-.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: #fff; border-radius: 14px; padding: 4px; }
+.tabs { display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; gap: 4px; background: #fff; border-radius: 14px; padding: 4px; }
 .tabs a { text-align: center; padding: 10px; border-radius: 10px; font-weight: 800; color: var(--ink-2); text-decoration: none; }
 .tabs a[aria-current='page'] { background: var(--ink); color: var(--ground); }
 
@@ -461,3 +461,24 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 /* Keep the label on screen: left-anchored in left-aligned rows, right-anchored in the right-hand stack. */
 .avatars .name-tip { left: 0; transform: none; }
 .who-stack .name-tip { left: auto; right: 0; transform: none; }
+
+/* My stats: attendance. */
+.att-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+.att-big { font-family: var(--display); font-size: 34px; font-weight: 800; line-height: 1.1; }
+.att-cal { display: flex; flex-direction: column; gap: 8px; }
+.att-row { display: grid; grid-template-columns: repeat(5, 1fr); justify-items: center; }
+.att-head span { font-size: 12px; font-weight: 800; color: var(--ink-3); }
+.att-dot { display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: transparent; border: 1.5px dashed var(--line-2); }
+.att-dot.in { background: var(--gold); border: 0; }
+.att-dot.missed { background: #ecebe4; border: 0; }
+.att-dot.ahead { border-color: transparent; }
+.att-dot.today { box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--ink); }
+.att-key { display: flex; gap: 16px; justify-content: center; margin-top: 4px; }
+.att-key > span { display: inline-flex; align-items: center; gap: 6px; }
+.att-key .att-dot { width: 12px; height: 12px; }
+.att-rank { width: 26px; text-align: center; font-weight: 800; color: var(--ink-3); font-size: 15px; }
+.att-rank.medal { font-size: 22px; }
+.att-bar { width: 64px; height: 8px; border-radius: 4px; background: #ecebe4; overflow: hidden; flex: none; }
+.att-bar span { display: block; height: 100%; background: var(--gold); border-radius: 4px; }
+.att-count { width: 22px; text-align: right; }
+.att-me { background: #fdf6dc; }
