@@ -10,7 +10,9 @@ interface Person {
   animal?: string | null;
 }
 
-const SHOW = 4;
+// As many as fit on a phone: fewer when the "I'm in" button shares the row.
+const FIT_GOING = 8;
+const FIT_NOT_GOING = 6;
 
 /**
  * Who's coming, as a little row of avatars. Not coming yet: an "I'm coming" pill.
@@ -22,7 +24,9 @@ export function WhosComing({ classDate, me, others, going }: { classDate: string
   const [error, setError] = useState('');
   const box = useRef<HTMLDivElement>(null);
   const crew = isGoing ? [me, ...others] : others;
-  const shown = crew.slice(0, SHOW);
+  const fit = isGoing ? FIT_GOING : FIT_NOT_GOING;
+  // Never show "+1" in place of the one avatar that would have fit.
+  const shown = crew.length <= fit ? crew : crew.slice(0, fit - 1);
   const extra = crew.length - shown.length;
   const names = crew.map((p) => p.name).join(', ');
 
