@@ -83,10 +83,7 @@ export default async function TodayPage() {
         {visibleWorkout ? (
           <Link href={`/workouts/${classDate}`} style={{ color: 'inherit', textDecoration: 'none' }}>
             <h2 style={{ fontSize: 26 }}>{visibleWorkout.title}</h2>
-            <p className="muted">
-              {visibleWorkout.focus}
-              {visibleWorkout.status === 'draft' ? ' · draft, only admins see this' : ''}
-            </p>
+            {visibleWorkout.status === 'draft' && <p className="muted">Draft, only admins see this</p>}
             <Suspense fallback={null}>
               <WeatherLine weather={weatherP} hasOutdoor={hasOutdoor} />
             </Suspense>

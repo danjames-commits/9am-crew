@@ -394,7 +394,7 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .level-switch .link-btn { font-size: inherit; }
 
 /* Who's coming: a small avatar row by the workout title. */
-.title-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 6px; }
+.title-meta { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 6px; }
 .title-meta .muted { min-width: 0; }
 .whos-coming { position: relative; display: flex; align-items: center; gap: 8px; flex: none; }
 .who-stack { display: flex; align-items: center; }

@@ -54,10 +54,9 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
           </Link>
         )}
       </div>
-      {(w.focus || upcoming) && (
+      {upcoming && (
         <div className="title-meta">
-          <span className="muted small">{w.focus}</span>
-          {upcoming && <WhosComing classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />}
+          <WhosComing classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />
         </div>
       )}
       {w.status === 'draft' && <div className="notice bad">Draft. Only admins can see this until it’s published.</div>}
