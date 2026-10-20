@@ -1,12 +1,12 @@
 import { firstName } from '@/lib/ui';
-import { mondayOf } from '@/lib/dates';
+import { addDays, mondayOf } from '@/lib/dates';
 import { bestGoalStreak, goalBoard, goalStreak, recentWeeks, weekCounts, type AttendanceRow } from '@/lib/attendance';
 import { LiftsTabs } from './LiftsTabs';
 import { Avatar } from './Avatar';
 import { GoalPicker } from './GoalPicker';
+import { AttendanceCalendar } from './AttendanceCalendar';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
-const DAY_LETTERS = ['M', 'T', 'W', 'T', 'F'];
 const listNames = (n: string[]) => (n.length < 2 ? n.join('') : `${n.slice(0, -1).join(', ')} and ${n[n.length - 1]}`);
 const weeksWord = (n: number) => (n === 1 ? 'week' : 'weeks');
 
@@ -34,7 +34,12 @@ export function AttendanceView({
   const thisWeek = weekCounts(mine).get(mondayOf(doneThrough)) ?? 0;
   const streak = goalStreak(mine, goal, doneThrough);
   const best = bestGoalStreak(mine, goal);
-  const weeks = recentWeeks(new Set(mine), new Set(held), doneThrough, 4);
+  // Up to 3 pages of 4 weeks, newest first; older pages only once there's something in them.
+  const all = recentWeeks(new Set(mine), new Set(held), doneThrough, 12);
+  const earliest = [...held, ...mine].sort()[0];
+  const pages = [all.slice(8, 12), all.slice(4, 8), all.slice(0, 4)].filter(
+    (p, i) => i === 0 || (earliest !== undefined && addDays(p[p.length - 1].monday, 4) >= earliest),
+  );
 
   const monthStart = doneThrough.slice(0, 8) + '01';
   const monthName = new Date(doneThrough + 'T12:00:00Z').toLocaleDateString('en-CA', { month: 'long', timeZone: 'UTC' });
@@ -80,31 +85,7 @@ export function AttendanceView({
         <GoalPicker goal={goal} />
       </section>
 
-      <section className="stack tight">
-        <div className="eyebrow">Last 4 weeks</div>
-        <div className="card att-cal" role="img" aria-label={`You made ${weeks.flatMap((w) => w.days).filter((d) => d.mark === 'in').length} classes in the last 4 weeks`}>
-          <div className="att-row att-head">
-            {DAY_LETTERS.map((l, i) => (
-              <span key={i}>{l}</span>
-            ))}
-          </div>
-          {weeks.map((w) => (
-            <div key={w.monday} className="att-row">
-              {w.days.map((d) => (
-                <span key={d.date} className={`att-dot ${d.mark}`} title={d.date} />
-              ))}
-            </div>
-          ))}
-          <div className="att-key muted small">
-            <span>
-              <span className="att-dot in" /> You were in
-            </span>
-            <span>
-              <span className="att-dot missed" /> Missed
-            </span>
-          </div>
-        </div>
-      </section>
+      <AttendanceCalendar pages={pages} />
 
       <section className="stack tight">
         <div className="row between">
