@@ -338,6 +338,7 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .follow-levels { display: grid; gap: 8px; }
 .follow-level { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; background: #fff; border-radius: 14px; padding: 12px 14px; }
 .follow-level-name { font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--teal); padding-top: 3px; }
+.follow-level.wide { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 .follow-level .follow-text { font-size: calc(var(--follow-size) * 0.9); }
 @media (min-width: 900px) { .follow-levels { grid-template-columns: 1fr 1fr; } }
 .follow-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--ground); border-top: 1px solid var(--line); }

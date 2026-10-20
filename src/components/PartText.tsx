@@ -16,6 +16,25 @@ export function partWords(p: Part, i: number, outside: boolean) {
   return { useOutdoor, versions, title, headline, body };
 }
 
+/**
+ * The levels of a part, with identical ones merged: "All levels" when every
+ * level does the same thing, otherwise e.g. "Starter & Steady".
+ */
+export function levelGroups(p: Part, outside: boolean, names: string[]) {
+  const groups: { label: string; levels: number[]; headline: string; body: string }[] = [];
+  names.forEach((_, i) => {
+    const w = partWords(p, i, outside);
+    const same = groups.find((g) => g.headline.trim() === w.headline.trim() && g.body.trim() === w.body.trim());
+    if (same) same.levels.push(i);
+    else groups.push({ label: '', levels: [i], headline: w.headline, body: w.body });
+  });
+  for (const g of groups) {
+    const n = g.levels.map((i) => names[i]);
+    g.label = g.levels.length === names.length ? 'All levels' : n.length < 2 ? n[0] : `${n.slice(0, -1).join(', ')} & ${n[n.length - 1]}`;
+  }
+  return groups;
+}
+
 export function PartBody({ body, className = 'part-body' }: { body: string; className?: string }) {
   if (!body) return null;
   return (

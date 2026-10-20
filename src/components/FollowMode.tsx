@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LEVELS, type Level, type Part } from '@/lib/types';
 import { notesByPart, splitCoachNotes, type CoachNoteSection } from '@/lib/coach-notes';
-import { PartBody, partWords } from './PartText';
+import { PartBody, levelGroups, partWords } from './PartText';
 import { YourNumbers } from './YourNumbers';
 import { QuickLog, type QuickLogContext } from './QuickLog';
 
@@ -309,18 +309,15 @@ function PartScreen({
         <>
           <NoteList sections={notes} heading="Coach notes" />
           <div className="follow-levels">
-            {LEVELS.map((l) => {
-              const w = partWords(part, l.n - 1, outside);
-              return (
-                <div key={l.n} className="follow-level">
-                  <div className="follow-level-name">{l.name}</div>
-                  <div>
-                    {w.headline && part.kind !== 'conditioning' && <p className="follow-strong">{w.headline}</p>}
-                    <PartBody body={w.body} className="part-body follow-text" />
-                  </div>
+            {levelGroups(part, outside, LEVELS.map((l) => l.name)).map((g) => (
+              <div key={g.label} className={`follow-level ${g.levels.length > 1 ? 'wide' : ''}`}>
+                <div className="follow-level-name">{g.label}</div>
+                <div>
+                  {g.headline && part.kind !== 'conditioning' && <p className="follow-strong">{g.headline}</p>}
+                  <PartBody body={g.body} className="part-body follow-text" />
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </>
       ) : (
