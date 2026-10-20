@@ -92,7 +92,7 @@ export function AttendanceView({
           <div className="eyebrow">{monthName} leaderboard</div>
           {crewTotal > 0 && <span className="muted small">{crewTotal} classes as a crew</span>}
         </div>
-        <p className="muted small">Weeks each person hit their own goal. Twice a week, every week, ranks with five a week.</p>
+        <p className="muted small">Ranked by weeks each person hit their own goal. One mark per week: ✓ hit, grey missed, outline still going.</p>
         {hot.length > 0 && (
           <p className="small">
             <span aria-hidden="true">🔥 </span>
@@ -114,9 +114,12 @@ export function AttendanceView({
                     {r.goal}× a week{r.streak >= 2 ? ` · 🔥 ${r.streak}` : ''}
                   </span>
                 </span>
-                <span className="att-score">
-                  <b>{r.hits}</b>
-                  <span className="muted small">/{Math.max(r.outOf, r.hits)}</span>
+                <span className="att-weeks" aria-label={`Hit goal ${r.hits} ${weeksWord(r.hits)} this month`}>
+                  {r.weeks.map((w, i) => (
+                    <span key={i} className={`att-wk ${w}`} title={w === 'hit' ? 'Hit goal' : w === 'missed' ? 'Missed goal' : 'This week, still going'}>
+                      {w === 'hit' ? '✓' : ''}
+                    </span>
+                  ))}
                 </span>
               </div>
             ))}

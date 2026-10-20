@@ -53,13 +53,15 @@ export function monthWeeks(monthStart: string, doneThrough: string) {
   return weeks;
 }
 
+export type WeekResult = 'hit' | 'missed' | 'open';
+
 export interface BoardRow {
   user_id: string;
   goal: number;
   /** Weeks this month you hit your goal. */
   hits: number;
-  /** Weeks so far you could have: finished weeks, plus this one once you've hit it. */
-  outOf: number;
+  /** Each week of the month so far: hit your goal, missed it, or still going. */
+  weeks: WeekResult[];
   classes: number;
   streak: number;
   /** 1-based; people tied share a rank. */
@@ -73,8 +75,6 @@ export interface BoardRow {
  */
 export function goalBoard(rows: AttendanceRow[], goals: Record<string, number>, monthStart: string, doneThrough: string): BoardRow[] {
   const weeks = monthWeeks(monthStart, doneThrough);
-  const current = mondayOf(doneThrough);
-  const finished = weeks.filter((w) => addDays(w, 4) <= doneThrough).length;
   const byUser = new Map<string, string[]>();
   for (const r of rows) {
     if (r.class_date > doneThrough) continue;
@@ -86,8 +86,8 @@ export function goalBoard(rows: AttendanceRow[], goals: Record<string, number>, 
       const counts = weekCounts(dates);
       const hitWeeks = weeks.filter((w) => (counts.get(w) ?? 0) >= goal);
       const classes = dates.filter((d) => weeks.includes(mondayOf(d))).length;
-      const hitCurrent = hitWeeks.includes(current) && addDays(current, 4) > doneThrough;
-      return { user_id, goal, hits: hitWeeks.length, outOf: finished + (hitCurrent ? 1 : 0), classes, streak: goalStreak(dates, goal, doneThrough), rank: 0 };
+      const results = weeks.map((w): WeekResult => (hitWeeks.includes(w) ? 'hit' : addDays(w, 4) <= doneThrough ? 'missed' : 'open'));
+      return { user_id, goal, hits: hitWeeks.length, weeks: results, classes, streak: goalStreak(dates, goal, doneThrough), rank: 0 };
     })
     .filter((r) => r.classes > 0)
     .sort((a, b) => b.hits - a.hits || b.streak - a.streak || a.user_id.localeCompare(b.user_id));

@@ -44,9 +44,9 @@ describe('goalBoard', () => {
   ];
   it('ranks by weeks you hit your own goal, not by how often you come', () => {
     const b = goalBoard(rows, { reg: 5, two: 2 }, '2026-10-01', '2026-10-20');
-    expect(b.map((r) => [r.user_id, r.hits, r.outOf, r.rank])).toEqual([
-      ['two', 3, 3, 1],
-      ['reg', 1, 2, 2],
+    expect(b.map((r) => [r.user_id, r.hits, r.weeks, r.rank])).toEqual([
+      ['two', 3, ['hit', 'hit', 'hit'], 1],
+      ['reg', 1, ['hit', 'missed', 'open'], 2],
     ]);
     expect(b.find((r) => r.user_id === 'two')!.classes).toBe(6);
   });

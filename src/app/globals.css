@@ -478,7 +478,11 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .att-rank { width: 26px; text-align: center; font-weight: 800; color: var(--ink-3); font-size: 15px; }
 .att-rank.medal { font-size: 22px; }
 .att-sub { display: block; }
-.att-score { flex: none; font-size: 20px; }
+.att-weeks { flex: none; display: flex; gap: 4px; }
+.att-wk { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; font-size: 13px; font-weight: 800; }
+.att-wk.hit { background: var(--gold); color: var(--ink); }
+.att-wk.missed { background: #ecebe4; }
+.att-wk.open { border: 1.5px dashed var(--line-2); }
 .att-me { background: #fdf6dc; }
 .goal-line { border-top: 1px solid rgba(255, 255, 255, 0.14); padding-top: 12px; }
 .goal-line .link-btn { color: var(--gold); }
