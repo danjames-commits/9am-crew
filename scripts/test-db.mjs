@@ -33,6 +33,7 @@ await db.exec(BENCH_SQL);
 await db.exec(readFileSync(new URL('../supabase/migration-011-benchmark-no-date.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-012-chat-reads.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-013-shouty.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-014-weekly-goal.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -267,6 +268,13 @@ r = await as(A, `insert into public.messages (body) values ('quiet please') retu
 assert.equal(r.rows[0].body, 'quiet please', 'everyone else posts as typed');
 await db.exec(`update public.profiles set shouty = false where id = '${B}'`);
 ok('chat: shouty members post IN CAPS 🤘');
+
+await as(B, `update public.profiles set weekly_goal = 3 where id = '${B}'`);
+await as(B, `update public.profiles set weekly_goal = 5 where id = '${A}'`); // not yours: no effect
+r = await db.query(`select id, weekly_goal from public.profiles where id in ('${A}', '${B}') order by id`);
+assert.deepEqual(r.rows.map((x) => x.weekly_goal), [1, 3]);
+await fails(B, `update public.profiles set weekly_goal = 6 where id = '${B}'`, 'goal over 5');
+ok('weekly goal: starts at 1, you set your own, 1 to 5');
 
 await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);

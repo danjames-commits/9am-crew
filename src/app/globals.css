@@ -472,13 +472,11 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .att-dot.in { background: var(--gold); border: 0; }
 .att-dot.missed { background: #ecebe4; border: 0; }
 .att-dot.ahead { border-color: transparent; }
-.att-dot.today { box-shadow: 0 0 0 2px var(--ground), 0 0 0 4px var(--ink); }
 .att-key { display: flex; gap: 16px; justify-content: center; margin-top: 4px; }
 .att-key > span { display: inline-flex; align-items: center; gap: 6px; }
 .att-key .att-dot { width: 12px; height: 12px; }
 .att-rank { width: 26px; text-align: center; font-weight: 800; color: var(--ink-3); font-size: 15px; }
 .att-rank.medal { font-size: 22px; }
-.att-bar { width: 64px; height: 8px; border-radius: 4px; background: #ecebe4; overflow: hidden; flex: none; }
-.att-bar span { display: block; height: 100%; background: var(--gold); border-radius: 4px; }
-.att-count { width: 22px; text-align: right; }
+.att-sub { display: block; }
+.att-score { flex: none; font-size: 20px; }
 .att-me { background: #fdf6dc; }

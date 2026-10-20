@@ -20,6 +20,12 @@ export function todayLocal(now = new Date()) {
   return localParts(now).date;
 }
 
+/** The last day whose class is over: today once it's past 10, otherwise yesterday. */
+export function lastClassDone(now = new Date()) {
+  const { date, hour } = localParts(now);
+  return hour >= CLASS_END_HOUR ? date : addDays(date, -1);
+}
+
 const toUTC = (d: string) => new Date(d + 'T12:00:00Z');
 const fromUTC = (d: Date) => d.toISOString().slice(0, 10);
 

@@ -5,26 +5,34 @@ export interface AttendanceRow {
   class_date: string;
 }
 
+/** How many classes in each week (keyed by its Monday). */
+export function weekCounts(dates: string[]) {
+  const m = new Map<string, number>();
+  for (const d of dates) m.set(mondayOf(d), (m.get(mondayOf(d)) ?? 0) + 1);
+  return m;
+}
+
 /**
- * Weeks in a row with at least one class, counting back from this week.
- * A week that hasn't had your class yet doesn't break the streak: it just
- * isn't counted until you show up.
+ * Weeks in a row you hit your weekly goal, counting back from this week.
+ * This week only counts once you've hit it, and never breaks the streak
+ * while it's still going. `doneThrough` is the last class that has happened.
  */
-export function weekStreak(dates: string[], today: string) {
-  const weeks = new Set(dates.filter((d) => d <= today).map(mondayOf));
-  let week = mondayOf(today);
-  if (!weeks.has(week)) week = addDays(week, -7);
+export function goalStreak(dates: string[], goal: number, doneThrough: string) {
+  const counts = weekCounts(dates.filter((d) => d <= doneThrough));
+  const hit = (w: string) => (counts.get(w) ?? 0) >= goal;
+  let week = mondayOf(doneThrough);
+  if (!hit(week)) week = addDays(week, -7);
   let n = 0;
-  while (weeks.has(week)) {
+  while (hit(week)) {
     n++;
     week = addDays(week, -7);
   }
   return n;
 }
 
-/** The longest run of weeks in a row with at least one class. */
-export function bestWeekStreak(dates: string[]) {
-  const weeks = [...new Set(dates.map(mondayOf))].sort();
+/** The longest run of weeks in a row you hit your goal. */
+export function bestGoalStreak(dates: string[], goal: number) {
+  const weeks = [...weekCounts(dates)].filter(([, n]) => n >= goal).map(([w]) => w).sort();
   let best = 0;
   let run = 0;
   let prev = '';
@@ -36,39 +44,71 @@ export function bestWeekStreak(dates: string[]) {
   return best;
 }
 
+/** The weeks that count for a month: those starting in it, up to the last class that's happened. */
+export function monthWeeks(monthStart: string, doneThrough: string) {
+  const weeks: string[] = [];
+  let w = mondayOf(monthStart);
+  if (w < monthStart) w = addDays(w, 7);
+  for (; w <= doneThrough && w.slice(0, 7) === monthStart.slice(0, 7); w = addDays(w, 7)) weeks.push(w);
+  return weeks;
+}
+
 export interface BoardRow {
   user_id: string;
-  count: number;
+  goal: number;
+  /** Weeks this month you hit your goal. */
+  hits: number;
+  /** Weeks so far you could have: finished weeks, plus this one once you've hit it. */
+  outOf: number;
+  classes: number;
+  streak: number;
   /** 1-based; people tied share a rank. */
   rank: number;
 }
 
-/** Classes per person between two dates (inclusive), most first. Ties share a rank. */
-export function leaderboard(rows: AttendanceRow[], from: string, to: string): BoardRow[] {
-  const counts = new Map<string, number>();
+/**
+ * Everyone against their own weekly goal. Ranked by weeks hit this month,
+ * so someone who comes twice a week and never misses ranks with the
+ * five-a-week regulars.
+ */
+export function goalBoard(rows: AttendanceRow[], goals: Record<string, number>, monthStart: string, doneThrough: string): BoardRow[] {
+  const weeks = monthWeeks(monthStart, doneThrough);
+  const current = mondayOf(doneThrough);
+  const finished = weeks.filter((w) => addDays(w, 4) <= doneThrough).length;
+  const byUser = new Map<string, string[]>();
   for (const r of rows) {
-    if (r.class_date >= from && r.class_date <= to) counts.set(r.user_id, (counts.get(r.user_id) ?? 0) + 1);
+    if (r.class_date > doneThrough) continue;
+    byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r.class_date]);
   }
-  const sorted = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-  let rank = 0;
-  return sorted.map(([user_id, count], i) => {
-    if (i === 0 || count < sorted[i - 1][1]) rank = i + 1;
-    return { user_id, count, rank };
+  const list = [...byUser]
+    .map(([user_id, dates]) => {
+      const goal = goals[user_id] ?? 1;
+      const counts = weekCounts(dates);
+      const hitWeeks = weeks.filter((w) => (counts.get(w) ?? 0) >= goal);
+      const classes = dates.filter((d) => weeks.includes(mondayOf(d))).length;
+      const hitCurrent = hitWeeks.includes(current) && addDays(current, 4) > doneThrough;
+      return { user_id, goal, hits: hitWeeks.length, outOf: finished + (hitCurrent ? 1 : 0), classes, streak: goalStreak(dates, goal, doneThrough), rank: 0 };
+    })
+    .filter((r) => r.classes > 0)
+    .sort((a, b) => b.hits - a.hits || b.streak - a.streak || a.user_id.localeCompare(b.user_id));
+  list.forEach((r, i) => {
+    r.rank = i > 0 && r.hits === list[i - 1].hits ? list[i - 1].rank : i + 1;
   });
+  return list;
 }
 
 export type DayMark = 'in' | 'missed' | 'none' | 'ahead';
 
 /** The last `weeks` weeks, Monday to Friday, oldest first, for the little calendar. */
-export function recentWeeks(mine: Set<string>, held: Set<string>, today: string, weeks = 8) {
-  const start = addDays(mondayOf(today), -7 * (weeks - 1));
+export function recentWeeks(mine: Set<string>, held: Set<string>, doneThrough: string, weeks = 8) {
+  const start = addDays(mondayOf(doneThrough), -7 * (weeks - 1));
   return Array.from({ length: weeks }, (_, w) => {
     const monday = addDays(start, w * 7);
     return {
       monday,
       days: [0, 1, 2, 3, 4].map((n) => {
         const date = addDays(monday, n);
-        const mark: DayMark = mine.has(date) ? 'in' : date > today ? 'ahead' : held.has(date) ? 'missed' : 'none';
+        const mark: DayMark = date > doneThrough ? 'ahead' : mine.has(date) ? 'in' : held.has(date) ? 'missed' : 'none';
         return { date, mark };
       }),
     };

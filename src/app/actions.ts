@@ -72,6 +72,17 @@ export async function setLevel(level: number) {
   return { ok: true };
 }
 
+/** Your weekly attendance goal: 1 to 5 classes a week. */
+export async function setWeeklyGoal(goal: number) {
+  const { supabase, me } = await requireMember();
+  const n = Math.round(goal);
+  if (!(n >= 1 && n <= 5)) return { error: 'Pick 1 to 5 classes a week.' };
+  const { error } = await supabase.from('profiles').update({ weekly_goal: n }).eq('id', me.id);
+  if (error) return { error: 'Couldn’t save that. Try again.' };
+  revalidatePath('/lifts/attendance');
+  return { ok: true };
+}
+
 /** Claude draws a spirit animal from a description. Nothing is saved until they press Save. */
 export async function drawAvatar(prompt: string) {
   const { supabase, me } = await requireMember();
