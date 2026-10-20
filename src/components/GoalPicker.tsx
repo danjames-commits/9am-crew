@@ -3,9 +3,10 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { setWeeklyGoal } from '@/app/actions';
 
-/** Pick your own weekly goal, 1 to 5 classes. */
+/** Your weekly goal as one quiet line; tap Change to pick 1 to 5 classes a week. */
 export function GoalPicker({ goal }: { goal: number }) {
   const [value, setValue] = useState(goal);
+  const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [saving, start] = useTransition();
   const router = useRouter();
@@ -13,6 +14,7 @@ export function GoalPicker({ goal }: { goal: number }) {
   function pick(n: number) {
     const before = value;
     setValue(n);
+    setOpen(false);
     setError('');
     start(async () => {
       const r = await setWeeklyGoal(n);
@@ -24,19 +26,28 @@ export function GoalPicker({ goal }: { goal: number }) {
   }
 
   return (
-    <div className="stack tight">
+    <div className="goal-line">
       <div className="row between">
-        <b>My weekly goal</b>
-        <span className="muted small">{saving ? 'Saving…' : `${value} ${value === 1 ? 'class' : 'classes'} a week`}</span>
+        <span className="small">
+          Goal: <b>{value} {value === 1 ? 'class' : 'classes'} a week</b>
+          {saving && <span className="muted"> · saving…</span>}
+        </span>
+        <button type="button" className="link-btn small" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+          {open ? 'Done' : 'Change'}
+        </button>
       </div>
-      <div className="segmented" role="group" aria-label="Classes a week" style={{ gridTemplateColumns: 'repeat(5, minmax(0, 1fr))' }}>
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button key={n} type="button" aria-pressed={value === n} onClick={() => pick(n)}>
-            {n}
-          </button>
-        ))}
-      </div>
-      <p className="muted small">Pick what you can keep up. Everyone ranks on weeks they hit their own goal.</p>
+      {open && (
+        <div className="stack tight" style={{ marginTop: 10 }}>
+          <div className="segmented goal-seg" role="group" aria-label="Classes a week" style={{ gridTemplateColumns: 'repeat(5, minmax(0, 1fr))' }}>
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button key={n} type="button" aria-pressed={value === n} onClick={() => pick(n)}>
+                {n}
+              </button>
+            ))}
+          </div>
+          <p className="muted small">Pick what you can keep up. Everyone ranks on weeks they hit their own goal.</p>
+        </div>
+      )}
       {error && (
         <p className="small" role="alert">
           {error}

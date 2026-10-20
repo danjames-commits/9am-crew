@@ -34,7 +34,7 @@ export function AttendanceView({
   const thisWeek = weekCounts(mine).get(mondayOf(doneThrough)) ?? 0;
   const streak = goalStreak(mine, goal, doneThrough);
   const best = bestGoalStreak(mine, goal);
-  const weeks = recentWeeks(new Set(mine), new Set(held), doneThrough);
+  const weeks = recentWeeks(new Set(mine), new Set(held), doneThrough, 4);
 
   const monthStart = doneThrough.slice(0, 8) + '01';
   const monthName = new Date(doneThrough + 'T12:00:00Z').toLocaleDateString('en-CA', { month: 'long', timeZone: 'UTC' });
@@ -77,15 +77,12 @@ export function AttendanceView({
               : 'Goal hit this week. Nice work.'
             : `${goal - thisWeek} more this week to hit your goal${streak > 0 ? ` and make it ${streak + 1} ${weeksWord(streak + 1)} in a row` : ''}.`}
         </p>
-      </section>
-
-      <section className="card">
         <GoalPicker goal={goal} />
       </section>
 
       <section className="stack tight">
-        <div className="eyebrow">Last 8 weeks</div>
-        <div className="card att-cal" role="img" aria-label={`You made ${weeks.flatMap((w) => w.days).filter((d) => d.mark === 'in').length} classes in the last 8 weeks`}>
+        <div className="eyebrow">Last 4 weeks</div>
+        <div className="card att-cal" role="img" aria-label={`You made ${weeks.flatMap((w) => w.days).filter((d) => d.mark === 'in').length} classes in the last 4 weeks`}>
           <div className="att-row att-head">
             {DAY_LETTERS.map((l, i) => (
               <span key={i}>{l}</span>
