@@ -199,13 +199,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 10;
 }
-.nav-inner { max-width: 560px; margin: 0 auto; height: var(--nav-h); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* Equal gaps between the items (labels differ in length), not equal columns. */
+.nav-inner { max-width: 560px; margin: 0 auto; height: var(--nav-h); display: flex; justify-content: space-evenly; }
 .nav a {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 3px;
+  padding: 0 12px;
   text-decoration: none;
   color: #6b726e;
   font-size: 13px;
