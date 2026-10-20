@@ -42,8 +42,22 @@ export default async function AdminPage() {
     <main className="screen">
       <div className="row between">
         <h1>Program</h1>
-        <span className="badge">ADMIN</span>
+        <Link href="/admin/members" className="btn small ghost">
+          Members
+        </Link>
       </div>
+
+      {pending ? (
+        <Link href="/admin/members" className="card gold row" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <span className="grow">
+            <b>
+              {pending} {pending === 1 ? 'person is' : 'people are'} waiting to be approved.
+            </b>{' '}
+            Tap to let them in.
+          </span>
+          <Icon name="next" />
+        </Link>
+      ) : null}
 
       {planSoon && (
         <Link href={`/admin/cycles/new?start=${following.start}`} className="card gold row" style={{ textDecoration: 'none' }}>
@@ -110,14 +124,6 @@ export default async function AdminPage() {
           })}
         </div>
       </section>
-
-      <Link href="/admin/members" className="card row" style={{ textDecoration: 'none', color: 'inherit' }}>
-        <span className="grow">
-          <b>Members and admins</b>
-          {pending ? <span className="muted"> · {pending} waiting for approval</span> : null}
-        </span>
-        <Icon name="next" />
-      </Link>
 
       <ProgramForm cycleStart={schedule.cycleStart} cycleWeeks={schedule.cycleWeeks} goals={schedule.goals} />
     </main>
