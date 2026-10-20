@@ -32,7 +32,7 @@ export default async function WorkoutsPage() {
   }
   const label = (week: DigestDay[]) => {
     const pos = positionOn(week[0].date, schedule);
-    return pos.started ? `Week ${pos.week.index + 1} · ${pos.week.label}` : undefined;
+    return pos.started ? `Week ${pos.week.index + 1}/${pos.totalWeeks} · ${pos.week.label}` : undefined;
   };
 
   return (
