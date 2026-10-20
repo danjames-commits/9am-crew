@@ -43,13 +43,18 @@ export function WorkoutView({
   const [open, setOpen] = useState<boolean[]>(() => parts.map(() => true));
   const [mode, setMode] = useState<'member' | 'coach' | null>(null);
   const [levelOpen, setLevelOpen] = useState(false);
+  const [placeOpen, setPlaceOpen] = useState(false);
   const levelRef = useRef<HTMLDivElement>(null);
+  const placeRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!levelOpen) return;
-    const close = (e: PointerEvent) => !levelRef.current?.contains(e.target as Node) && setLevelOpen(false);
+    if (!levelOpen && !placeOpen) return;
+    const close = (e: PointerEvent) => {
+      if (!levelRef.current?.contains(e.target as Node)) setLevelOpen(false);
+      if (!placeRef.current?.contains(e.target as Node)) setPlaceOpen(false);
+    };
     document.addEventListener('pointerdown', close);
     return () => document.removeEventListener('pointerdown', close);
-  }, [levelOpen]);
+  }, [levelOpen, placeOpen]);
   const i = level - 1;
   const ctx: QuickLogContext = { ...log, classDate, maxes };
 
@@ -79,6 +84,30 @@ export function WorkoutView({
             </div>
           )}
         </div>
+        {hasOutdoor && (
+          <div className="wv-level" ref={placeRef}>
+            <button type="button" className="wv-chip" aria-expanded={placeOpen} onClick={() => setPlaceOpen((o) => !o)}>
+              {outside ? 'Outside' : 'Inside'} <span aria-hidden="true">▾</span>
+            </button>
+            {placeOpen && (
+              <div className="wv-pop" role="dialog" aria-label="Inside or outside">
+                {[false, true].map((o) => (
+                  <button
+                    key={String(o)}
+                    type="button"
+                    className={`wv-pop-item ${outside === o ? 'on' : ''}`}
+                    onClick={() => {
+                      setOutside(o);
+                      setPlaceOpen(false);
+                    }}
+                  >
+                    <b>{o ? 'Outside' : 'Inside'}</b>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <span className="grow" />
         {coach && (
           <button type="button" className="btn small ghost" onClick={() => setMode('coach')}>
@@ -89,6 +118,18 @@ export function WorkoutView({
           {coach ? '▶ Start' : '▶ Workout mode'}
         </button>
       </div>
+
+      {hasOutdoor && (
+        <p className="small wv-weather" style={{ color: weather?.outside ? 'var(--teal)' : 'var(--ink-3)' }}>
+          {weather ? (
+            <>
+              <b>{weather.headline}.</b> {weather.detail} at 9 AM.
+            </>
+          ) : (
+            'The 9 AM forecast shows here a few days before.'
+          )}
+        </p>
+      )}
 
       {level !== mine && (
         <div className="level-switch small">
@@ -137,27 +178,6 @@ export function WorkoutView({
               </span>
             </summary>
             <div className="stack tight">
-              {p.outdoor && (
-                <div className="stack tight">
-                  <div className="segmented" role="group" aria-label="Inside or outside" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
-                    <button aria-pressed={!outside} onClick={() => setOutside(false)}>
-                      Inside
-                    </button>
-                    <button aria-pressed={!!outside} onClick={() => setOutside(true)}>
-                      Outside
-                    </button>
-                  </div>
-                  <p className="small" style={{ color: weather?.outside ? 'var(--teal)' : 'var(--ink-3)' }}>
-                    {weather ? (
-                      <>
-                        <b>{weather.headline}.</b> {weather.detail} at 9 AM.
-                      </>
-                    ) : (
-                      'The 9 AM forecast shows here a few days before.'
-                    )}
-                  </p>
-                </div>
-              )}
               {w.headline && <h3 style={{ fontSize: 20 }}>{w.headline}</h3>}
               <PartBody body={w.body} />
               {p.lift && <YourNumbers part={w.useOutdoor ? { ...p, versions: w.versions } : p} level={level} maxes={maxes} />}

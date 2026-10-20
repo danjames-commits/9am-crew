@@ -450,4 +450,5 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .wv-pop-item { text-align: left; padding: 10px 12px; border: 0; border-radius: 10px; background: none; color: var(--ink); font: inherit; cursor: pointer; min-height: 0; }
 .wv-pop-item.on { background: var(--ground); }
 .wv-toolbar .btn { white-space: nowrap; }
+.wv-weather { margin-top: -10px; }
 
