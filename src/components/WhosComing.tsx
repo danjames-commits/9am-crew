@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { setAttendance } from '@/app/actions';
 import { Avatar } from './Avatar';
+import { PersonAvatar } from './PersonAvatar';
 
 interface Person {
   id: string;
@@ -52,7 +53,7 @@ export function WhosComing({ classDate, me, others, going }: { classDate: string
         </button>
       )}
       {crew.length > 0 && (
-        <div className="who-stack" title={`Going: ${names}`} aria-label={`${crew.length} going: ${names}`}>
+        <div className="who-stack" aria-label={`${crew.length} going: ${names}`}>
           {shown.map((p) =>
             p.id === me.id ? (
               <button
@@ -70,7 +71,7 @@ export function WhosComing({ classDate, me, others, going }: { classDate: string
               </button>
             ) : (
               <span key={p.id} className="who-other">
-                <Avatar id={p.id} name={p.name} animal={p.animal} size="sm" />
+                <PersonAvatar id={p.id} name={p.name} animal={p.animal} />
               </span>
             ),
           )}

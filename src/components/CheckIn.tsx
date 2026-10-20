@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { setAttendance } from '@/app/actions';
 import { Avatar } from './Avatar';
+import { PersonAvatar } from './PersonAvatar';
 
 interface Person {
   id: string;
@@ -68,9 +69,13 @@ export function CheckIn({
     <div className="stack">
       <div className="row between">
         <div className="avatars" aria-label={`${crew.length} going`}>
-          {crew.map((p) => (
-            <Avatar key={p.id} id={p.id} name={p.name} animal={p.animal} size="sm" />
-          ))}
+          {crew.map((p) =>
+            p.id === me.id ? (
+              <Avatar key={p.id} id={p.id} name={p.name} animal={p.animal} size="sm" />
+            ) : (
+              <PersonAvatar key={p.id} id={p.id} name={p.name} animal={p.animal} />
+            ),
+          )}
           {crew.length === 0 && <span className="muted">Nobody yet. Be the first!</span>}
         </div>
         <span className="muted">{crew.length} going</span>
@@ -83,9 +88,6 @@ export function CheckIn({
         <button className="btn primary big" onClick={toggle}>
           I’m coming
         </button>
-      )}
-      {crew.length > 0 && (
-        <p className="muted small">{crew.map((p) => p.name).join(', ')}</p>
       )}
       {error && <p className="small" role="alert">{error}</p>}
     </div>

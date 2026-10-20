@@ -452,3 +452,12 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .wv-toolbar .btn { white-space: nowrap; }
 .wv-weather { margin-top: -10px; }
 
+
+/* Someone else's avatar: hover or tap shows their full name. */
+.person { position: relative; display: inline-flex; padding: 0; border: 0; background: none; border-radius: 50%; cursor: pointer; min-height: 0; }
+.name-tip { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 30; padding: 5px 9px; border-radius: 8px; background: #fff; color: var(--ink); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22); font-size: 12px; font-weight: 700; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.12s; }
+@media (hover: hover) { .person:hover .name-tip { opacity: 1; } }
+.person[data-open] .name-tip { opacity: 1; }
+/* Keep the label on screen: left-anchored in left-aligned rows, right-anchored in the right-hand stack. */
+.avatars .name-tip { left: 0; transform: none; }
+.who-stack .name-tip { left: auto; right: 0; transform: none; }
