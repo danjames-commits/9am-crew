@@ -11,7 +11,7 @@ export function LiftsTabs({ current }: { current: 'lifts' | 'benchmarks' | 'atte
         Benchmarks
       </Link>
       <Link href="/lifts/attendance" aria-current={current === 'attendance' ? 'page' : undefined}>
-        Attendance
+        Show-ups
       </Link>
     </nav>
   );
