@@ -32,6 +32,7 @@ const BENCH_SQL = readFileSync(new URL('../supabase/migration-010-benchmarks.sql
 await db.exec(BENCH_SQL);
 await db.exec(readFileSync(new URL('../supabase/migration-011-benchmark-no-date.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-012-chat-reads.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-013-shouty.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -255,6 +256,17 @@ r = await as(B, `select user_id from public.chat_reads`);
 assert.deepEqual(r.rows.map((x) => x.user_id), [B], 'you only see your own read marker');
 await fails(B, `update public.chat_reads set read_at = now() where user_id = '${A}'`, 'touch someone else’s marker');
 ok('chat: a dot when others post since you last looked');
+
+await fails(B, `update public.profiles set shouty = true where id = '${B}'`, 'set shouty on yourself');
+await db.exec(`update public.profiles set shouty = true where id = '${B}'`);
+r = await as(B, `insert into public.messages (body) values ('see you at 9am, bring chalk') returning body`);
+assert.equal(r.rows[0].body, 'SEE YOU AT 9AM, BRING CHALK 🤘');
+r = await as(B, `insert into public.messages (body) values ('already rocking 🤘') returning body`);
+assert.equal(r.rows[0].body, 'ALREADY ROCKING 🤘');
+r = await as(A, `insert into public.messages (body) values ('quiet please') returning body`);
+assert.equal(r.rows[0].body, 'quiet please', 'everyone else posts as typed');
+await db.exec(`update public.profiles set shouty = false where id = '${B}'`);
+ok('chat: shouty members post IN CAPS 🤘');
 
 await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);
