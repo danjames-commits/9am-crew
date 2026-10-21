@@ -1,5 +1,6 @@
 import 'server-only';
 import { createServerClient } from '@supabase/ssr';
+import { SUPABASE_JWKS } from './jwks';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { cache } from 'react';
@@ -25,7 +26,7 @@ export async function supabaseServer() {
 // getClaims checks the token locally, so this costs no round trip.
 const getAuth = cache(async () => {
   const supabase = await supabaseServer();
-  const { data } = await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims(undefined, { jwks: SUPABASE_JWKS });
   const userId = data?.claims?.sub;
   if (!userId) redirect('/login');
   return { supabase, userId };

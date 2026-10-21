@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
+import { SUPABASE_JWKS } from './lib/supabase/jwks';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // Keeps the login session fresh and sends signed-out visitors to /login.
@@ -20,7 +21,7 @@ export async function proxy(request: NextRequest) {
   // The keep-warm ping: wakes the server, no sign-in needed.
   if (request.nextUrl.pathname === '/api/warm') return response;
 
-  const { data } = await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims(undefined, { jwks: SUPABASE_JWKS });
   const signedIn = Boolean(data?.claims?.sub);
   const path = request.nextUrl.pathname;
 
