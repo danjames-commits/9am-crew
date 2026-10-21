@@ -3,15 +3,14 @@ import { Suspense } from 'react';
 import { after } from 'next/server';
 import { requireMember, signedIn } from '@/lib/supabase/server';
 import { maybePostRecap } from '@/lib/recap';
-import { getPeople, getSchedule, recentPrs, type PrPost } from '@/lib/data';
+import { getPeople, getSchedule } from '@/lib/data';
+import { WeekDigest, type DigestDay } from '@/components/WeekDigest';
 import { daysBetween } from '@/lib/dates';
 import { nextCycle, positionOn } from '@/lib/programming/engine';
-import { nextClassDate, relativeDay, longDate, timeAgo, todayLocal } from '@/lib/dates';
+import { classDays, nextClassDate, nextWeekday, relativeDay, longDate, todayLocal } from '@/lib/dates';
 import { firstName } from '@/lib/ui';
 import { levelName } from '@/lib/types';
 import { CheckIn } from '@/components/CheckIn';
-import { CheerButton } from '@/components/CheerButton';
-import { PrCard } from '@/components/PrCard';
 import { Avatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
 import { classWeather } from '@/lib/weather';
@@ -20,12 +19,21 @@ import type { Part } from '@/lib/types';
 export const dynamic = 'force-dynamic';
 
 export default async function TodayPage() {
-  const { supabase, userId } = await signedIn();
+  const { supabase } = await signedIn();
   const classDate = nextClassDate();
 
   // Started now, shown later: weather and personal bests stream in (Suspense), so they never hold up the page.
   const weatherP = classWeather(classDate);
-  const prsP = recentPrs(supabase, userId);
+  // The four class days after the next one, streamed in below the next-class card.
+  const later = classDays(nextWeekday(classDate), 4);
+  const upcomingP = Promise.all([
+    supabase.from('workouts').select('class_date, title, focus, status, parts').in('class_date', later),
+    supabase.from('attendance').select('class_date, user_id').in('class_date', later),
+  ]).then(([{ data: ws }, { data: att }]) => ({
+    dates: later,
+    workouts: later.map((d) => (ws ?? []).find((w) => w.class_date === d) ?? null) as DigestDay['workout'][],
+    att: (att ?? []) as { class_date: string; user_id: string }[],
+  }));
   const [{ me }, { data: workout }, { data: attendance }, { names, animals }, admin] = await Promise.all([
     requireMember(),
     supabase.from('workouts').select('id, title, focus, status, parts').eq('class_date', classDate).maybeSingle(),
@@ -98,12 +106,9 @@ export default async function TodayPage() {
         <CheckIn classDate={classDate} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />
       </section>
 
-      <section className="stack">
-        <h2>Personal bests</h2>
-        <Suspense fallback={<div className="card muted">Loading…</div>}>
-          <RecentBests prs={prsP} meId={userId} names={names} isAdmin={me.is_admin} />
-        </Suspense>
-      </section>
+      <Suspense fallback={null}>
+        <ComingUp days={upcomingP} meId={me.id} isAdmin={me.is_admin} />
+      </Suspense>
     </main>
   );
 }
@@ -120,24 +125,18 @@ async function WeatherLine({ weather: weatherP, hasOutdoor }: { weather: ReturnT
   );
 }
 
-async function RecentBests({ prs: prsP, meId, names, isAdmin }: { prs: Promise<PrPost[]>; meId: string; names: Record<string, string>; isAdmin: boolean }) {
-  const prs = await prsP;
-  if (prs.length === 0) {
-    return <div className="card muted">No new bests this week yet. Log your lifts on the My stats tab and they’ll show up here.</div>;
-  }
-  return prs.map((p) => {
-    const name = names[p.user_id] ?? 'Someone';
-    return (
-      <PrCard
-        key={p.id}
-        who={p.user_id === meId ? 'You' : firstName(name)}
-        body={p.body}
-        when={timeAgo(p.created_at)}
-        art={p.art}
-        artTarget={p.movementId ? { userId: p.user_id, movementId: p.movementId } : undefined}
-        canRedraw={isAdmin}
-        cheer={<CheerButton liftLogId={p.lift_log_id} count={p.cheers} mine={p.cheeredByMe} name={name} disabled={p.user_id === meId} />}
-      />
-    );
-  });
+// The class days after the next one, each with an "I'm in" so you can plan your week.
+async function ComingUp({ days: daysP, meId, isAdmin }: { days: Promise<{ dates: string[]; workouts: DigestDay['workout'][]; att: { class_date: string; user_id: string }[] }>; meId: string; isAdmin: boolean }) {
+  const { dates, workouts, att } = await daysP;
+  const others: Record<string, number> = {};
+  for (const a of att) if (a.user_id !== meId) others[a.class_date] = (others[a.class_date] ?? 0) + 1;
+  return (
+    <WeekDigest
+      heading="Coming up"
+      days={dates.map((date, i) => ({ date, workout: workouts[i] }))}
+      today={todayLocal()}
+      isAdmin={isAdmin}
+      rsvp={{ mine: att.filter((a) => a.user_id === meId).map((a) => a.class_date), others }}
+    />
+  );
 }

@@ -520,3 +520,7 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 @keyframes sheet-in { from { opacity: 0; } }
 @keyframes card-in { from { transform: scale(0.92); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .person-sheet, .person-card { animation: none; } }
+.rsvp { flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 72px; }
+.rsvp-chip { min-height: 34px; padding: 0 12px; border-radius: 17px; border: 1.5px solid var(--line-2); background: #fff; color: var(--ink); font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+.rsvp-chip.on { background: var(--gold); border-color: var(--gold); }
+.rsvp .small { font-size: 11px; }

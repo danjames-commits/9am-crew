@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { shortDate } from '@/lib/dates';
 import type { Part } from '@/lib/types';
+import { RsvpChip } from './RsvpChip';
 
 export interface DigestDay {
   date: string;
@@ -23,7 +24,22 @@ export function dayTags(parts: Part[]) {
 }
 
 /** A week at a glance: one line per day, with what kind of day it is. */
-export function WeekDigest({ days, today, isAdmin, heading, sub }: { days: DigestDay[]; today: string; isAdmin: boolean; heading: string; sub?: string }) {
+export function WeekDigest({
+  days,
+  today,
+  isAdmin,
+  heading,
+  sub,
+  rsvp,
+}: {
+  days: DigestDay[];
+  today: string;
+  isAdmin: boolean;
+  heading: string;
+  sub?: string;
+  /** Show an "I'm in" chip on each day: which days you're in, and how many others are. */
+  rsvp?: { mine: string[]; others: Record<string, number> };
+}) {
   const tests = days.filter((d) => d.workout?.parts.some((p) => p.benchmark || p.lift?.mode === 'build')).length;
   return (
     <div className="stack tight">
@@ -63,6 +79,7 @@ export function WeekDigest({ days, today, isAdmin, heading, sub }: { days: Diges
                   <div className="muted">Not posted yet</div>
                 )}
               </div>
+              {rsvp && <RsvpChip date={date} going={rsvp.mine.includes(date)} others={rsvp.others[date] ?? 0} />}
             </>
           );
           const href = posted ? `/workouts/${date}` : isAdmin ? `/admin/build/${date}` : null;
