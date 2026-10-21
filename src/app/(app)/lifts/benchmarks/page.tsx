@@ -36,7 +36,7 @@ export default async function BenchmarksPage() {
               const last = mine[mine.length - 1];
               const best = bestResult(b, mine, last.level);
               return (
-                <Link key={b.id} href={`/lifts/benchmarks/${b.id}`} className="list-item">
+                <Link key={b.id} href={`/lifts/benchmarks/${b.id}`} prefetch={false} className="list-item">
                   <div className="grow">
                     <div style={{ fontWeight: 700 }}>{b.name}</div>
                     <div className="muted small">
@@ -71,7 +71,7 @@ export default async function BenchmarksPage() {
           </summary>
           <div className="list">
             {untried.map((b) => (
-              <Link key={b.id} href={`/lifts/benchmarks/${b.id}`} className="list-item" style={{ paddingLeft: 0, paddingRight: 0 }}>
+              <Link key={b.id} href={`/lifts/benchmarks/${b.id}`} prefetch={false} className="list-item" style={{ paddingLeft: 0, paddingRight: 0 }}>
                 <div className="grow">
                   <div style={{ fontWeight: 700 }}>{b.name}</div>
                   {b.description && <div className="muted small">{b.description}</div>}

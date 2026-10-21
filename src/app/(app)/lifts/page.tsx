@@ -52,7 +52,7 @@ export default async function LiftsPage() {
             const top = Math.max(...b.recent);
             const bottom = Math.min(...b.recent) * 0.8;
             return (
-              <Link key={b.movementId} href={`/lifts/${b.movementId}`} className="list-item">
+              <Link key={b.movementId} href={`/lifts/${b.movementId}`} prefetch={false} className="list-item">
                 <div className="grow">
                   <div style={{ fontWeight: 700 }}>{b.movement}</div>
                   <div className="muted small">

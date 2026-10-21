@@ -17,6 +17,9 @@ export async function proxy(request: NextRequest) {
     },
   });
 
+  // The keep-warm ping: wakes the server, no sign-in needed.
+  if (request.nextUrl.pathname === '/api/warm') return response;
+
   const { data } = await supabase.auth.getClaims();
   const signedIn = Boolean(data?.claims?.sub);
   const path = request.nextUrl.pathname;
