@@ -30,7 +30,8 @@ export function MeForm({
   const [sharePrs, setSharePrs] = useState(privacy.sharePrs);
   const [lvl, setLvl] = useState(level);
   const [pick, setPick] = useState<string | null>(customVersion(animal) ? 'custom' : animal);
-  const [mode, setMode] = useState<'pick' | 'draw'>(customVersion(animal) ? 'draw' : 'pick');
+  // Opens on Claude drawing one, unless you've already picked a ready-made animal.
+  const [mode, setMode] = useState<'pick' | 'draw'>(animal && !customVersion(animal) ? 'pick' : 'draw');
   // The ready-made animal to go back to when they switch from Claude's drawing to picking.
   const [lastPreset, setLastPreset] = useState<string | null>(customVersion(animal) ? null : animal);
   const [idea, setIdea] = useState('');
