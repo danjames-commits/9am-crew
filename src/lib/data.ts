@@ -1,4 +1,5 @@
 import 'server-only';
+import { prArtUrls } from './pr-art';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { estimateMax, type SavedCycle, type Schedule } from './programming/engine';
 import { classDays, daysBetween } from './dates';
@@ -113,6 +114,9 @@ export interface PrPost {
   created_at: string;
   cheers: number;
   cheeredByMe: boolean;
+  movementId: number | null;
+  /** Their spirit animal doing this lift, once Claude has drawn it. */
+  art?: string;
 }
 
 export async function recentPrs(supabase: SupabaseClient, meId: string, sinceDays = 10, limit = 6): Promise<PrPost[]> {
@@ -120,15 +124,23 @@ export async function recentPrs(supabase: SupabaseClient, meId: string, sinceDay
   const { data } = await supabase
     .from('messages')
     // Cheers ride along through the shared lift log, so it's one request.
-    .select('id, user_id, body, lift_log_id, created_at, lift_logs(cheers(user_id))')
+    .select('id, user_id, body, lift_log_id, created_at, lift_logs(movement_id, cheers(user_id))')
     .eq('kind', 'pr')
     .gte('created_at', since)
     .order('created_at', { ascending: false })
     .limit(limit);
-  return (data ?? []).map(({ lift_logs, ...p }) => {
+  const posts = (data ?? []).map(({ lift_logs, ...p }) => {
     const cheers = embeddedCheers(lift_logs);
-    return { ...p, cheers: cheers.length, cheeredByMe: cheers.some((c) => c.user_id === meId) };
+    return { ...p, cheers: cheers.length, cheeredByMe: cheers.some((c) => c.user_id === meId), movementId: embeddedMovement(lift_logs) };
   });
+  const art = await prArtUrls(supabase, posts.map((p) => ({ userId: p.user_id, movementId: p.movementId })));
+  return posts.map((p) => ({ ...p, art: art.get(`${p.user_id}:${p.movementId}`) }));
+}
+
+/** The lift embedded by a `lift_logs(movement_id, …)` select. */
+export function embeddedMovement(liftLog: unknown): number | null {
+  const id = (liftLog as { movement_id?: number } | null)?.movement_id;
+  return typeof id === 'number' ? id : null;
 }
 
 /** The cheers embedded by a `lift_logs(cheers(user_id))` select. */

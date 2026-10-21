@@ -23,7 +23,7 @@ function client() {
 // ---------------------------------------------------------------
 // Daily limits, so nobody runs up the bill by accident.
 // ---------------------------------------------------------------
-export const DAILY_LIMIT = { build: 60, scale: 8, recap: 5, plan: 20, avatar: 12 } as const;
+export const DAILY_LIMIT = { build: 60, scale: 8, recap: 5, plan: 20, avatar: 12, prart: 10 } as const;
 
 export async function takeAllowance(supabase: SupabaseClient, userId: string, kind: keyof typeof DAILY_LIMIT) {
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
@@ -565,4 +565,54 @@ export async function drawAnimal(prompt: string) {
     messages.push({ role: 'user', content: 'That SVG used something that isn’t allowed. Redraw it with only the allowed elements and attributes, double quotes, no style attributes, comments or text.' });
   }
   return { ok: false as const, message: 'The drawing came out wonky. Give it another go.' };
+}
+
+// ---------------------------------------------------------------
+// Personal-best drawings: their spirit animal doing the lift, looping
+// ---------------------------------------------------------------
+const LIFT_ARTIST = `You draw tiny animated trophies for "9AM Crew", a small, friendly weekday 9 AM workout group (mostly retirees and moms). When someone hits a new personal best on a lift, you draw THEIR spirit animal doing that lift, as a short looping cartoon. The group's identity is MID-LEVEL ENERGY: proud, cheerful, a bit funny, never intense.
+
+What to draw:
+- The same character as their avatar (same animal, colours, mood and props where it makes sense), now with a full body, doing the named lift with good form. Make the lift unmistakable: a barbell on the back for a back squat, pulling a bar from the floor for a deadlift, pressing a bar overhead for a press, and so on. Gentle cartoon proportions, a determined or pleased face.
+- One simple loop of the movement, about 1.6 to 2.4 seconds, repeating forever. Animate a few groups with transforms: the body and bar moving down and up for a squat, the bar rising for a press, and so on. Keep the feet planted. A small gold sparkle or two that fades in and out is welcome. Smooth and readable is better than complicated.
+
+How to draw:
+- One SVG, viewBox="0 0 100 100", with xmlns="http://www.w3.org/2000/svg". Double quotes on every attribute.
+- Shapes: svg, g, defs, circle, ellipse, rect, path, polygon, polyline, line, linearGradient, radialGradient, stop, with presentation attributes only (fill, stroke, stroke-width, stroke-linecap, stroke-linejoin, opacity, transform and shape geometry).
+- Motion: only <animateTransform> (attributeName="transform", type translate, scale or rotate) and <animate> (on opacity, fill, or shape geometry), with values, keyTimes, keySplines, calcMode, dur, begin (plain times like "0s" only) and repeatCount="indefinite". Put an animation inside the group it moves.
+- No style attributes, no CSS, no text, no images, no links, no scripts, no comments.
+- No background (it sits on a gold circle). The character fills most of the frame and is centred; it must read at 64 pixels wide.
+- Keep it under about 12000 characters.`;
+
+/** Draws their spirit animal doing the lift. Returns the cleaned SVG, or null if it didn't come out. */
+export async function drawLiftArt(opts: { movement: string; character: string; avatarSvg?: string | null }) {
+  const schema = {
+    type: 'object',
+    properties: { svg: { type: 'string', description: 'The animated SVG' } },
+    required: ['svg'],
+    additionalProperties: false,
+  };
+  const ask = `Their spirit animal: ${opts.character}.
+${opts.avatarSvg ? `Their avatar (draw the same character, now with a body, doing the lift):\n${opts.avatarSvg}\n` : ''}
+The lift they just hit a new best on: ${opts.movement}.`;
+  const messages: Anthropic.MessageParam[] = [{ role: 'user', content: ask }];
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await client().messages.create({
+      model: BUILD_MODEL,
+      max_tokens: 12000,
+      system: LIFT_ARTIST,
+      messages,
+      output_config: { format: { type: 'json_schema', schema } },
+    });
+    const block = res.content.find((b) => b.type === 'text');
+    if (res.stop_reason === 'refusal' || !block || block.type !== 'text' || res.stop_reason === 'max_tokens') continue;
+    const svg = cleanSvg((JSON.parse(block.text) as { svg: string }).svg, { animated: true });
+    if (svg) return svg;
+    messages.push({ role: 'assistant', content: block.text });
+    messages.push({
+      role: 'user',
+      content: 'That SVG used something that isn’t allowed. Redraw it with only the allowed elements, attributes and animation tags, double quotes, plain-number timings, no style attributes, comments or text.',
+    });
+  }
+  return null;
 }

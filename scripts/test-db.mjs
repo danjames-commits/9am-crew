@@ -36,6 +36,7 @@ await db.exec(readFileSync(new URL('../supabase/migration-013-shouty.sql', impor
 await db.exec(readFileSync(new URL('../supabase/migration-014-weekly-goal.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-015-privacy.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-017-coach-brief.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-018-pr-art.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -297,6 +298,16 @@ await as(B, `update public.program set coach_brief = 'Burpees forever.' where id
 r = await as(B, `select coach_brief from public.program`);
 assert.equal(r.rows[0].coach_brief, 'Be kind.', 'members read it (Claude uses it for their questions), only admins change it');
 ok('coach brief: admins edit, members read');
+
+const art = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="9"/></svg>';
+await as(B, `insert into public.pr_art (movement_id, user_id, animal, status, svg) values (${squat}, '${B}', 'otter', 'ready', '${art}')`);
+await fails(B, `insert into public.pr_art (movement_id, user_id, status) values (${squat}, '${A}', 'drawing')`, 'draw art for someone else');
+await fails(B, `insert into public.pr_art (movement_id, user_id, status, svg) values (${squat + 1}, '${B}', 'ready', '<svg><script/></svg>')`, 'art with a script');
+await as(A, `update public.pr_art set status = 'drawing' where user_id = '${B}'`); // admins can redraw anyone's
+r = await as(C, `select status from public.pr_art`);
+assert.deepEqual(r.rows.map((x) => x.status), ['drawing']);
+await as(B, `insert into public.ai_requests (user_id, kind) values ('${B}', 'prart')`);
+ok('personal-best drawings: your own, admins can redraw, scripts refused');
 
 await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);

@@ -29,6 +29,8 @@ export function ChatRoom({
   initialAnimals,
   meId,
   lastRead,
+  art = {},
+  isAdmin = false,
 }: {
   initial: ChatMessage[];
   initialCheers: Cheer[];
@@ -37,6 +39,9 @@ export function ChatRoom({
   meId: string;
   /** When you last opened the chat (null the first time). */
   lastRead: string | null;
+  /** Personal-best drawings by message id (url once drawn). */
+  art?: Record<number, { url?: string; userId: string; movementId: number }>;
+  isAdmin?: boolean;
 }) {
   const supabase = useMemo(() => supabaseBrowser(), []);
   const [messages, setMessages] = useState(initial);
@@ -156,6 +161,9 @@ export function ChatRoom({
           key={m.id}
           who={mine ? 'You' : firstName(name)}
           body={m.body}
+          art={art[m.id]?.url}
+          artTarget={art[m.id] ? { userId: art[m.id].userId, movementId: art[m.id].movementId } : undefined}
+          canRedraw={isAdmin}
           cheerers={these.map((c) => ({ id: c.user_id, name: names[c.user_id] ?? 'Member', animal: animals[c.user_id] }))}
           cheer={<CheerPop count={these.length} cheered={cheered} disabled={mine} name={name} onToggle={() => toggleCheer(m.lift_log_id!)} />}
         />

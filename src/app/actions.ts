@@ -1,5 +1,7 @@
 'use server';
 import { revalidatePath } from 'next/cache';
+import { after } from 'next/server';
+import { ensurePrArt } from '@/lib/pr-art';
 import { BRIEF_MAX, DEFAULT_COACH_BRIEF, getCoachBrief } from '@/lib/coach-brief';
 import { redirect } from 'next/navigation';
 import { requireMember, supabaseServer } from '@/lib/supabase/server';
@@ -90,6 +92,16 @@ export async function setWeeklyGoal(goal: number) {
   return { ok: true };
 }
 
+/** Admins: have Claude draw someone's personal-best animation again. Takes about half a minute. */
+export async function redrawPrArt(userId: string, movementId: number) {
+  const { supabase, me } = await requireMember({ admin: true });
+  if (!/^[0-9a-f-]{36}$/i.test(userId) || !Number.isInteger(movementId)) return { error: 'Bad request' };
+  const r = await ensurePrArt(supabase, { userId, movementId, actorId: me.id, force: true });
+  revalidatePath('/');
+  revalidatePath('/chat');
+  return r;
+}
+
 /** Admins: save the coaches' brief that every Claude feature reads. Empty goes back to the starting version. */
 export async function saveCoachBrief(body: string) {
   const { supabase, me } = await requireMember({ admin: true });
@@ -151,6 +163,8 @@ export async function logLift(_: unknown, form: FormData) {
     .select('is_pr')
     .single();
   if (error) return { error: error.message };
+  // A new best: Claude draws their spirit animal doing this lift, in the background (once per lift).
+  if (data?.is_pr) after(() => ensurePrArt(supabase, { userId: me.id, movementId: movement_id, actorId: me.id }));
   revalidatePath('/lifts');
   revalidatePath('/');
   return { ok: true, isPr: Boolean(data?.is_pr), at: Date.now() };

@@ -14,14 +14,24 @@ const ATTRS = new Set([
   'offset', 'stop-color', 'stop-opacity', 'gradientunits', 'gradienttransform', 'fx', 'fy',
 ]);
 
+// Personal-best drawings may also move, with SVG's own animation tags (no scripts, no CSS).
+const ANIM_TAGS = new Set(['animate', 'animatetransform']);
+const ANIM_ATTRS = new Set([
+  'attributename', 'type', 'values', 'keytimes', 'keysplines', 'calcmode', 'dur', 'repeatcount', 'begin', 'from', 'to', 'by', 'additive', 'accumulate',
+]);
+// What an animation may change: shapes, positions and colours only.
+const ANIMATABLE = new Set(['transform', 'opacity', 'cx', 'cy', 'r', 'rx', 'ry', 'x', 'y', 'width', 'height', 'd', 'points', 'fill', 'stroke', 'x1', 'y1', 'x2', 'y2']);
+
 const MAX = 16000;
+const MAX_ANIMATED = 24000;
 
 /** Returns a cleaned SVG string, or null if the drawing has anything we don't allow. */
-export function cleanSvg(raw: string): string | null {
+export function cleanSvg(raw: string, opts: { animated?: boolean } = {}): string | null {
+  const animated = Boolean(opts.animated);
   let s = raw.trim();
   // Claude sometimes wraps it in a code fence.
   s = s.replace(/^```(?:svg|xml)?\s*/i, '').replace(/\s*```$/, '').trim();
-  if (!s.startsWith('<svg') || !s.endsWith('</svg>') || s.length > MAX) return null;
+  if (!s.startsWith('<svg') || !s.endsWith('</svg>') || s.length > (animated ? MAX_ANIMATED : MAX)) return null;
   // No comments, doctypes, CDATA, processing instructions or entities (other than the basic five).
   if (/<!|<\?/.test(s)) return null;
   if (/&(?!(?:amp|lt|gt|quot|apos|#\d{1,5});)/.test(s)) return null;
@@ -36,7 +46,8 @@ export function cleanSvg(raw: string): string | null {
     if (s.slice(last, m.index).trim()) return null;
     last = tag.lastIndex;
     const [, close, name, attrs, selfClose] = m;
-    if (!TAGS.has(name.toLowerCase())) return null;
+    const isAnim = ANIM_TAGS.has(name.toLowerCase());
+    if (!TAGS.has(name.toLowerCase()) && !(animated && isAnim)) return null;
     if (close) {
       if (attrs.trim() || selfClose) return null;
       depth--;
@@ -47,7 +58,15 @@ export function cleanSvg(raw: string): string | null {
     for (const a of attrs.matchAll(/([a-zA-Z][a-zA-Z0-9:-]*)\s*=\s*"([^"<>]*)"/g)) {
       const key = a[1].toLowerCase();
       const value = a[2];
-      if (!ATTRS.has(key)) return null;
+      if (!ATTRS.has(key) && !(isAnim && ANIM_ATTRS.has(key))) return null;
+      if (isAnim) {
+        if (key === 'attributename' && !ANIMATABLE.has(value.trim().toLowerCase())) return null;
+        if (key === 'type' && !/^(translate|scale|rotate|skewX|skewY)$/.test(value.trim())) return null;
+        // Timing is plain numbers only: never "click", "mouseover" or another element's events.
+        if (key === 'begin' && !/^\s*-?\d+(\.\d+)?(ms|s)?\s*(;\s*-?\d+(\.\d+)?(ms|s)?\s*)*$/.test(value)) return null;
+        if (key === 'dur' && !/^\s*\d+(\.\d+)?(ms|s)\s*$/.test(value)) return null;
+        if (key === 'repeatcount' && !/^\s*(indefinite|\d+(\.\d+)?)\s*$/.test(value)) return null;
+      }
       if (key === 'xmlns' && value !== 'http://www.w3.org/2000/svg') return null;
       // url() is only allowed for gradients defined in this same drawing.
       if (/url\(/i.test(value) && !/^url\(#[a-zA-Z][\w-]*\)$/.test(value)) return null;
@@ -68,4 +87,9 @@ export function svgVersion(svg: string) {
   let h = 5381;
   for (let i = 0; i < svg.length; i++) h = ((h * 33) ^ svg.charCodeAt(i)) >>> 0;
   return h.toString(36);
+}
+
+/** The same drawing standing still (for people who've asked their phone to reduce motion). */
+export function stillSvg(svg: string) {
+  return svg.replace(/<animate(?:Transform)?\b[^>]*\/>/gi, '').replace(/<animate(?:Transform)?\b[^>]*>\s*<\/animate(?:Transform)?>/gi, '');
 }

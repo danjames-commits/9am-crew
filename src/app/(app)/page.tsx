@@ -101,7 +101,7 @@ export default async function TodayPage() {
       <section className="stack">
         <h2>Personal bests</h2>
         <Suspense fallback={<div className="card muted">Loading…</div>}>
-          <RecentBests prs={prsP} meId={userId} names={names} />
+          <RecentBests prs={prsP} meId={userId} names={names} isAdmin={me.is_admin} />
         </Suspense>
       </section>
     </main>
@@ -120,7 +120,7 @@ async function WeatherLine({ weather: weatherP, hasOutdoor }: { weather: ReturnT
   );
 }
 
-async function RecentBests({ prs: prsP, meId, names }: { prs: Promise<PrPost[]>; meId: string; names: Record<string, string> }) {
+async function RecentBests({ prs: prsP, meId, names, isAdmin }: { prs: Promise<PrPost[]>; meId: string; names: Record<string, string>; isAdmin: boolean }) {
   const prs = await prsP;
   if (prs.length === 0) {
     return <div className="card muted">No new bests this week yet. Log your lifts on the My stats tab and they’ll show up here.</div>;
@@ -133,6 +133,9 @@ async function RecentBests({ prs: prsP, meId, names }: { prs: Promise<PrPost[]>;
         who={p.user_id === meId ? 'You' : firstName(name)}
         body={p.body}
         when={timeAgo(p.created_at)}
+        art={p.art}
+        artTarget={p.movementId ? { userId: p.user_id, movementId: p.movementId } : undefined}
+        canRedraw={isAdmin}
         cheer={<CheerButton liftLogId={p.lift_log_id} count={p.cheers} mine={p.cheeredByMe} name={name} disabled={p.user_id === meId} />}
       />
     );

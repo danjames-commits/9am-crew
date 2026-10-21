@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cleanSvg, svgVersion } from './svg-clean';
+import { stillSvg, cleanSvg, svgVersion } from './svg-clean';
 
 const beaver = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs><linearGradient id="fur"><stop offset="0" stop-color="#8b5a2b"/><stop offset="1" stop-color="#6b4220"/></linearGradient></defs>
@@ -40,5 +40,26 @@ describe('cleanSvg', () => {
     expect(svgVersion(beaver)).toBe(svgVersion(beaver));
     expect(svgVersion(beaver)).toMatch(/^[a-z0-9]{1,16}$/);
     expect(svgVersion(beaver)).not.toBe(svgVersion(beaver + ' '));
+  });
+});
+
+describe('animated drawings', () => {
+  const head = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">';
+  const bob = '<g><animateTransform attributeName="transform" type="translate" values="0 0;0 6;0 0" dur="1.6s" repeatCount="indefinite"/><circle cx="50" cy="50" r="20" fill="#a86"/></g>';
+  it('allows simple looping motion only when asked', () => {
+    expect(cleanSvg(head + bob + '</svg>', { animated: true })).toContain('animateTransform');
+    expect(cleanSvg(head + bob + '</svg>')).toBeNull();
+  });
+  it('blocks event triggers, links and odd targets', () => {
+    expect(cleanSvg(head + '<g><animate attributeName="opacity" values="1;0" dur="1s" begin="click"/></g></svg>', { animated: true })).toBeNull();
+    expect(cleanSvg(head + '<g><animate attributeName="href" values="a;b" dur="1s"/></g></svg>', { animated: true })).toBeNull();
+    expect(cleanSvg(head + '<g><animate attributeName="opacity" values="1;0" dur="1s" href="#x"/></g></svg>', { animated: true })).toBeNull();
+    expect(cleanSvg(head + '<set attributeName="opacity" to="0"/></svg>', { animated: true })).toBeNull();
+  });
+  it('can be shown standing still', () => {
+    const svg = cleanSvg(head + bob + '<g><animate attributeName="opacity" values="1;0.5" dur="2s"></animate></g></svg>', { animated: true })!;
+    const still = stillSvg(svg);
+    expect(still).not.toMatch(/animate/i);
+    expect(still).toContain('<circle');
   });
 });
