@@ -22,7 +22,22 @@ export function PrArt({
 }) {
   const [open, setOpen] = useState(false);
   const [still, setStill] = useState(false);
+  const [drawing, start] = useTransition();
+  const [note, setNote] = useState('');
+  const router = useRouter();
   const close = useCallback(() => setOpen(false), []);
+
+  // The card closes straight away; Claude keeps drawing and the medal shows it's working.
+  const draw = useCallback(() => {
+    if (!target) return;
+    setNote('');
+    setOpen(false);
+    start(async () => {
+      const r = await redrawPrArt(target.userId, target.movementId);
+      if (r && 'error' in r && r.error) setNote(r.error);
+      else router.refresh();
+    });
+  }, [target, router]);
   useEffect(() => {
     const q = window.matchMedia('(prefers-reduced-motion: reduce)');
     setStill(q.matches);
@@ -31,7 +46,7 @@ export function PrArt({
     return () => q.removeEventListener('change', on);
   }, []);
   const src = art ? (still ? `${art}&still=1` : art) : null;
-  const tappable = Boolean(src) || (canRedraw && target);
+  const tappable = !drawing && (Boolean(src) || (canRedraw && target));
 
   const medal = src ? (
     // eslint-disable-next-line @next/next/no-img-element
@@ -40,6 +55,13 @@ export function PrArt({
     <span aria-hidden="true">🏆</span>
   );
 
+  if (drawing) {
+    return (
+      <div className="pr-medal drawing" role="status" aria-label="Claude is drawing it">
+        <span aria-hidden="true">✏️</span>
+      </div>
+    );
+  }
   if (!tappable) return <div className={`pr-medal ${src ? 'art' : ''}`}>{medal}</div>;
   return (
     <>
@@ -55,7 +77,12 @@ export function PrArt({
       >
         {medal}
       </button>
-      {open && <ArtSheet src={src} caption={caption} target={target} canRedraw={canRedraw} onClose={close} />}
+      {note && (
+        <span className="sr-only" role="alert">
+          {note}
+        </span>
+      )}
+      {open && <ArtSheet src={src} caption={caption} canDraw={Boolean(canRedraw && target)} note={note} onDraw={draw} onClose={close} />}
     </>
   );
 }
@@ -63,22 +90,20 @@ export function PrArt({
 function ArtSheet({
   src,
   caption,
-  target,
-  canRedraw,
+  canDraw,
+  note,
+  onDraw,
   onClose,
 }: {
   src: string | null;
   caption: string;
-  target?: { userId: string; movementId: number };
-  canRedraw: boolean;
+  canDraw: boolean;
+  note: string;
+  onDraw: () => void;
   onClose: () => void;
 }) {
-  const [drawing, start] = useTransition();
-  const [note, setNote] = useState('');
-  const router = useRouter();
-
   useEffect(() => {
-    const key = (e: KeyboardEvent) => e.key === 'Escape' && !drawing && onClose();
+    const key = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     document.addEventListener('keydown', key);
     const before = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -86,20 +111,7 @@ function ArtSheet({
       document.removeEventListener('keydown', key);
       document.body.style.overflow = before;
     };
-  }, [onClose, drawing]);
-
-  function redraw() {
-    if (!target) return;
-    setNote('');
-    start(async () => {
-      const r = await redrawPrArt(target.userId, target.movementId);
-      if (r && 'error' in r && r.error) setNote(r.error);
-      else {
-        router.refresh();
-        onClose();
-      }
-    });
-  }
+  }, [onClose]);
 
   return createPortal(
     <div
@@ -110,7 +122,7 @@ function ArtSheet({
       onClick={(e) => {
         e.stopPropagation();
         e.preventDefault();
-        if (!drawing) onClose();
+        onClose();
       }}
     >
       <div className="person-card">
@@ -125,19 +137,19 @@ function ArtSheet({
         <div className="person-line">
           <b>{caption}</b>
         </div>
-        {canRedraw && target && (
+        {canDraw && (
           <button
             type="button"
             className="btn small ghost"
-            disabled={drawing}
             onClick={(e) => {
               e.stopPropagation();
-              redraw();
+              onDraw();
             }}
           >
-            {drawing ? 'Claude is drawing… (about 30 seconds)' : src ? 'Redraw' : 'Draw it'}
+            {src ? 'Redraw' : 'Draw it'}
           </button>
         )}
+        {canDraw && <p className="muted small">Takes about half a minute. You can carry on; it appears when it’s ready.</p>}
         {note && (
           <p className="small" role="alert">
             {note}

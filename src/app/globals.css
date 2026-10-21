@@ -425,6 +425,9 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .pr-medal.art { width: 64px; height: 64px; overflow: hidden; background: radial-gradient(circle at 50% 40%, #fff7d6 0%, #fde08a 100%); }
 .pr-medal.art img { display: block; width: 58px; height: 58px; }
 .pr-art-big { width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #fff7d6 0%, #fde08a 100%); box-shadow: 0 0 0 4px var(--gold); }
+.pr-medal.drawing { cursor: default; animation: pr-drawing 1.2s ease-in-out infinite; }
+@keyframes pr-drawing { 50% { transform: rotate(-12deg) scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .pr-medal.drawing { animation: none; } }
 .pr-art-empty { display: grid; place-items: center; font-size: 96px; }
 .pr-who { font-size: 13px; font-weight: 800; color: var(--gold-ink); }
 .pr-when { font-weight: 600; opacity: 0.8; }
