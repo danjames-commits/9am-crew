@@ -35,6 +35,7 @@ await db.exec(readFileSync(new URL('../supabase/migration-012-chat-reads.sql', i
 await db.exec(readFileSync(new URL('../supabase/migration-013-shouty.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-014-weekly-goal.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-015-privacy.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-017-coach-brief.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -290,6 +291,12 @@ assert.equal(await log(190, 3), true);
 r = await db.query(`select count(*)::int as n from public.messages where kind = 'pr'`);
 assert.equal(r.rows[0].n, before + 1, 'posted again once shared');
 ok('privacy: opt out of sharing personal bests and of Show-ups');
+
+await as(A, `update public.program set coach_brief = 'Be kind.', coach_brief_by = '${A}', coach_brief_at = now() where id = 1`);
+await as(B, `update public.program set coach_brief = 'Burpees forever.' where id = 1`); // members can't edit it
+r = await as(B, `select coach_brief from public.program`);
+assert.equal(r.rows[0].coach_brief, 'Be kind.', 'members read it (Claude uses it for their questions), only admins change it');
+ok('coach brief: admins edit, members read');
 
 await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);

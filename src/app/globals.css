@@ -503,3 +503,4 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .toggle-row input[type='checkbox']:checked { background: var(--teal); }
 .toggle-row input[type='checkbox']:checked::after { transform: translateX(20px); }
 .toggle-row input[type='checkbox']:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.brief-text { min-height: 420px; font: inherit; font-size: 15px; font-weight: 400; color: var(--ink); line-height: 1.5; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line-2); background: #fff; resize: vertical; width: 100%; }

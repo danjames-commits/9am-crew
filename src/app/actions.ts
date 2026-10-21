@@ -1,5 +1,6 @@
 'use server';
 import { revalidatePath } from 'next/cache';
+import { BRIEF_MAX, DEFAULT_COACH_BRIEF, getCoachBrief } from '@/lib/coach-brief';
 import { redirect } from 'next/navigation';
 import { requireMember, supabaseServer } from '@/lib/supabase/server';
 import type { LevelPct, Part, PartKind, WorkoutDraft } from '@/lib/types';
@@ -87,6 +88,20 @@ export async function setWeeklyGoal(goal: number) {
   if (error) return { error: 'Couldn’t save that. Try again.' };
   revalidatePath('/lifts/attendance');
   return { ok: true };
+}
+
+/** Admins: save the coaches' brief that every Claude feature reads. Empty goes back to the starting version. */
+export async function saveCoachBrief(body: string) {
+  const { supabase, me } = await requireMember({ admin: true });
+  const text = body.replace(/\r\n/g, '\n').trim().slice(0, BRIEF_MAX);
+  const reset = !text || text === DEFAULT_COACH_BRIEF.trim();
+  const { error } = await supabase
+    .from('program')
+    .update({ coach_brief: reset ? null : text, coach_brief_at: new Date().toISOString(), coach_brief_by: me.id })
+    .eq('id', 1);
+  if (error) return { error: 'Couldn’t save the brief. Try again.' };
+  revalidatePath('/admin/brief');
+  return { ok: true, reset };
 }
 
 /** Claude draws a spirit animal from a description. Nothing is saved until they press Save. */
@@ -420,9 +435,9 @@ export async function aiScale(date: string, message: string, outside: boolean) {
   if (!w) return { error: 'Workout not found.' };
   if (!(await takeAllowance(supabase, me.id, 'scale'))) return { error: 'You’ve asked a lot today. Check with an admin, or try again tomorrow.' };
   try {
-    const { bests } = await getBests(supabase, me.id);
+    const [{ bests }, brief] = await Promise.all([getBests(supabase, me.id), getCoachBrief(supabase)]);
     const maxes = Object.fromEntries(bests.map((b) => [b.movement, b.estMax]));
-    const advice = await scaleAdvice({ workout: { title: w.title, parts: w.parts as Part[] }, level: me.level, outside, maxes, message });
+    const advice = await scaleAdvice({ brief: brief.body, workout: { title: w.title, parts: w.parts as Part[] }, level: me.level, outside, maxes, message });
     return { advice };
   } catch (e) {
     return { error: e instanceof Error ? e.message : 'Claude didn’t answer. Try again.' };

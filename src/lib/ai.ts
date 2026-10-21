@@ -7,6 +7,7 @@ import { LEVELS, type LevelText, type LiftSpec, type Part, type WorkoutDraft } f
 import { addDays, longDate, shortDate, todayLocal, weekday } from './dates';
 import type { WeatherCall } from './weather-rules';
 import { cleanSvg } from './svg-clean';
+import { getCoachBrief, withBrief } from './coach-brief';
 
 // Sonnet writes workouts; Haiku handles the quick, short jobs.
 const BUILD_MODEL = 'claude-sonnet-5-5';
@@ -40,21 +41,18 @@ export async function takeAllowance(supabase: SupabaseClient, userId: string, ki
 // ---------------------------------------------------------------
 // Writing workouts
 // ---------------------------------------------------------------
-const CREW = `You program workouts for "9AM Crew": about 8 people (mostly retirees and moms, relaxed and friendly, all ages and abilities) who train together every weekday at 9 AM in a small rented gym space in Charlottetown, PEI, Canada. Classes are about 50–60 minutes. Weights are in pounds.
+// The app's own rules for writing a workout. Who the crew is, what equipment we
+// have and how we like to train come from the coaches' brief (coach-brief.ts).
+const BUILD_RULES = `You write one day's workout for a small weekday 9 AM fitness group, in the exact shape the app needs.
 
-Assume this equipment unless the admin says otherwise: barbells and plates, kettlebells, dumbbells, wall balls, a few rowers, air bikes, plyo boxes, gymnastic rings, a pull-up bar, resistance bands. There is road and sidewalk outside for walking and running.
-
-Hard rules:
-- NEVER program partner or team work, pairs, relays, "you go I go", or anything that needs another person. Everyone works on their own.
+Format rules:
 - Every part is written four times, one per level:
   ${LEVELS.map((l) => `${l.name}: ${l.blurb}`).join('\n  ')}
-  Gentle should be genuinely gentle (low impact, lighter tools, step-ups not box jumps, wall or incline push-ups, walking not running).
 - Every conditioning part needs an "outdoor" version that swaps rowing or biking for walking or running outside (or does the whole thing outside), for days the weather is good. Only leave outdoor null if an outside version makes no sense.
 - Strength parts use the "lift" settings, not free text. Pick the lift from the allowed list. "percent" means sets × reps at a percentage of each person's best (give the Strong-level percentage; the app works out the others). "build" means building up to a solid set of N (for finding numbers or test days). The app writes the strength text itself from these settings; put any coaching cue in "note".
 - Follow the cycle: use the week's percentage, sets and reps for the main lift unless the admin asks otherwise. On an ease-off week keep everything lighter; on test week the main lift is "build".
-- Keep it safe and sensible for older adults: no high-skill Olympic lifting for Gentle or Steady, no max-effort jumping, plenty of warm-up for the main lift.
-- Vary the conditioning from recent days. Give it a short, friendly name (e.g. "Steady Twelve").
-- Write plainly: short lines, real numbers, separate lines with a newline. No emoji.`;
+- Never include partner or team work.
+- Separate lines with a newline.`;
 
 const levelText = {
   type: 'object',
@@ -194,7 +192,7 @@ export async function draftWorkout(opts: {
   weather?: WeatherCall | null;
 }): Promise<WorkoutDraft> {
   const { supabase, schedule, date, request, current, weather } = opts;
-  const [{ data: movementRows }, { data: recent }] = await Promise.all([
+  const [{ data: movementRows }, { data: recent }, brief] = await Promise.all([
     supabase.from('movements').select('name').order('sort'),
     supabase
       .from('workouts')
@@ -203,6 +201,7 @@ export async function draftWorkout(opts: {
       .lte('class_date', addDays(date, 7))
       .neq('class_date', date)
       .order('class_date'),
+    getCoachBrief(supabase),
   ]);
   const movements = (movementRows ?? []).map((m) => m.name as string);
   const pos = positionOn(date, schedule);
@@ -240,7 +239,7 @@ ${current && current.parts.length ? `\nWhat the admin has on screen right now:\n
     const res = await client().messages.create({
       model: BUILD_MODEL,
       max_tokens: 6000,
-      system: CREW,
+      system: withBrief(BUILD_RULES, brief.body),
       messages,
       output_config: { format: { type: 'json_schema', schema } },
     });
@@ -261,6 +260,8 @@ ${current && current.parts.length ? `\nWhat the admin has on screen right now:\n
 // "Help me scale this"
 // ---------------------------------------------------------------
 export async function scaleAdvice(opts: {
+  /** The coaches' brief (who the crew is, house rules). */
+  brief: string;
   workout: { title: string; parts: Part[] };
   level: number;
   outside: boolean;
@@ -278,7 +279,10 @@ export async function scaleAdvice(opts: {
   const res = await client().messages.create({
     model: QUICK_MODEL,
     max_tokens: 600,
-    system: `You help one member of a small, friendly over-50s-and-moms fitness group adjust today's workout. Be warm, practical and brief: at most about 120 words. Give specific swaps for the parts affected (exercise, reps, weight or effort), keep everything they can still do, and never suggest partner work. Plain text with short lines, no headings, no emoji. You are not a doctor: if they describe sharp pain, swelling, dizziness, chest symptoms or anything that sounds like an injury, tell them to skip what hurts and check with a health professional, and keep the rest gentle. End with: "Check with an admin if you're unsure."`,
+    system: withBrief(
+      `You help one member of a small, friendly fitness group adjust today's workout. Be warm, practical and brief: at most about 120 words. Give specific swaps for the parts affected (exercise, reps, weight or effort), keep everything they can still do, and never suggest partner work. Plain text with short lines, no headings, no emoji. You are not a doctor: if they describe sharp pain, swelling, dizziness, chest symptoms or anything that sounds like an injury, tell them to skip what hurts and check with a health professional, and keep the rest gentle. End with: "Check with an admin if you're unsure."`,
+      opts.brief,
+    ),
     messages: [
       {
         role: 'user',
@@ -294,11 +298,14 @@ export async function scaleAdvice(opts: {
 // ---------------------------------------------------------------
 // Friday recap
 // ---------------------------------------------------------------
-export async function writeRecap(facts: string) {
+export async function writeRecap(facts: string, brief: string) {
   const res = await client().messages.create({
     model: QUICK_MODEL,
     max_tokens: 400,
-    system: `You write the Friday recap for "9AM Crew", a small, friendly weekday workout group (mostly retirees and moms) in Charlottetown, PEI. It's posted in their group chat. Warm, upbeat, a little playful, never cheesy. At most about 80 words, plain text, two or three short paragraphs, at most one emoji. Celebrate new personal bests by first name. Never single out who missed days or compare attendance between people. End with one line about what's coming next week.`,
+    system: withBrief(
+      `You write the Friday recap for the crew's group chat. Warm, upbeat, a little playful, never cheesy. At most about 80 words, plain text, two or three short paragraphs, at most one emoji. Celebrate new personal bests by first name. Never single out who missed days or compare attendance between people. End with one line about what's coming next week.`,
+      brief,
+    ),
     messages: [{ role: 'user', content: facts }],
   });
   const block = res.content.find((b) => b.type === 'text');
@@ -309,14 +316,14 @@ export async function writeRecap(facts: string) {
 // ---------------------------------------------------------------
 // Planning a whole cycle
 // ---------------------------------------------------------------
-const PLANNER = `You plan training cycles for "9AM Crew": about 8 people (mostly retirees and moms, relaxed and friendly, all ages and abilities) who train together every weekday at 9 AM in a small rented gym space in Charlottetown, PEI, Canada. Each member picks a level (Gentle, Steady, Strong, Full); percentages you set are for Strong, and the app makes Steady 10% lighter and Full 5% heavier. Gentle uses lighter tools. Weights are in pounds.
+const PLANNER = `You plan training cycles for a small weekday 9 AM fitness group, in the exact shape the app needs. Each member picks a level (Gentle, Steady, Strong, Full); percentages you set are for Strong, and the app makes Steady 10% lighter and Full 5% heavier. Gentle uses lighter tools.
 
 A cycle is a run of weeks (usually 4–8) with a weekly split. You decide:
 - The weeks: each is "build" (sets × reps at a percentage of each person's best), "deload" (an easier week so bodies recover), or "test" (everyone builds to a new best). Strong percentages should climb gradually, roughly 60–85%, with a deload every 3–4 weeks and usually a test week at the end. Sets and reps should fit the percentage (lighter = more reps, e.g. 3×8 at 65%, 5×5 at ~75%, 5×3 at ~82%). Give each week a short label like "Base", "Build", "Heavy", "Ease off", "Holidays", "Test".
-- The weekday split, Monday to Friday: a short focus line, the main lift for the day (or none), whether to include pull-up skill practice, a conditioning style, and an optional note for whoever writes that day's workouts. Keep Thursday an easy, low-intensity day unless the admin says otherwise. Spread the main lifts so the same muscles aren't hammered on back-to-back days. Lifts can repeat across cycles but vary them sensibly.
+- The weekday split, Monday to Friday: a short focus line, the main lift for the day (or none), whether to include pull-up skill practice, a conditioning style, and an optional note for whoever writes that day's workouts. Lifts can repeat across cycles but vary them sensibly.
 - A short, friendly name for the cycle, 1–4 crew goals, and a few sentences on why it's planned this way (written for the admins, plain language).
 
-Hard rules: never plan partner or team work of any kind. Keep it safe and sensible for older adults. Respect what the admin asks for (dates away, injuries, focus lifts, number of weeks, outdoor work, holidays). Plain language, no emoji.
+Hard rules: never plan partner or team work of any kind. Respect what the admin asks for this cycle (dates away, injuries, focus lifts, number of weeks, outdoor work, holidays). Plain language, no emoji.
 
 Conditioning styles you can choose from:
 ${STYLES.map((s) => `- ${s}: ${STYLE_NAMES[s]}`).join('\n')}`;
@@ -408,10 +415,11 @@ export async function planCycle(opts: {
   request?: string;
 }): Promise<PlanDraft> {
   const { supabase, schedule, start, brief, current, request } = opts;
-  const [{ data: movementRows }, { data: people }, { data: logs }] = await Promise.all([
+  const [{ data: movementRows }, { data: people }, { data: logs }, coachBrief] = await Promise.all([
     supabase.from('movements').select('id, name').order('sort'),
     supabase.from('profiles').select('level').eq('approved', true),
     supabase.from('lift_logs').select('movement_id, user_id'),
+    getCoachBrief(supabase),
   ]);
   const movements = (movementRows ?? []).map((m) => m.name as string);
   const nameOf = new Map((movementRows ?? []).map((m) => [m.id, m.name as string]));
@@ -464,7 +472,7 @@ The admin's brief for this cycle: "${brief.trim() || 'No special requests. Plan 
     const res = await client().messages.create({
       model: BUILD_MODEL,
       max_tokens: 4000,
-      system: PLANNER,
+      system: withBrief(PLANNER, coachBrief.body),
       messages,
       output_config: { format: { type: 'json_schema', schema } },
     });

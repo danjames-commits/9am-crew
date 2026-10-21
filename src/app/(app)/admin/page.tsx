@@ -70,6 +70,15 @@ export default async function AdminPage() {
       {autoDates.length > 0 && <AutoDraft dates={autoDates} />}
 
       <CycleCard schedule={schedule} />
+      <Link href="/admin/brief" className="card row" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <span className="grow">
+          <b>Coach brief</b>
+          <span className="muted small" style={{ display: 'block' }}>
+            Who we are and how we train. Claude reads it for every workout, plan and answer.
+          </span>
+        </span>
+        <Icon name="next" />
+      </Link>
       <Link href="/admin/cycles" className="btn outline">
         Cycle planner{ai ? ': plan cycles with Claude' : ''}
       </Link>

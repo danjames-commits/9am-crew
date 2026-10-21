@@ -1,3 +1,4 @@
+import { getCoachBrief } from './coach-brief';
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { addDays, mondayOf, todayLocal, weekday, TIME_ZONE, shortDate } from './dates';
@@ -59,7 +60,8 @@ Next week: ${nextWeek}
 ${testLine}`;
 
   try {
-    const body = await writeRecap(facts);
+    const brief = await getCoachBrief(supabase);
+    const body = await writeRecap(facts, brief.body);
     await supabase.rpc('post_weekly_recap', { p_week: monday, p_body: body });
   } catch {
     // Try again on the next visit.
