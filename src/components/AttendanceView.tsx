@@ -3,6 +3,7 @@ import { addDays, mondayOf } from '@/lib/dates';
 import { bestGoalStreak, goalBoard, goalStreak, recentWeeks, weekCounts, type AttendanceRow } from '@/lib/attendance';
 import { LiftsTabs } from './LiftsTabs';
 import { Avatar } from './Avatar';
+import { PersonAvatar } from './PersonAvatar';
 import { GoalPicker } from './GoalPicker';
 import { AttendanceCalendar } from './AttendanceCalendar';
 
@@ -111,7 +112,11 @@ export function AttendanceView({
             {board.map((r) => (
               <div key={r.user_id} className={`list-item ${r.user_id === userId ? 'att-me' : ''}`}>
                 <span className={`att-rank ${r.rank <= 3 && r.hits > 0 ? 'medal' : ''}`}>{r.rank <= 3 && r.hits > 0 ? MEDALS[r.rank - 1] : r.rank}</span>
-                <Avatar id={r.user_id} name={names[r.user_id]} animal={animals[r.user_id]} size="sm" />
+                {r.user_id === userId ? (
+                  <Avatar id={r.user_id} name={names[r.user_id]} animal={animals[r.user_id]} size="sm" />
+                ) : (
+                  <PersonAvatar id={r.user_id} name={names[r.user_id]} animal={animals[r.user_id]} />
+                )}
                 <span className="grow" style={{ minWidth: 0 }}>
                   <b>{r.user_id === userId ? 'You' : names[r.user_id]}</b>
                   <span className="muted small att-sub">

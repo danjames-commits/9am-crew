@@ -3,6 +3,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { firstName } from '@/lib/ui';
 import { Avatar } from './Avatar';
+import { PersonAvatar } from './PersonAvatar';
 import { timeAgo } from '@/lib/dates';
 import { Icon } from './Icon';
 import { PrCard } from './PrCard';
@@ -163,7 +164,11 @@ export function ChatRoom({
     return (
       <div key={m.id} className="row top" style={{ justifyContent: mine ? 'flex-end' : 'flex-start' }}>
         {!mine && (
-          <Avatar id={m.user_id ?? ''} name={name} animal={animals[m.user_id ?? '']} size="sm" hidden={!showName} />
+          showName && m.user_id ? (
+            <PersonAvatar id={m.user_id} name={name} animal={animals[m.user_id]} />
+          ) : (
+            <Avatar id={m.user_id ?? ''} name={name} animal={animals[m.user_id ?? '']} size="sm" hidden />
+          )
         )}
         <div className={`bubble ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)}>
           {showName && <div className="who">{firstName(name)}</div>}

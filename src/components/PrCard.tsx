@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Avatar } from './Avatar';
+import { PersonAvatar } from './PersonAvatar';
 
 interface Person {
   id: string;
@@ -27,7 +27,7 @@ export function PrCard({ who, body, when, cheer, cheerers = [] }: { who: string;
         {cheerers.length > 0 && (
           <div className="pr-cheerers" aria-label={`Cheered by ${cheerers.map((p) => p.name).join(', ')}`}>
             {cheerers.slice(0, 5).map((p) => (
-              <Avatar key={p.id} id={p.id} name={p.name} animal={p.animal} size="sm" />
+              <PersonAvatar key={p.id} id={p.id} name={p.name} animal={p.animal} />
             ))}
           </div>
         )}

@@ -460,7 +460,6 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .person { position: relative; display: inline-flex; padding: 0; border: 0; background: none; border-radius: 50%; cursor: pointer; min-height: 0; }
 .name-tip { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 30; padding: 5px 9px; border-radius: 8px; background: #fff; color: var(--ink); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22); font-size: 12px; font-weight: 700; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.12s; }
 @media (hover: hover) { .person:hover .name-tip { opacity: 1; } }
-.person[data-open] .name-tip { opacity: 1; }
 /* Keep the label on screen: left-anchored in left-aligned rows, right-anchored in the right-hand stack. */
 .avatars .name-tip { left: 0; transform: none; }
 .who-stack .name-tip { left: auto; right: 0; transform: none; }
@@ -504,3 +503,13 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .toggle-row input[type='checkbox']:checked::after { transform: translateX(20px); }
 .toggle-row input[type='checkbox']:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 .brief-text { min-height: 420px; font: inherit; font-size: 15px; font-weight: 400; color: var(--ink); line-height: 1.5; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line-2); background: #fff; resize: vertical; width: 100%; }
+
+/* Tap someone's avatar: their spirit animal, big. */
+.person-sheet { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 24px; background: rgba(28, 35, 33, 0.55); animation: sheet-in 0.15s ease-out; touch-action: none; }
+.person-card { display: flex; flex-direction: column; align-items: center; gap: 10px; width: min(320px, 100%); padding: 32px 24px 26px; border-radius: 24px; background: #fff; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.25); text-align: center; animation: card-in 0.18s ease-out; }
+.person-card .avatar { margin-bottom: 8px; }
+.person-name { font-family: var(--display); font-weight: 800; font-size: 24px; line-height: 1.15; }
+.person-line { font-size: 15px; line-height: 1.4; }
+@keyframes sheet-in { from { opacity: 0; } }
+@keyframes card-in { from { transform: scale(0.92); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .person-sheet, .person-card { animation: none; } }
