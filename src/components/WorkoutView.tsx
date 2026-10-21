@@ -39,8 +39,8 @@ export function WorkoutView({
   const [savingLevel, startSaving] = useTransition();
   const hasOutdoor = parts.some((p) => p.outdoor);
   const [outside, setOutside] = useState(Boolean(hasOutdoor && weather?.outside));
-  // Every part can fold away; all start open.
-  const [open, setOpen] = useState<boolean[]>(() => parts.map(() => true));
+  // Every part can fold away. Warm-up and cool-down start folded; the main work starts open.
+  const [open, setOpen] = useState<boolean[]>(() => parts.map((p) => p.kind !== 'warmup' && p.kind !== 'cooldown'));
   const [mode, setMode] = useState<'member' | 'coach' | null>(null);
   const [levelOpen, setLevelOpen] = useState(false);
   const [placeOpen, setPlaceOpen] = useState(false);
