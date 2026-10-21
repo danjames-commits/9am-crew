@@ -15,6 +15,7 @@ export function MeForm({
   level,
   animal,
   drawn,
+  privacy,
 }: {
   id: string;
   name: string;
@@ -22,8 +23,11 @@ export function MeForm({
   animal: string | null;
   /** Their saved drawing, if they have one. */
   drawn: { name: string; prompt: string; version: string } | null;
+  privacy: { showInShowups: boolean; sharePrs: boolean };
 }) {
   const [displayName, setDisplayName] = useState(name);
+  const [showups, setShowups] = useState(privacy.showInShowups);
+  const [sharePrs, setSharePrs] = useState(privacy.sharePrs);
   const [lvl, setLvl] = useState(level);
   const [pick, setPick] = useState<string | null>(customVersion(animal) ? 'custom' : animal);
   const [mode, setMode] = useState<'pick' | 'draw'>(customVersion(animal) ? 'draw' : 'pick');
@@ -65,7 +69,7 @@ export function MeForm({
 
   function save(e: React.FormEvent) {
     e.preventDefault();
-    start(async () => setMsg(await updateMe({ display_name: displayName, level: lvl, animal: pick, drawing: pick === 'custom' ? fresh : null })));
+    start(async () => setMsg(await updateMe({ display_name: displayName, level: lvl, animal: pick, drawing: pick === 'custom' ? fresh : null, show_in_showups: showups, share_prs: sharePrs })));
   }
 
   // A fresh edit clears the old "Saved" message.
@@ -198,6 +202,31 @@ export function MeForm({
           </label>
         ))}
         <p className="muted small">You can still look at any level on a workout. This just picks which one opens first.</p>
+      </fieldset>
+      <fieldset className="stack" style={{ border: 'none', padding: 0, margin: 0 }}>
+        <legend className="eyebrow" style={{ marginBottom: 10 }}>
+          What the crew sees
+        </legend>
+        <div className="card flush list">
+          <label className="list-item toggle-row">
+            <span className="grow">
+              <b>Show me on the Show-ups leaderboard</b>
+              <span className="muted small" style={{ display: 'block' }}>
+                Off: you still see your own show-ups and streaks. Nobody else does.
+              </span>
+            </span>
+            <input type="checkbox" role="switch" checked={showups} onChange={(e) => setShowups(e.target.checked)} />
+          </label>
+          <label className="list-item toggle-row">
+            <span className="grow">
+              <b>Share my personal bests</b>
+              <span className="muted small" style={{ display: 'block' }}>
+                Off: new bests still show on your lifts, but aren’t posted to the chat or Today.
+              </span>
+            </span>
+            <input type="checkbox" role="switch" checked={sharePrs} onChange={(e) => setSharePrs(e.target.checked)} />
+          </label>
+        </div>
       </fieldset>
       <button className="btn primary big" disabled={pending}>
         {pending ? 'Saving…' : 'Save'}

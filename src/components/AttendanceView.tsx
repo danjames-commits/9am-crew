@@ -16,6 +16,7 @@ export function AttendanceView({
   names,
   animals,
   goals,
+  hidden = [],
   rows,
   held,
 }: {
@@ -25,6 +26,8 @@ export function AttendanceView({
   names: Record<string, string>;
   animals: Record<string, string | null>;
   goals: Record<string, number>;
+  /** Opted out of the leaderboard. */
+  hidden?: string[];
   /** Classes people were in, on days a workout actually ran, up to doneThrough. */
   rows: AttendanceRow[];
   held: string[];
@@ -43,7 +46,8 @@ export function AttendanceView({
 
   const monthStart = doneThrough.slice(0, 8) + '01';
   const monthName = new Date(doneThrough + 'T12:00:00Z').toLocaleDateString('en-CA', { month: 'long', timeZone: 'UTC' });
-  const board = goalBoard(rows, goals, monthStart, doneThrough);
+  const meHidden = hidden.includes(userId);
+  const board = goalBoard(rows.filter((r) => !hidden.includes(r.user_id)), goals, monthStart, doneThrough);
   const crewTotal = board.reduce((n, r) => n + r.classes, 0);
   const top = board.length ? Math.max(...board.map((r) => r.streak)) : 0;
   // You first, then everyone else.
@@ -125,6 +129,7 @@ export function AttendanceView({
             ))}
           </div>
         )}
+        {meHidden && <p className="small">You’re hidden from the leaderboard. Your own numbers above are still yours. Change it on your Me page.</p>}
         <p className="muted small">Counts classes that have happened, when you tapped “I’m in”. Starts fresh every month.</p>
       </section>
     </main>

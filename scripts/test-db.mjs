@@ -34,6 +34,7 @@ await db.exec(readFileSync(new URL('../supabase/migration-011-benchmark-no-date.
 await db.exec(readFileSync(new URL('../supabase/migration-012-chat-reads.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-013-shouty.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-014-weekly-goal.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-015-privacy.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -275,6 +276,20 @@ r = await db.query(`select id, weekly_goal from public.profiles where id in ('${
 assert.deepEqual(r.rows.map((x) => x.weekly_goal), [1, 3]);
 await fails(B, `update public.profiles set weekly_goal = 6 where id = '${B}'`, 'goal over 5');
 ok('weekly goal: starts at 1, you set your own, 1 to 5');
+
+// Opting out of sharing personal bests: the lift still counts as a best, nothing is posted.
+await as(B, `update public.profiles set share_prs = false, show_in_showups = false where id = '${B}'`);
+r = await db.query(`select share_prs, show_in_showups from public.profiles where id = '${B}'`);
+assert.deepEqual([r.rows[0].share_prs, r.rows[0].show_in_showups], [false, false]);
+const before = (await db.query(`select count(*)::int as n from public.messages where kind = 'pr'`)).rows[0].n;
+assert.equal(await log(185, 3), true, 'still a personal best');
+r = await db.query(`select count(*)::int as n from public.messages where kind = 'pr'`);
+assert.equal(r.rows[0].n, before, 'but not posted');
+await as(B, `update public.profiles set share_prs = true where id = '${B}'`);
+assert.equal(await log(190, 3), true);
+r = await db.query(`select count(*)::int as n from public.messages where kind = 'pr'`);
+assert.equal(r.rows[0].n, before + 1, 'posted again once shared');
+ok('privacy: opt out of sharing personal bests and of Show-ups');
 
 await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);

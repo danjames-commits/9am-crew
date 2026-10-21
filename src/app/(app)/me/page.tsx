@@ -5,13 +5,16 @@ import { signOut } from '@/app/actions';
 
 export default async function MePage() {
   const { supabase, userId } = await signedIn();
-  const [{ me }, { data: drawn }] = await Promise.all([
+  const [{ me }, { data: drawn }, { data: prefs }] = await Promise.all([
     requireMember(),
     supabase.from('avatars').select('name, prompt, svg').eq('user_id', userId).maybeSingle(),
+    supabase.from('profiles').select('show_in_showups, share_prs').eq('id', userId).maybeSingle(),
   ]);
   return (
     <main className="screen">
-      <MeForm id={me.id} name={me.display_name} level={me.level} animal={me.animal ?? null} drawn={drawn ? { name: drawn.name, prompt: drawn.prompt, version: svgVersion(drawn.svg) } : null} />
+      <MeForm id={me.id} name={me.display_name} level={me.level} animal={me.animal ?? null} drawn={drawn ? { name: drawn.name, prompt: drawn.prompt, version: svgVersion(drawn.svg) } : null}
+        privacy={{ showInShowups: prefs?.show_in_showups ?? true, sharePrs: prefs?.share_prs ?? true }}
+      />
       <div className="card stack">
         <h2>Put it on your home screen</h2>
         <p className="muted">

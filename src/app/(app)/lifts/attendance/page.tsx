@@ -15,10 +15,12 @@ export default async function AttendancePage() {
     getPeople(supabase),
     supabase.from('attendance').select('user_id, class_date').lte('class_date', doneThrough),
     supabase.from('workouts').select('class_date').eq('status', 'published').lte('class_date', doneThrough),
-    supabase.from('profiles').select('id, weekly_goal').eq('approved', true),
+    supabase.from('profiles').select('id, weekly_goal, show_in_showups').eq('approved', true),
   ]);
   const ran = new Set((held ?? []).map((w) => w.class_date));
   const goals = Object.fromEntries((goalRows ?? []).map((g) => [g.id, g.weekly_goal ?? 1]));
+  // People who've opted out of the leaderboard (they still see their own numbers).
+  const hidden = (goalRows ?? []).filter((g) => g.show_in_showups === false).map((g) => g.id as string);
   return (
     <AttendanceView
       userId={userId}
@@ -26,6 +28,7 @@ export default async function AttendancePage() {
       names={names}
       animals={animals}
       goals={goals}
+      hidden={hidden}
       // Only days a workout actually ran, for people still in the crew.
       rows={((att ?? []) as AttendanceRow[]).filter((r) => r.user_id in names && ran.has(r.class_date))}
       held={[...ran]}

@@ -30,6 +30,8 @@ export async function updateMe(input: {
   animal?: string | null;
   /** A new drawing to keep (when animal is 'custom'). */
   drawing?: { prompt: string; name: string; svg: string } | null;
+  show_in_showups?: boolean;
+  share_prs?: boolean;
 }) {
   const { supabase, me } = await requireMember();
   const display_name = input.display_name.trim().slice(0, 40);
@@ -55,7 +57,11 @@ export async function updateMe(input: {
       animal = `custom:${svgVersion(saved.svg)}`;
     }
   }
-  const { error } = await supabase.from('profiles').update({ display_name, level, animal }).eq('id', me.id);
+  const privacy = {
+    ...(typeof input.show_in_showups === 'boolean' ? { show_in_showups: input.show_in_showups } : {}),
+    ...(typeof input.share_prs === 'boolean' ? { share_prs: input.share_prs } : {}),
+  };
+  const { error } = await supabase.from('profiles').update({ display_name, level, animal, ...privacy }).eq('id', me.id);
   if (error) return { error: error.message };
   revalidatePath('/', 'layout');
   return { ok: true };
