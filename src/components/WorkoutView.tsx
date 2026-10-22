@@ -7,6 +7,7 @@ import { ScaleHelper } from './ScaleHelper';
 import type { WeatherCall } from '@/lib/weather-rules';
 import { Icon } from './Icon';
 import { PartBody, partWords } from './PartText';
+import { equipmentIn } from '@/lib/equipment';
 import { QuickLog, type QuickLogContext } from './QuickLog';
 import { FollowMode, type CoachInfo } from './FollowMode';
 
@@ -56,6 +57,13 @@ export function WorkoutView({
     return () => document.removeEventListener('pointerdown', close);
   }, [levelOpen, placeOpen]);
   const i = level - 1;
+  // What to grab for this workout, at the level and place you're looking at.
+  const kit = equipmentIn(
+    parts.flatMap((p) => {
+      const w = partWords(p, i, outside);
+      return [p.kind === 'strength' ? '' : w.title, w.headline, w.body];
+    }),
+  );
   const ctx: QuickLogContext = { ...log, classDate, maxes };
 
   return (
@@ -119,6 +127,16 @@ export function WorkoutView({
         </button>
       </div>
 
+      {kit.length > 0 && (
+        <p className="wv-kit small" aria-label={`Equipment: ${kit.join(', ')}`}>
+          <span className="muted">Grab:</span>
+          {kit.map((k) => (
+            <span key={k} className="kit-chip">
+              {k}
+            </span>
+          ))}
+        </p>
+      )}
       {hasOutdoor && (
         <p className="small wv-weather" style={{ color: weather?.outside ? 'var(--teal)' : 'var(--ink-3)' }}>
           {weather ? (
