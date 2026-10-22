@@ -4,6 +4,7 @@ import { ALL_CLOCK_BUTTONS, CLOCK_BUTTONS, listDevices, switchbotReady, type Swi
 import { CLOCK_TESTS } from '@/lib/clock-tests';
 import { ClockRemote } from '@/components/admin/ClockRemote';
 import { ClockTests } from '@/components/admin/ClockTests';
+import { LearnedButton } from '@/components/admin/LearnedButton';
 import { Icon } from '@/components/Icon';
 
 export const dynamic = 'force-dynamic';
@@ -29,7 +30,9 @@ export default async function ClockPage() {
   const hubs = devices?.deviceList.filter((d) => /hub/i.test(d.deviceType)) ?? [];
   const clock = devices?.infraredRemoteList.find((r) => /clock/i.test(r.deviceName)) ?? null;
 
-  const auto = [!problem, hubs.length > 0, Boolean(clock)];
+  // SwitchBot can't tell us which buttons a remote has learned, so step 3 is done when you say so.
+  const learned = Boolean(clock) && findings.learned?.result === 'yes';
+  const auto = [!problem, hubs.length > 0, learned];
   const tested = CLOCK_TESTS.filter((t) => findings[t.id]).length;
   const done = auto.filter(Boolean).length + tested;
   const total = auto.length + CLOCK_TESTS.length;
@@ -51,7 +54,7 @@ export default async function ClockPage() {
         <span style={{ width: `${(done / total) * 100}%` }} />
       </div>
       <p className="muted">
-        The SwitchBot Hub Mini presses the clock remote’s buttons for the app. Work down the steps at the gym. Each one says what to do and what to look for. The app ticks the first three
+        The SwitchBot Hub Mini presses the clock remote’s buttons for the app. Work down the steps at the gym. Each one says what to do and what to look for. The app ticks the first two
         itself; for the rest, watch the clock and mark ✓ or ✗.
       </p>
 
@@ -73,13 +76,24 @@ export default async function ClockPage() {
         </ol>
       </Step>
 
-      <Step n={3} title="Teach it the remote" ok={Boolean(clock)} status={clock ? `Found: ${clock.deviceName}` : 'No remote with “clock” in its name yet.'}>
+      <Step
+        n={3}
+        title="Teach it the remote"
+        ok={learned}
+        status={
+          learned
+            ? `${clock!.deviceName}: buttons taught.`
+            : clock
+              ? `Remote “${clock.deviceName}” added. Now teach it the buttons.`
+              : 'No remote with “clock” in its name yet.'
+        }
+      >
         <ol className="small setup-list">
           <li>
             SwitchBot app → the Hub Mini → <b>Add remote</b> → <b>Others</b> (DIY). Name it <b>Gym clock</b>.
           </li>
           <li>Add each button: point the real remote at the hub, press the button, and name it exactly as below.</li>
-          <li>Reload this page when you’re done. (You can do this part anywhere, even at home.)</li>
+          <li>Tap <b>All buttons taught</b> below when you’re done. (You can do this part anywhere, even at home.)</li>
         </ol>
         <div className="learn-grid">
           {ALL_CLOCK_BUTTONS.map((b) => (
@@ -87,6 +101,7 @@ export default async function ClockPage() {
           ))}
         </div>
         <p className="small muted">{ALL_CLOCK_BUTTONS.length} buttons. Names must match exactly, including capitals (OK, F1 … F12).</p>
+        {clock && <LearnedButton />}
       </Step>
 
       <section className="stack tight">

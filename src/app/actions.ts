@@ -130,7 +130,7 @@ export async function pressClockSequence(buttons: string[]) {
 /** Admins: note what a clock test did, so the timer can be built on what's true for our clock. */
 export async function recordClockFinding(id: string, result: 'yes' | 'no', note: string) {
   const { supabase, me } = await requireMember({ admin: true });
-  if (!CLOCK_TESTS.some((t) => t.id === id)) return { error: 'Unknown test' };
+  if (id !== 'learned' && !CLOCK_TESTS.some((t) => t.id === id)) return { error: 'Unknown test' };
   const { data } = await supabase.from('program').select('clock_findings').eq('id', 1).maybeSingle();
   const findings = { ...((data?.clock_findings as Record<string, unknown>) ?? {}), [id]: { result, note: note.trim().slice(0, 300), by: me.display_name, at: new Date().toISOString() } };
   const { error } = await supabase.from('program').update({ clock_findings: findings }).eq('id', 1);
