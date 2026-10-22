@@ -3,6 +3,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { LEVELS, type Level, type Part } from '@/lib/types';
 import { notesByPart, splitCoachNotes, type CoachNoteSection } from '@/lib/coach-notes';
 import { PartBody, levelGroups, partWords } from './PartText';
+import { BARBELL_LIFTS, equipmentIn } from '@/lib/equipment';
+import { KitList } from './EquipmentStrip';
 import { YourNumbers } from './YourNumbers';
 import { QuickLog, type QuickLogContext } from './QuickLog';
 
@@ -42,6 +44,17 @@ export function FollowMode({
   const isCoach = mode === 'coach';
   const [level, setLevel] = useState<Level>(startLevel);
   const [outside, setOutside] = useState(startOutside);
+  // What the coach sets out: everything any level uses, inside or outside as chosen.
+  const hasOutdoor = parts.some((p) => p.outdoor);
+  const setOut = equipmentIn(
+    [0, 1, 2, 3].flatMap((i) =>
+      parts.flatMap((p) => {
+        const w = partWords(p, i, outside);
+        return [p.kind === 'strength' ? '' : w.title, w.headline, w.body];
+      }),
+    ),
+    { barbellLift: parts.some((p) => p.lift && (BARBELL_LIFTS.has(p.lift.movement) || BARBELL_LIFTS.has(p.lift.gentleMovement ?? ''))) },
+  );
   const [size, setSize] = useState(() => {
     try {
       return Number(localStorage.getItem('follow-size') ?? 1) || 1;
@@ -125,7 +138,6 @@ export function FollowMode({
   };
 
   const part = typeof screen === 'number' ? parts[screen] : null;
-  const hasOutdoor = parts.some((p) => p.outdoor);
 
   return (
     <div className={`follow ${isCoach ? 'coach' : ''}`} role="dialog" aria-modal="true" aria-label={isCoach ? 'Coach mode' : 'Workout mode'} style={{ ['--follow-size' as string]: `${SIZES[size]}px` }}>
@@ -208,6 +220,12 @@ export function FollowMode({
               <div className="follow-eyebrow">Coming today · {coach?.going.length ?? 0}</div>
               <p>{coach?.going.length ? coach.going.join(', ') : 'Nobody has tapped “I’m coming” yet.'}</p>
             </div>
+            {setOut.length > 0 && (
+              <div className="follow-card">
+                <div className="follow-eyebrow">Set out · every level{hasOutdoor ? (outside ? ', outside' : ', inside') : ''}</div>
+                <KitList kit={setOut} />
+              </div>
+            )}
             <div className="follow-card">
               <div className="follow-eyebrow">The plan</div>
               <ol className="follow-plan">

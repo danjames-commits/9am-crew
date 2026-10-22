@@ -96,7 +96,7 @@ const ICONS: Record<string, React.ReactNode> = {
   Bands: <path d="M4 12c0-4.5 16-4.5 16 0s-16 4.5-16 0z" />,
 };
 
-function KitIcon({ name, size = 20 }: { name: string; size?: number }) {
+export function KitIcon({ name, size = 20 }: { name: string; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       {ICONS[name] ?? <circle cx="12" cy="12" r="6" />}
@@ -138,6 +138,20 @@ export function EquipmentStrip({ kit }: { kit: string[] }) {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Every piece of kit, icon and name: for the coach setting up the room. */
+export function KitList({ kit }: { kit: string[] }) {
+  return (
+    <div className="kit-list">
+      {kit.map((k) => (
+        <span key={k} className="kit-list-item">
+          <KitIcon name={k} size={20} />
+          {k}
+        </span>
+      ))}
     </div>
   );
 }

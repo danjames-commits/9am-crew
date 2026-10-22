@@ -534,3 +534,6 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .kit-pop-item svg { color: var(--ink-2); }
 .kit-more { font-size: 12px; font-weight: 800; color: var(--ink-3); margin-left: 2px; }
 .title-meta .whos-coming { margin-left: auto; }
+.kit-list { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 6px; }
+.kit-list-item { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; }
+.kit-list-item svg { width: 1.1em; height: 1.1em; flex: none; }
