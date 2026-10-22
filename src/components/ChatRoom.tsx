@@ -52,6 +52,14 @@ export function ChatRoom({
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const bottom = useRef<HTMLDivElement>(null);
+  const box = useRef<HTMLTextAreaElement>(null);
+  // The message box grows with what you type (up to about six lines), then scrolls.
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 150)}px`;
+  }, [text]);
   const newLine = useRef<HTMLDivElement>(null);
   // Where you left off: the first message from someone else since you last looked.
   const [firstNewId] = useState(() => {
@@ -202,22 +210,31 @@ export function ChatRoom({
         ))}
         <div ref={bottom} />
       </div>
-      <form
-        onSubmit={send}
-        className="row"
-        style={{
-          position: 'sticky',
-          bottom: 'calc(var(--nav-h) + env(safe-area-inset-bottom))',
-          background: 'var(--ground)',
-          padding: '10px 0',
-          marginBottom: -24,
-        }}
-      >
+      <form onSubmit={send} className="row chat-form">
         <label htmlFor="msg" className="sr-only">
           Message
         </label>
-        <input id="msg" placeholder="Message the crew…" value={text} onChange={(e) => setText(e.target.value)} maxLength={2000} autoComplete="off" style={{ borderRadius: 24 }} />
-        <button className="btn primary" aria-label="Send" disabled={sending || !text.trim()} style={{ width: 52, padding: 0, borderRadius: 26 }}>
+        <textarea
+          id="msg"
+          ref={box}
+          className="chat-input"
+          placeholder="Message the crew…"
+          value={text}
+          rows={1}
+          maxLength={2000}
+          autoComplete="off"
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            // On a computer, Enter sends and Shift+Enter starts a new line.
+            // On a phone, return makes a new line and the arrow button sends, like Messages.
+            const phone = window.matchMedia('(pointer: coarse)').matches;
+            if (!phone && e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+              e.preventDefault();
+              e.currentTarget.form?.requestSubmit();
+            }
+          }}
+        />
+        <button className="btn primary" aria-label="Send" disabled={sending || !text.trim()} style={{ width: 52, padding: 0, borderRadius: 26, flex: 'none' }}>
           <Icon name="send" />
         </button>
       </form>
