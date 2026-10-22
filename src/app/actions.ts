@@ -4,6 +4,7 @@ import { after } from 'next/server';
 import { ensurePrArt } from '@/lib/pr-art';
 import { EQUIPMENT } from '@/lib/equipment';
 import { ALL_CLOCK_BUTTONS, findClock, pressButton } from '@/lib/switchbot';
+import { CLOCK_TESTS } from '@/lib/clock-tests';
 import { BRIEF_MAX, DEFAULT_COACH_BRIEF, getCoachBrief } from '@/lib/coach-brief';
 import { redirect } from 'next/navigation';
 import { requireMember, supabaseServer } from '@/lib/supabase/server';
@@ -106,6 +107,36 @@ export async function pressClock(button: string) {
   } catch (e) {
     return { error: e instanceof Error ? e.message : 'SwitchBot didn’t answer.' };
   }
+}
+
+/** Admins: press a short run of clock buttons in order (for the Try it tests). */
+export async function pressClockSequence(buttons: string[]) {
+  await requireMember({ admin: true });
+  if (!buttons.length || buttons.length > 24 || !buttons.every((b) => ALL_CLOCK_BUTTONS.includes(b))) return { error: 'Unknown button' };
+  try {
+    const clock = await findClock();
+    if (!clock) return { error: 'No remote named “Gym clock” in SwitchBot yet.' };
+    for (const b of buttons) {
+      await pressButton(clock.deviceId, b);
+      // A short gap so the clock registers each press.
+      await new Promise((r) => setTimeout(r, 350));
+    }
+    return { ok: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'SwitchBot didn’t answer.' };
+  }
+}
+
+/** Admins: note what a clock test did, so the timer can be built on what's true for our clock. */
+export async function recordClockFinding(id: string, result: 'yes' | 'no', note: string) {
+  const { supabase, me } = await requireMember({ admin: true });
+  if (!CLOCK_TESTS.some((t) => t.id === id)) return { error: 'Unknown test' };
+  const { data } = await supabase.from('program').select('clock_findings').eq('id', 1).maybeSingle();
+  const findings = { ...((data?.clock_findings as Record<string, unknown>) ?? {}), [id]: { result, note: note.trim().slice(0, 300), by: me.display_name, at: new Date().toISOString() } };
+  const { error } = await supabase.from('program').update({ clock_findings: findings }).eq('id', 1);
+  if (error) return { error: 'Couldn’t save that.' };
+  revalidatePath('/admin/clock');
+  return { ok: true };
 }
 
 /** Admins: change a workout's equipment list (additions and removals on top of what the app reads). */
