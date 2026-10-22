@@ -2,6 +2,7 @@
 import { revalidatePath } from 'next/cache';
 import { after } from 'next/server';
 import { ensurePrArt } from '@/lib/pr-art';
+import { EQUIPMENT } from '@/lib/equipment';
 import { BRIEF_MAX, DEFAULT_COACH_BRIEF, getCoachBrief } from '@/lib/coach-brief';
 import { redirect } from 'next/navigation';
 import { requireMember, supabaseServer } from '@/lib/supabase/server';
@@ -89,6 +90,17 @@ export async function setWeeklyGoal(goal: number) {
   const { error } = await supabase.from('profiles').update({ weekly_goal: n }).eq('id', me.id);
   if (error) return { error: 'Couldn’t save that. Try again.' };
   revalidatePath('/lifts/attendance');
+  return { ok: true };
+}
+
+/** Admins: change a workout's equipment list (additions and removals on top of what the app reads). */
+export async function setWorkoutEquipment(date: string, add: string[], remove: string[]) {
+  if (!isDate(date)) return { error: 'Bad date' };
+  const { supabase } = await requireMember({ admin: true });
+  const clean = (l: string[]) => [...new Set(l.filter((k) => EQUIPMENT.includes(k)))];
+  const { error } = await supabase.from('workouts').update({ equipment_add: clean(add), equipment_remove: clean(remove) }).eq('class_date', date);
+  if (error) return { error: 'Couldn’t save that. Try again.' };
+  revalidatePath(`/workouts/${date}`);
   return { ok: true };
 }
 

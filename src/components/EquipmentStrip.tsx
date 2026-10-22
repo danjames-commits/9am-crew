@@ -1,5 +1,8 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { setWorkoutEquipment } from '@/app/actions';
+import { EQUIPMENT } from '@/lib/equipment';
 
 /** Simple line icons for each piece of kit, in the same style as the bottom nav. */
 const ICONS: Record<string, React.ReactNode> = {
@@ -107,37 +110,136 @@ export function KitIcon({ name, size = 20 }: { name: string; size?: number }) {
 /** Icons shown before "+N", so the row shares a line with who's coming. */
 const SHOW = 5;
 
-/** The kit for this workout as a row of small icons. Tap for the names. */
-export function EquipmentStrip({ kit }: { kit: string[] }) {
+interface KitEdit {
+  date: string;
+  /** What the coach sets out now (every level, with changes). */
+  setOut: string[];
+  /** What the app found on its own (every level). */
+  found: string[];
+  changes: { add: string[]; remove: string[] };
+}
+
+/** The kit for this workout as a row of small icons. Tap for the names; admins can change the list. */
+export function EquipmentStrip({ kit, edit }: { kit: string[]; edit?: KitEdit }) {
   const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!open) return;
-    const close = (e: PointerEvent) => !box.current?.contains(e.target as Node) && setOpen(false);
+    const close = (e: PointerEvent) => {
+      if (!box.current?.contains(e.target as Node)) {
+        setOpen(false);
+        setEditing(false);
+      }
+    };
     document.addEventListener('pointerdown', close);
     return () => document.removeEventListener('pointerdown', close);
   }, [open]);
-  if (!kit.length) return <span />;
+  if (!kit.length && !edit) return <span />;
 
   return (
     <div className="kit" ref={box}>
-      <button type="button" className="kit-strip" aria-expanded={open} aria-label={`Equipment: ${kit.join(', ')}. Tap for names.`} onClick={() => setOpen((o) => !o)}>
+      <button type="button" className="kit-strip" aria-expanded={open} aria-label={kit.length ? `Equipment: ${kit.join(', ')}. Tap for names.` : 'Add equipment'} onClick={() => setOpen((o) => !o)}>
         {kit.slice(0, SHOW).map((k) => (
           <KitIcon key={k} name={k} size={19} />
         ))}
         {kit.length > SHOW && <span className="kit-more">+{kit.length - SHOW}</span>}
+        {!kit.length && <span className="kit-more">+ Equipment</span>}
       </button>
       {open && (
         <div className="kit-pop" role="dialog" aria-label="Equipment">
-          <div className="kit-pop-title">Grab for this workout</div>
-          {kit.map((k) => (
-            <div key={k} className="kit-pop-item">
-              <KitIcon name={k} size={22} />
-              {k}
-            </div>
-          ))}
+          {editing && edit ? (
+            <KitEditor edit={edit} onDone={() => setEditing(false)} />
+          ) : (
+            <>
+              <div className="kit-pop-title">Grab for this workout</div>
+              {kit.map((k) => (
+                <div key={k} className="kit-pop-item">
+                  <KitIcon name={k} size={22} />
+                  {k}
+                </div>
+              ))}
+              {!kit.length && <p className="muted small" style={{ padding: '4px 10px' }}>Nothing needed at your level.</p>}
+              {edit && (
+                <button type="button" className="link-btn kit-edit-link" onClick={() => setEditing(true)}>
+                  Change the list
+                </button>
+              )}
+            </>
+          )}
         </div>
       )}
+    </div>
+  );
+}
+
+/** Admins: tick what this workout needs. Saved as changes on top of what the app reads, for every level. */
+function KitEditor({ edit, onDone }: { edit: KitEdit; onDone: () => void }) {
+  const [on, setOn] = useState<Set<string>>(() => new Set(edit.setOut));
+  const [saving, start] = useTransition();
+  const [error, setError] = useState('');
+  const router = useRouter();
+
+  function save(list: Set<string> | null) {
+    setError('');
+    // Store only the differences from what the app finds, so later text edits still count.
+    const add = list ? EQUIPMENT.filter((k) => list.has(k) && !edit.found.includes(k)) : [];
+    const remove = list ? edit.found.filter((k) => !list.has(k)) : [];
+    start(async () => {
+      const r = await setWorkoutEquipment(edit.date, add, remove);
+      if (r && 'error' in r && r.error) setError(r.error);
+      else {
+        router.refresh();
+        onDone();
+      }
+    });
+  }
+
+  return (
+    <div className="stack tight">
+      <div className="kit-pop-title">What this workout needs</div>
+      <div className="kit-edit-grid">
+        {EQUIPMENT.map((k) => {
+          const picked = on.has(k);
+          return (
+            <button
+              key={k}
+              type="button"
+              className={`kit-toggle ${picked ? 'on' : ''}`}
+              aria-pressed={picked}
+              onClick={() =>
+                setOn((s) => {
+                  const n = new Set(s);
+                  if (n.has(k)) n.delete(k);
+                  else n.add(k);
+                  return n;
+                })
+              }
+            >
+              <KitIcon name={k} size={18} />
+              {k}
+            </button>
+          );
+        })}
+      </div>
+      <p className="muted small" style={{ padding: '0 6px' }}>
+        For every level. The app still adjusts the list for each level from the workout text.
+      </p>
+      {error && (
+        <p className="small" role="alert">
+          {error}
+        </p>
+      )}
+      <div className="row" style={{ gap: 6, padding: '0 4px' }}>
+        <button type="button" className="btn small primary grow" disabled={saving} onClick={() => save(on)}>
+          {saving ? 'Saving…' : 'Save'}
+        </button>
+        {(edit.changes.add.length > 0 || edit.changes.remove.length > 0) && (
+          <button type="button" className="btn small ghost" disabled={saving} onClick={() => save(null)}>
+            Reset
+          </button>
+        )}
+      </div>
     </div>
   );
 }

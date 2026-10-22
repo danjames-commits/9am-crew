@@ -37,6 +37,7 @@ await db.exec(readFileSync(new URL('../supabase/migration-014-weekly-goal.sql', 
 await db.exec(readFileSync(new URL('../supabase/migration-015-privacy.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-017-coach-brief.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-018-pr-art.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-019-equipment.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';

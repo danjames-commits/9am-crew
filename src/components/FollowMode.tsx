@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { LEVELS, type Level, type Part } from '@/lib/types';
 import { notesByPart, splitCoachNotes, type CoachNoteSection } from '@/lib/coach-notes';
 import { PartBody, levelGroups, partWords } from './PartText';
-import { BARBELL_LIFTS, equipmentIn } from '@/lib/equipment';
+import { setOutKit, type KitChanges } from '@/lib/workout-kit';
 import { KitList } from './EquipmentStrip';
 import { YourNumbers } from './YourNumbers';
 import { QuickLog, type QuickLogContext } from './QuickLog';
@@ -29,6 +29,7 @@ export function FollowMode({
   maxes,
   ctx,
   coach,
+  kitChanges,
   onClose,
 }: {
   mode: 'member' | 'coach';
@@ -39,22 +40,15 @@ export function FollowMode({
   maxes: Record<string, number>;
   ctx: QuickLogContext;
   coach?: CoachInfo;
+  kitChanges?: KitChanges;
   onClose: () => void;
 }) {
   const isCoach = mode === 'coach';
   const [level, setLevel] = useState<Level>(startLevel);
   const [outside, setOutside] = useState(startOutside);
-  // What the coach sets out: everything any level uses, inside or outside as chosen.
+  // What the coach sets out: everything any level uses, inside or outside as chosen, plus any coach changes.
   const hasOutdoor = parts.some((p) => p.outdoor);
-  const setOut = equipmentIn(
-    [0, 1, 2, 3].flatMap((i) =>
-      parts.flatMap((p) => {
-        const w = partWords(p, i, outside);
-        return [p.kind === 'strength' ? '' : w.title, w.headline, w.body];
-      }),
-    ),
-    { barbellLift: parts.some((p) => p.lift && (BARBELL_LIFTS.has(p.lift.movement) || BARBELL_LIFTS.has(p.lift.gentleMovement ?? ''))) },
-  );
+  const setOut = setOutKit(parts, outside, kitChanges);
   const [size, setSize] = useState(() => {
     try {
       return Number(localStorage.getItem('follow-size') ?? 1) || 1;

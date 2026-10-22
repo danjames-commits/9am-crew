@@ -7,7 +7,7 @@ import { ScaleHelper } from './ScaleHelper';
 import type { WeatherCall } from '@/lib/weather-rules';
 import { Icon } from './Icon';
 import { PartBody, partWords } from './PartText';
-import { BARBELL_LIFTS, equipmentIn } from '@/lib/equipment';
+import { setOutKit, workoutKit, type KitChanges } from '@/lib/workout-kit';
 import { EquipmentStrip } from './EquipmentStrip';
 import { QuickLog, type QuickLogContext } from './QuickLog';
 import { FollowMode, type CoachInfo } from './FollowMode';
@@ -23,6 +23,8 @@ export function WorkoutView({
   log,
   coach,
   meta,
+  kitChanges,
+  kitEditDate,
 }: {
   title: string;
   parts: Part[];
@@ -37,6 +39,10 @@ export function WorkoutView({
   coach?: CoachInfo;
   /** Shown on the right of the row under the title (who's coming). */
   meta?: React.ReactNode;
+  /** A coach's additions and removals to the equipment the app finds. */
+  kitChanges?: KitChanges;
+  /** Admins: the class date, to save equipment changes. */
+  kitEditDate?: string;
 }) {
   const [level, setLevel] = useState<Level>(Math.min(4, Math.max(1, myLevel)) as Level);
   // Your saved level; you can make the level you're looking at your own from here.
@@ -61,22 +67,18 @@ export function WorkoutView({
     return () => document.removeEventListener('pointerdown', close);
   }, [levelOpen, placeOpen]);
   const i = level - 1;
-  // What to grab for this workout, at the level and place you're looking at.
-  const kit = equipmentIn(
-    parts.flatMap((p) => {
-      const w = partWords(p, i, outside);
-      return [p.kind === 'strength' ? '' : w.title, w.headline, w.body];
-    }),
-    // The main lift at this level (Gentle often swaps to a dumbbell or kettlebell version).
-    { barbellLift: parts.some((p) => p.lift && BARBELL_LIFTS.has(level === 1 ? (p.lift.gentleMovement ?? p.lift.movement) : p.lift.movement)) },
-  );
+  // What to grab for this workout, at the level and place you're looking at, plus any coach changes.
+  const kit = workoutKit(parts, level, outside, kitChanges);
   const ctx: QuickLogContext = { ...log, classDate, maxes };
 
   return (
     <div className="stack loose">
-      {(kit.length > 0 || meta) && (
+      {(kit.length > 0 || meta || kitEditDate) && (
         <div className="title-meta">
-          <EquipmentStrip kit={kit} />
+          <EquipmentStrip
+            kit={kit}
+            edit={kitEditDate ? { date: kitEditDate, setOut: setOutKit(parts, outside, kitChanges), found: setOutKit(parts, outside), changes: kitChanges ?? { add: [], remove: [] } } : undefined}
+          />
           {meta}
         </div>
       )}
@@ -218,6 +220,7 @@ export function WorkoutView({
           maxes={maxes}
           ctx={ctx}
           coach={mode === 'coach' ? coach : undefined}
+          kitChanges={kitChanges}
           onClose={() => setMode(null)}
         />
       )}

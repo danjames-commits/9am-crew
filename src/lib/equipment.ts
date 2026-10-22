@@ -17,7 +17,7 @@ const KIT: { name: string; test: RegExp }[] = [
   { name: 'Sled', test: /\bsleds?\b/ },
   { name: 'Jump rope', test: /\bjump ?ropes?\b|\bskipping\b|\b(double|single)[- ]unders?\b/ },
   { name: 'Rings', test: /\brings?\b/ },
-  { name: 'Pull-up bar', test: /\bpull-?ups?\b|\bchin-?ups?\b|\btoes[- ]to[- ]bar\b|\bhanging\b|\bdead hang\b|\bknee raises\b|\bscap(ular)? pulls?\b|\bkip(ping)?\b|\bthe rig\b|\bhigh bar\b/ },
+  { name: 'Pull-up bar', test: /\bpull-?ups?\b|\bchin-?ups?\b|\btoes[- ]to[- ]bar\b|\bhanging\b|\bdead hang\b|\bscap(ular)? pulls?\b|\bkip(ping)?\b|\bthe rig\b|\bhigh bar\b/ },
   { name: 'Bands', test: /\bbands?\b|\bbanded\b/ },
 ];
 
@@ -43,3 +43,13 @@ export function equipmentIn(texts: string[], opts: { barbellLift?: boolean } = {
 
 /** The tracked lifts that use a barbell (Gentle's swaps, like goblet squats, don't). */
 export const BARBELL_LIFTS = new Set(['Back squat', 'Front squat', 'Deadlift', 'Strict press', 'Push press', 'Bench press', 'Power clean', 'Snatch', 'Squat clean & jerk']);
+
+/** Every piece of kit the app knows, in pick-up order. */
+export const EQUIPMENT = KIT.map((k) => k.name);
+
+/** A coach's changes on top of what the app found: things to add, things to leave out. */
+export function adjustKit(found: string[], add: string[] = [], remove: string[] = []) {
+  const set = new Set(found.filter((k) => !remove.includes(k)));
+  for (const k of add) if (EQUIPMENT.includes(k)) set.add(k);
+  return EQUIPMENT.filter((k) => set.has(k));
+}

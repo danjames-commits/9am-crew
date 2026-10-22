@@ -22,7 +22,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
 
   const [{ me }, { data: w }, { names, animals }, { bests, movements }, { data: attendance }, coachNote, { benchmarks }] = await Promise.all([
     requireMember(),
-    supabase.from('workouts').select('id, class_date, title, focus, why, parts, status').eq('class_date', date).maybeSingle(),
+    supabase.from('workouts').select('id, class_date, title, focus, why, parts, status, equipment_add, equipment_remove').eq('class_date', date).maybeSingle(),
     getPeople(supabase),
     getBests(supabase, userId),
     supabase.from('attendance').select('user_id').eq('class_date', date).order('created_at'),
@@ -63,6 +63,8 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
         weather={weather}
         classDate={w.class_date}
         canScale={upcoming && aiEnabled()}
+        kitChanges={{ add: (w.equipment_add as string[] | null) ?? [], remove: (w.equipment_remove as string[] | null) ?? [] }}
+        kitEditDate={me.is_admin ? w.class_date : undefined}
         meta={upcoming ? <WhosComing classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} /> : null}
         log={{ movements, benchmarks, today: todayLocal() }}
         coach={

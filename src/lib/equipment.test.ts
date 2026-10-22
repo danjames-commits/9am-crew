@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { equipmentIn } from './equipment';
+import { adjustKit, equipmentIn } from './equipment';
 
 describe('equipmentIn', () => {
   it('finds the kit, in pick-up order', () => {
@@ -18,6 +18,13 @@ describe('equipmentIn', () => {
   it('a plain or single-leg deadlift is not a barbell', () => {
     expect(equipmentIn(['5 light single-leg Romanian deadlifts each side · 10 band pull-aparts'])).toEqual(['Bands']);
     expect(equipmentIn(['Deadlift test: build to a heavy 3'], { barbellLift: true })).toEqual(['Barbell']);
+  });
+  it('lying knee raises are on the floor; hanging ones need the bar', () => {
+    expect(equipmentIn(['6 lying bent-knee raises'])).toEqual([]);
+    expect(equipmentIn(['8 hanging knee raises'])).toEqual(['Pull-up bar']);
+  });
+  it('a coach can add and remove kit', () => {
+    expect(adjustKit(['Barbell', 'Pull-up bar'], ['Box', 'Spaceship'], ['Pull-up bar'])).toEqual(['Barbell', 'Box']);
   });
   it('nothing for bodyweight days', () => {
     expect(equipmentIn(['10 air squats · 10 push-ups · 200 m jog'])).toEqual([]);
