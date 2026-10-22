@@ -2,6 +2,8 @@ import { createServerClient } from '@supabase/ssr';
 import { SUPABASE_JWKS } from './lib/supabase/jwks';
 import { NextResponse, type NextRequest } from 'next/server';
 
+const WARM_TABS = new Set(['/', '/chat', '/lifts', '/workouts', '/me']);
+
 // Keeps the login session fresh and sends signed-out visitors to /login.
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -20,6 +22,11 @@ export async function proxy(request: NextRequest) {
 
   // The keep-warm ping: wakes the server, no sign-in needed.
   if (request.nextUrl.pathname === '/api/warm') return response;
+  // Warming a tab itself (?warm=1): let it reach the page, which loads its code and
+  // then sends the signed-out ping to /login. Pages check sign-in on their own.
+  if (request.nextUrl.searchParams.has('warm') && WARM_TABS.has(request.nextUrl.pathname) && !request.cookies.getAll().length) {
+    return response;
+  }
 
   const { data } = await supabase.auth.getClaims(undefined, { jwks: SUPABASE_JWKS });
   const signedIn = Boolean(data?.claims?.sub);
