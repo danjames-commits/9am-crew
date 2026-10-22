@@ -8,6 +8,7 @@ import type { WeatherCall } from '@/lib/weather-rules';
 import { Icon } from './Icon';
 import { PartBody, partWords } from './PartText';
 import { BARBELL_LIFTS, equipmentIn } from '@/lib/equipment';
+import { EquipmentStrip } from './EquipmentStrip';
 import { QuickLog, type QuickLogContext } from './QuickLog';
 import { FollowMode, type CoachInfo } from './FollowMode';
 
@@ -21,6 +22,7 @@ export function WorkoutView({
   canScale = false,
   log,
   coach,
+  meta,
 }: {
   title: string;
   parts: Part[];
@@ -33,6 +35,8 @@ export function WorkoutView({
   log: Omit<QuickLogContext, 'classDate' | 'maxes'>;
   /** Admins only: notes and who's coming, for coach mode. */
   coach?: CoachInfo;
+  /** Shown on the right of the row under the title (who's coming). */
+  meta?: React.ReactNode;
 }) {
   const [level, setLevel] = useState<Level>(Math.min(4, Math.max(1, myLevel)) as Level);
   // Your saved level; you can make the level you're looking at your own from here.
@@ -70,6 +74,12 @@ export function WorkoutView({
 
   return (
     <div className="stack loose">
+      {(kit.length > 0 || meta) && (
+        <div className="title-meta">
+          <EquipmentStrip kit={kit} />
+          {meta}
+        </div>
+      )}
       <div className="wv-toolbar">
         <div className="wv-level" ref={levelRef}>
           <button type="button" className="wv-chip" aria-expanded={levelOpen} onClick={() => setLevelOpen((o) => !o)}>
@@ -129,15 +139,6 @@ export function WorkoutView({
         </button>
       </div>
 
-      {kit.length > 0 && (
-        <details className="wv-kit small">
-          <summary>
-            <span className="muted">Grab:</span> {kit.slice(0, 3).join(', ')}
-            {kit.length > 3 && <span className="muted"> +{kit.length - 3} more</span>}
-          </summary>
-          <p>{kit.join(' · ')}</p>
-        </details>
-      )}
       {hasOutdoor && (
         <p className="small wv-weather" style={{ color: weather?.outside ? 'var(--teal)' : 'var(--ink-3)' }}>
           {weather ? (

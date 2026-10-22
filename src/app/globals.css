@@ -397,7 +397,7 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .level-switch .link-btn { font-size: inherit; }
 
 /* Who's coming: a small avatar row by the workout title. */
-.title-meta { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 6px; }
+.title-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; margin-top: -8px; }
 .title-meta .muted { min-width: 0; }
 .whos-coming { position: relative; display: flex; align-items: center; gap: 8px; flex: none; }
 .who-stack { display: flex; align-items: center; }
@@ -524,9 +524,13 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .rsvp-chip { min-height: 34px; padding: 0 12px; border-radius: 17px; border: 1.5px solid var(--line-2); background: #fff; color: var(--ink); font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; white-space: nowrap; }
 .rsvp-chip.on { background: var(--gold); border-color: var(--gold); }
 .rsvp .small { font-size: 11px; }
-.wv-kit { margin-top: -10px; color: var(--ink-2); }
-.wv-kit summary { cursor: pointer; list-style: none; font-weight: 700; }
-.wv-kit summary::-webkit-details-marker { display: none; }
-.wv-kit[open] summary { display: none; }
-.wv-kit p { margin: 0; font-weight: 700; }
-.wv-kit p::before { content: 'Grab: '; font-weight: 400; color: var(--ink-3); }
+
+/* Equipment: small icons by the title; tap for names. */
+.kit { position: relative; }
+.kit-strip { display: flex; align-items: center; gap: 4px; padding: 6px 2px; min-height: 0; border: 0; background: none; color: var(--ink-2); cursor: pointer; }
+.kit-pop { position: absolute; left: 0; top: calc(100% + 4px); z-index: 20; min-width: 220px; padding: 8px 6px; background: #fff; border-radius: 14px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16); }
+.kit-pop-title { white-space: nowrap; padding: 2px 10px 6px; font-size: 12px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-3); }
+.kit-pop-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; font-weight: 700; color: var(--ink); }
+.kit-pop-item svg { color: var(--ink-2); }
+.kit-more { font-size: 12px; font-weight: 800; color: var(--ink-3); margin-left: 2px; }
+.title-meta .whos-coming { margin-left: auto; }

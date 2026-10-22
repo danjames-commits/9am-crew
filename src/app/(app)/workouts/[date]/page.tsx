@@ -54,11 +54,6 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
           </Link>
         )}
       </div>
-      {upcoming && (
-        <div className="title-meta">
-          <WhosComing classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />
-        </div>
-      )}
       {w.status === 'draft' && <div className="notice bad">Draft. Only admins can see this until it’s published.</div>}
       <WorkoutView
         title={w.title}
@@ -68,6 +63,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
         weather={weather}
         classDate={w.class_date}
         canScale={upcoming && aiEnabled()}
+        meta={upcoming ? <WhosComing classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} /> : null}
         log={{ movements, benchmarks, today: todayLocal() }}
         coach={
           me.is_admin
