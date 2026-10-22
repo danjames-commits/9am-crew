@@ -2,7 +2,9 @@
 // at your level (and inside or outside). No extra typing for whoever writes it.
 
 const KIT: { name: string; test: RegExp }[] = [
-  { name: 'Barbell', test: /\bbarbell\b|\bempty bar\b|\b(back|front|overhead|pause) squats?\b|\bdeadlifts?\b|\b(strict|push|bench) press\b|\b(power |squat |hang )?cleans?\b|\bclean & jerk\b|\bthrusters?\b|\bsnatch(es)?\b/ },
+  // Only lifts that are always done with a bar. A plain "deadlift" or "squat" can be bodyweight,
+  // single-leg or a dumbbell move, so those count only through the day's main lift (see below).
+  { name: 'Barbell', test: /\bbarbells?\b|\bempty bar\b|\b(back|front|overhead) squats?\b|\b(strict|push|bench) press(es)?\b|\b(power|hang power|squat|hang) cleans?\b|\bclean (&|and) jerks?\b|\bthrusters?\b|\b(power )?snatch(es)?\b|\bconventional deadlifts?\b|\bsumo deadlifts?\b/ },
   { name: 'Dumbbells', test: /\bdumbbells?\b|\bdb\b/ },
   { name: 'Kettlebell', test: /\bkettlebells?\b|\bkb\b|\bgoblet\b/ },
   { name: 'Wall ball', test: /\bwall ?balls?\b/ },
@@ -24,10 +26,12 @@ const NOT_A_ROWER = /\b(ring|bent[- ]over|upright|renegade|dumbbell|db|kettlebel
 // A lift done with something else in hand ("Romanian deadlifts, light dumbbells") isn't a barbell lift.
 const OTHER_WEIGHT = /\b(dumbbells?|db|kettlebells?|kb|goblet|sandbags?|landmine|bands?|banded|wall ?balls?|bodyweight)\b/;
 
-/** The equipment named in some workout text, in a sensible pick-up order. */
-export function equipmentIn(texts: string[]) {
+/** The equipment named in some workout text, in a sensible pick-up order.
+ *  `barbellLift`: the day's main lift is a barbell lift at this level. */
+export function equipmentIn(texts: string[], opts: { barbellLift?: boolean } = {}) {
   const text = texts.join('\n').toLowerCase();
   const found = new Set<string>();
+  if (opts.barbellLift) found.add('Barbell');
   for (const k of KIT) {
     let t = text;
     if (k.name === 'Rower') t = t.replace(NOT_A_ROWER, ' ');
@@ -36,3 +40,6 @@ export function equipmentIn(texts: string[]) {
   }
   return KIT.map((k) => k.name).filter((n) => found.has(n));
 }
+
+/** The tracked lifts that use a barbell (Gentle's swaps, like goblet squats, don't). */
+export const BARBELL_LIFTS = new Set(['Back squat', 'Front squat', 'Deadlift', 'Strict press', 'Push press', 'Bench press', 'Power clean', 'Snatch', 'Squat clean & jerk']);

@@ -7,7 +7,7 @@ import { ScaleHelper } from './ScaleHelper';
 import type { WeatherCall } from '@/lib/weather-rules';
 import { Icon } from './Icon';
 import { PartBody, partWords } from './PartText';
-import { equipmentIn } from '@/lib/equipment';
+import { BARBELL_LIFTS, equipmentIn } from '@/lib/equipment';
 import { QuickLog, type QuickLogContext } from './QuickLog';
 import { FollowMode, type CoachInfo } from './FollowMode';
 
@@ -63,6 +63,8 @@ export function WorkoutView({
       const w = partWords(p, i, outside);
       return [p.kind === 'strength' ? '' : w.title, w.headline, w.body];
     }),
+    // The main lift at this level (Gentle often swaps to a dumbbell or kettlebell version).
+    { barbellLift: parts.some((p) => p.lift && BARBELL_LIFTS.has(level === 1 ? (p.lift.gentleMovement ?? p.lift.movement) : p.lift.movement)) },
   );
   const ctx: QuickLogContext = { ...log, classDate, maxes };
 
@@ -128,14 +130,13 @@ export function WorkoutView({
       </div>
 
       {kit.length > 0 && (
-        <p className="wv-kit small" aria-label={`Equipment: ${kit.join(', ')}`}>
-          <span className="muted">Grab:</span>
-          {kit.map((k) => (
-            <span key={k} className="kit-chip">
-              {k}
-            </span>
-          ))}
-        </p>
+        <details className="wv-kit small">
+          <summary>
+            <span className="muted">Grab:</span> {kit.slice(0, 3).join(', ')}
+            {kit.length > 3 && <span className="muted"> +{kit.length - 3} more</span>}
+          </summary>
+          <p>{kit.join(' · ')}</p>
+        </details>
       )}
       {hasOutdoor && (
         <p className="small wv-weather" style={{ color: weather?.outside ? 'var(--teal)' : 'var(--ink-3)' }}>
