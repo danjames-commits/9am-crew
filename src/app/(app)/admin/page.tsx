@@ -42,9 +42,14 @@ export default async function AdminPage() {
     <main className="screen">
       <div className="row between">
         <h1>Program</h1>
-        <Link href="/admin/members" className="btn small ghost">
-          Members
-        </Link>
+        <div className="row" style={{ gap: 6 }}>
+          <Link href="/admin/clock" className="btn small ghost">
+            Clock
+          </Link>
+          <Link href="/admin/members" className="btn small ghost">
+            Members
+          </Link>
+        </div>
       </div>
 
       {pending ? (

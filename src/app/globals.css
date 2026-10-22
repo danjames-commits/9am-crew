@@ -543,3 +543,17 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .kit-toggle.on { border-color: var(--ink); color: var(--ink); background: var(--ground); }
 .kit-pop { max-width: calc(100vw - 32px); }
 .kit-pop:has(.kit-edit-grid) { width: min(320px, calc(100vw - 32px)); }
+
+/* Gym clock remote (admin). */
+.clock-checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.clock-checks li::before { display: inline-block; width: 22px; font-weight: 800; }
+.clock-checks li.ok::before { content: '✓'; color: var(--teal); }
+.clock-checks li.todo::before { content: '○'; color: var(--ink-3); }
+.clock-remote { display: grid; gap: 8px; background: #23272a; }
+.clock-row { display: grid; gap: 8px; }
+.clock-btn { min-height: 44px; border-radius: 22px; border: 0; background: #3b4146; color: #fff; font: inherit; font-weight: 800; font-size: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; cursor: pointer; }
+.clock-btn small { font-size: 9px; font-weight: 600; opacity: 0.75; }
+.clock-btn.power { background: #c9452f; }
+.clock-btn.blue { background: #2c7bd6; }
+.clock-btn:disabled { opacity: 0.45; cursor: default; }
+.clock-remote [role='status'] { color: #e6e6e6; }

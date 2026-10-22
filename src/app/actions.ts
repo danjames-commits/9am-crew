@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache';
 import { after } from 'next/server';
 import { ensurePrArt } from '@/lib/pr-art';
 import { EQUIPMENT } from '@/lib/equipment';
+import { ALL_CLOCK_BUTTONS, findClock, pressButton } from '@/lib/switchbot';
 import { BRIEF_MAX, DEFAULT_COACH_BRIEF, getCoachBrief } from '@/lib/coach-brief';
 import { redirect } from 'next/navigation';
 import { requireMember, supabaseServer } from '@/lib/supabase/server';
@@ -91,6 +92,20 @@ export async function setWeeklyGoal(goal: number) {
   if (error) return { error: 'Couldn’t save that. Try again.' };
   revalidatePath('/lifts/attendance');
   return { ok: true };
+}
+
+/** Admins: press one button on the gym clock's remote, through the SwitchBot hub. */
+export async function pressClock(button: string) {
+  await requireMember({ admin: true });
+  if (!ALL_CLOCK_BUTTONS.includes(button)) return { error: 'Unknown button' };
+  try {
+    const clock = await findClock();
+    if (!clock) return { error: 'No remote named “Gym clock” in SwitchBot yet.' };
+    await pressButton(clock.deviceId, button);
+    return { ok: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'SwitchBot didn’t answer.' };
+  }
 }
 
 /** Admins: change a workout's equipment list (additions and removals on top of what the app reads). */
