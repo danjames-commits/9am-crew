@@ -56,7 +56,7 @@ export async function findClock() {
 export function pressButton(remoteId: string, button: string) {
   return call<unknown>(`/devices/${encodeURIComponent(remoteId)}/commands`, {
     method: 'POST',
-    body: { command: button, parameter: 'default', commandType: 'customize' },
+    body: { command: learnedName(button), parameter: 'default', commandType: 'customize' },
   });
 }
 
@@ -77,3 +77,15 @@ export const CLOCK_BUTTONS: string[][] = [
   ['F10', 'F11', 'F12'],
 ];
 export const ALL_CLOCK_BUTTONS = CLOCK_BUTTONS.flat();
+
+// The SwitchBot app won't accept button names containing the numbers 1–100,
+// so digits and F-keys are taught spelled out ("One", "F Six").
+const WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve'];
+
+/** The name a button is taught under in the SwitchBot app. */
+export function learnedName(button: string): string {
+  if (/^\d$/.test(button)) return WORDS[Number(button)];
+  const f = /^F(\d{1,2})$/.exec(button);
+  if (f) return `F ${WORDS[Number(f[1])]}`;
+  return button;
+}

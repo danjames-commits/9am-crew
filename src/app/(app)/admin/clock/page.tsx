@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { requireMember } from '@/lib/supabase/server';
-import { ALL_CLOCK_BUTTONS, CLOCK_BUTTONS, listDevices, switchbotReady, type SwitchbotDevices } from '@/lib/switchbot';
+import { ALL_CLOCK_BUTTONS, CLOCK_BUTTONS, learnedName, listDevices, switchbotReady, type SwitchbotDevices } from '@/lib/switchbot';
 import { CLOCK_TESTS } from '@/lib/clock-tests';
 import { ClockRemote } from '@/components/admin/ClockRemote';
 import { ClockTests } from '@/components/admin/ClockTests';
@@ -97,10 +97,10 @@ export default async function ClockPage() {
         </ol>
         <div className="learn-grid">
           {ALL_CLOCK_BUTTONS.map((b) => (
-            <span key={b}>{SHOW_NAME[b] ?? b}</span>
+            <span key={b}>{SHOW_NAME[b] ?? learnedName(b)}</span>
           ))}
         </div>
-        <p className="small muted">{ALL_CLOCK_BUTTONS.length} buttons. Names must match exactly, including capitals (OK, F1 … F12).</p>
+        <p className="small muted">{ALL_CLOCK_BUTTONS.length} buttons. Names must match exactly, including capitals and the space in “F One”. Numbers are spelled out because the SwitchBot app won’t take digits in a name.</p>
         {clock && <LearnedButton />}
       </Step>
 
