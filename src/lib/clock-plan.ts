@@ -6,8 +6,6 @@
 
 /** Seconds of "get ready" countdown the clock adds before every timer. Set to 0 if F12 turns it off. */
 export const LEAD_IN = 10;
-/** Type minutes as two digits ("0","3") rather than one ("3"). */
-export const TWO_DIGIT_MINUTES = true;
 
 export type ClockStep =
   | { type: 'countdown'; label: string; seconds: number }
@@ -57,24 +55,26 @@ export function cleanPlan(raw: unknown, partCount: number): ClockPlan {
 }
 
 const digits = (n: number) => String(n).split('');
-const two = (n: number) => digits(n).length === 1 ? ['0', String(n)] : digits(n);
 
-/** Left, minutes, Right, seconds: the clock's way of typing a time. */
-function typeTime(seconds: number): string[] {
+// How the clock takes numbers (gym tests, Oct 23): the first digit replaces what's
+// flashing and the next slides in beside it, like a calculator ("3" → 3, then "0" → 30).
+// So no leading zeros. After Down the minutes are already flashing; Right moves to the
+// seconds. Seconds are always typed, even "0", or the last timer's seconds stay.
+
+/** Minutes, Right, seconds. `left` presses Left first to pick the minutes (intervals). */
+function typeTime(seconds: number, left: boolean): string[] {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
-  return ['Left', ...(TWO_DIGIT_MINUTES ? two(m) : digits(m)), 'Right', ...two(s)];
+  return [...(left ? ['Left'] : []), ...digits(m), 'Right', ...digits(s)];
 }
 
 /** The remote presses that set up and start one step. */
 export function buttonsFor(step: ClockStep): string[] {
   // Exit twice first, so whatever the clock was left on (a paused timer, a half-set program,
   // a menu) is cleared back to the time of day before the new timer is typed in.
-  // Gym test (Oct 23): Left + two minute digits works, but pressing Right sent the clock
-  // into setting the time of day. So whole-minute countdowns skip the seconds entirely.
-  if (step.type === 'countdown' && step.seconds % 60 === 0) return ['Exit', 'Exit', 'Down', 'Left', ...two(Math.floor(step.seconds / 60)), 'OK'];
-  if (step.type === 'countdown') return ['Exit', 'Exit', 'Down', ...typeTime(step.seconds), 'OK'];
-  return ['Exit', 'Exit', 'Select', ...digits(step.rounds), 'Select', ...typeTime(step.work), 'Select', ...typeTime(step.rest), 'OK'];
+  if (step.type === 'countdown') return ['Exit', 'Exit', 'Down', ...typeTime(step.seconds, false), 'OK'];
+  // Intervals aren't tested yet: Left kept in case the minutes aren't already selected.
+  return ['Exit', 'Exit', 'Select', ...digits(step.rounds), 'Select', ...typeTime(step.work, true), 'Select', ...typeTime(step.rest, true), 'OK'];
 }
 
 /** How long a step runs once started, not counting the lead-in. */

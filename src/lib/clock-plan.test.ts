@@ -1,20 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import { buttonsFor, cleanPlan, describeStep, digitsToSeconds, parseTime, stepSeconds } from './clock-plan';
-import { CLOCK_TESTS } from './clock-tests';
 import { ALL_CLOCK_BUTTONS } from './clock-buttons';
 
 describe('gym clock plan', () => {
-  it('types a countdown the same way as the setup test', () => {
-    const test = CLOCK_TESTS.find((t) => t.id === 'start-20s')!;
-    expect(buttonsFor({ type: 'countdown', label: '', seconds: 20 })).toEqual(['Exit', ...test.buttons]);
-    // Whole minutes: no Right press (it sent the clock into setting the time of day).
-    expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual(['Exit', 'Exit', 'Down', 'Left', '1', '2', 'OK']);
-    const minZero = CLOCK_TESTS.find((t) => t.id === 'min-zero')!;
-    expect(buttonsFor({ type: 'countdown', label: '', seconds: 180 }).slice(1, -1)).toEqual(minZero.buttons);
+  it('types a countdown the way the clock takes numbers', () => {
+    expect(buttonsFor({ type: 'countdown', label: '', seconds: 20 })).toEqual(['Exit', 'Exit', 'Down', '0', 'Right', '2', '0', 'OK']);
+    expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual(['Exit', 'Exit', 'Down', '1', '2', 'Right', '0', 'OK']);
+    expect(buttonsFor({ type: 'countdown', label: '', seconds: 3 * 60 + 30 })).toEqual(['Exit', 'Exit', 'Down', '3', 'Right', '3', '0', 'OK']);
   });
-  it('types intervals the same way as the setup test', () => {
-    const test = CLOCK_TESTS.find((t) => t.id === 'interval')!;
-    expect(buttonsFor({ type: 'intervals', label: '', rounds: 3, work: 20, rest: 10 })).toEqual(['Exit', ...test.buttons]);
+  it('types intervals', () => {
+    expect(buttonsFor({ type: 'intervals', label: '', rounds: 3, work: 20, rest: 10 })).toEqual(
+      ['Exit', 'Exit', 'Select', '3', 'Select', 'Left', '0', 'Right', '2', '0', 'Select', 'Left', '0', 'Right', '1', '0', 'OK'],
+    );
   });
   it('only uses real buttons, and stays under the 24-press limit', () => {
     const b = buttonsFor({ type: 'intervals', label: '', rounds: 12, work: 99 * 60 + 59, rest: 59 * 60 });
