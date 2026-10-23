@@ -11,6 +11,7 @@ import { requireMember, supabaseServer } from '@/lib/supabase/server';
 import type { LevelPct, Part, PartKind, WorkoutDraft } from '@/lib/types';
 import { aiEnabled, draftClockPlan, draftWorkout, drawAnimal, planCycle, scaleAdvice, takeAllowance } from '@/lib/ai';
 import { cleanPlan as cleanClockPlan, type ClockPlan } from '@/lib/clock-plan';
+import { partsFingerprint } from '@/lib/clock-week';
 import { cleanSvg, svgVersion } from '@/lib/svg-clean';
 import { cleanPlan, type PlanDraft } from '@/lib/programming/plan';
 import { isWeekday, todayLocal } from '@/lib/dates';
@@ -147,7 +148,8 @@ export async function saveClockPlan(date: string, plan: ClockPlan) {
   const { data: w } = await supabase.from('workouts').select('parts').eq('class_date', date).maybeSingle();
   if (!w) return { error: 'No workout that day.' };
   const clean = cleanClockPlan(plan, (w.parts as Part[]).length);
-  const { error } = await supabase.from('workouts').update({ clock_plan: clean }).eq('class_date', date);
+  // Marked as the coach's, so Claude won't redo them if the workout changes.
+  const { error } = await supabase.from('workouts').update({ clock_plan: clean, clock_by: 'coach' }).eq('class_date', date);
   if (error) return { error: 'Couldn’t save the timers. Try again.' };
   revalidatePath(`/workouts/${date}`);
   return { ok: true, plan: clean };
@@ -164,7 +166,10 @@ export async function draftClockTimers(date: string) {
   try {
     const brief = await getCoachBrief(supabase);
     const plan = await draftClockPlan({ parts: w.parts as Part[], brief: brief.body });
-    const { error } = await supabase.from('workouts').update({ clock_plan: plan }).eq('class_date', date);
+    const { error } = await supabase
+      .from('workouts')
+      .update({ clock_plan: plan, clock_by: 'claude', clock_for: partsFingerprint(w.parts) })
+      .eq('class_date', date);
     if (error) return { error: 'Couldn’t save the timers. Try again.' };
     revalidatePath(`/workouts/${date}`);
     return { ok: true, plan };

@@ -41,15 +41,3 @@ describe('gym clock plan', () => {
   });
 });
 
-import { timerWeek } from './clock-plan';
-describe('which week gets its timers set', () => {
-  it('Monday to Thursday: the rest of this week', () => {
-    expect(timerWeek('2026-10-21')).toEqual(['2026-10-21', '2026-10-22', '2026-10-23']); // Wednesday
-  });
-  it('Friday to Sunday: next week', () => {
-    const next = ['2026-10-26', '2026-10-27', '2026-10-28', '2026-10-29', '2026-10-30'];
-    expect(timerWeek('2026-10-23')).toEqual(next); // Friday
-    expect(timerWeek('2026-10-24')).toEqual(next); // Saturday
-    expect(timerWeek('2026-10-25')).toEqual(next); // Sunday
-  });
-});

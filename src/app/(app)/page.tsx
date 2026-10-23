@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import { after } from 'next/server';
 import { requireMember, signedIn } from '@/lib/supabase/server';
 import { maybePostRecap } from '@/lib/recap';
-import { fillWeekTimers } from '@/lib/clock-week';
 import { getPeople, getSchedule } from '@/lib/data';
 import { WeekDigest, type DigestDay } from '@/components/WeekDigest';
 import { daysBetween } from '@/lib/dates';
@@ -47,8 +46,6 @@ export default async function TodayPage() {
     ),
   ]);
   after(() => maybePostRecap(supabase));
-  // Admins: the week's gym clock timers get set in the background, a week at a time.
-  if (me.is_admin) after(() => fillWeekTimers(supabase, me.id));
   const pending = admin?.[0].count ?? 0;
   const schedule = admin?.[1] ?? null;
   const hasOutdoor = Boolean(workout && (workout.parts as Part[] | null)?.some((p) => p.outdoor));
