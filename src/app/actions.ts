@@ -121,7 +121,7 @@ export async function pressClockSequence(buttons: string[]) {
     for (const b of buttons) {
       await pressButton(clock.deviceId, b);
       // A short gap so the clock registers each press.
-      await new Promise((r) => setTimeout(r, 350));
+      await new Promise((r) => setTimeout(r, 700));
     }
     return { ok: true };
   } catch (e) {
