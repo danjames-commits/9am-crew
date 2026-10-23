@@ -7,6 +7,7 @@ import { setOutKit, type KitChanges } from '@/lib/workout-kit';
 import { KitList } from './EquipmentStrip';
 import { YourNumbers } from './YourNumbers';
 import { QuickLog, type QuickLogContext } from './QuickLog';
+import { RoundCounter, countsRounds } from './RoundCounter';
 import { ClockNowBar, ClockOverview, ClockPartPanel, RemoteSheet, useClockRunner, type ClockInfo, type ClockRunner } from './coach/GymClock';
 import type { ClockPlan } from '@/lib/clock-plan';
 
@@ -354,6 +355,7 @@ function PartScreen({
       ) : (
         <>
           <PartBody body={shown.body} className="part-body follow-text" />
+          {countsRounds(part) && <RoundCounter id={`${ctx.classDate}:${index}`} />}
           {part.lift && <YourNumbers part={shown.useOutdoor ? { ...part, versions: shown.versions } : part} level={level} maxes={maxes} />}
           <QuickLog part={part} level={level} outside={outside} ctx={ctx} big />
         </>

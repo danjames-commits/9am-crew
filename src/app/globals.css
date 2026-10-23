@@ -605,3 +605,13 @@ body:has(.chat-input:focus) .screen { padding-bottom: 0; }
 .btn.go { background: #2f8f4e; color: #fff; }
 .btn.go:hover { color: #fff; }
 .clock-remote-chip { min-height: 30px; padding: 0 12px; border: 1px solid var(--line); border-radius: 15px; background: #23272a; color: #fff; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
+
+/* Round counter in workout mode */
+.round-counter { display: grid; grid-template-columns: 72px 1fr 112px; align-items: center; gap: 10px; background: #fff; border-radius: 16px; padding: 10px; }
+.round-btn { height: 72px; border: 0; border-radius: 14px; font: inherit; font-size: 40px; font-weight: 800; line-height: 1; cursor: pointer; touch-action: manipulation; }
+.round-btn.minus { background: var(--ground); color: var(--ink); }
+.round-btn.minus:disabled { opacity: 0.4; }
+.round-btn.plus { background: var(--gold); color: var(--ink); }
+.round-count { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.round-count span { font-family: var(--display); font-weight: 800; font-size: 52px; font-variant-numeric: tabular-nums; }
+.round-count small { font-size: 13px; font-weight: 800; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
