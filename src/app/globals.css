@@ -29,7 +29,7 @@ body {
   line-height: 1.45;
 }
 a { color: var(--teal); }
-a:hover { color: #164f49; }
+a:hover { color: var(--link-hover, #164f49); }
 button, input, select, textarea { font: inherit; color: inherit; }
 h1, h2, h3 { font-family: var(--display); font-weight: 800; margin: 0; line-height: 1.1; }
 h1 { font-size: 32px; }
@@ -637,7 +637,7 @@ html.halloween {
   --teal-soft: #ecdff6;
   --teal-ink: #3d1757;
 }
-:where(html.halloween) a:where(:hover) { color: #4f1f6d; }
+html.halloween { --link-hover: #4f1f6d; }
 html.halloween .card.dark { background: radial-gradient(circle at calc(100% - 34px) 30px, #33204a 0 14px, transparent 15px), radial-gradient(circle at calc(100% - 28px) 34px, #f6e6ac 0 16px, transparent 17px), linear-gradient(160deg, #33204a, #221829 70%); }
 /* A cobweb in the top corner. */
 html.halloween body::before {
