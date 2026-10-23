@@ -120,8 +120,8 @@ export async function pressClockSequence(buttons: string[]) {
     if (!clock) return { error: 'No remote named “Gym clock” in SwitchBot yet.' };
     for (const b of buttons) {
       await pressButton(clock.deviceId, b);
-      // A short gap so the clock registers each press.
-      await new Promise((r) => setTimeout(r, 700));
+      // A long gap: SwitchBot can deliver presses late or out of order when they come quickly (gym test, Oct 23).
+      await new Promise((r) => setTimeout(r, 2000));
     }
     return { ok: true };
   } catch (e) {

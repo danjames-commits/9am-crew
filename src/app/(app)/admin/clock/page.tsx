@@ -8,6 +8,7 @@ import { LearnedButton } from '@/components/admin/LearnedButton';
 import { Icon } from '@/components/Icon';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 120;
 
 const SHOW_NAME: Record<string, string> = { Star: 'Star (*)', Hash: 'Hash (#)' };
 

@@ -13,7 +13,7 @@ import { aiEnabled } from '@/lib/ai';
 import { splitCoachNotes } from '@/lib/coach-notes';
 
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export default async function WorkoutPage({ params }: { params: Promise<{ date: string }> }) {
   const { date } = await params;
