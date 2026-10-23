@@ -7,7 +7,10 @@ describe('gym clock plan', () => {
   it('types a countdown the same way as the setup test', () => {
     const test = CLOCK_TESTS.find((t) => t.id === 'start-20s')!;
     expect(buttonsFor({ type: 'countdown', label: '', seconds: 20 })).toEqual(['Exit', ...test.buttons]);
-    expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual(['Exit', 'Exit', 'Down', 'Left', '1', '2', 'Right', '0', '0', 'OK']);
+    // Whole minutes: no Right press (it sent the clock into setting the time of day).
+    expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual(['Exit', 'Exit', 'Down', 'Left', '1', '2', 'OK']);
+    const minZero = CLOCK_TESTS.find((t) => t.id === 'min-zero')!;
+    expect(buttonsFor({ type: 'countdown', label: '', seconds: 180 }).slice(1, -1)).toEqual(minZero.buttons);
   });
   it('types intervals the same way as the setup test', () => {
     const test = CLOCK_TESTS.find((t) => t.id === 'interval')!;

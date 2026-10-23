@@ -70,6 +70,9 @@ function typeTime(seconds: number): string[] {
 export function buttonsFor(step: ClockStep): string[] {
   // Exit twice first, so whatever the clock was left on (a paused timer, a half-set program,
   // a menu) is cleared back to the time of day before the new timer is typed in.
+  // Gym test (Oct 23): Left + two minute digits works, but pressing Right sent the clock
+  // into setting the time of day. So whole-minute countdowns skip the seconds entirely.
+  if (step.type === 'countdown' && step.seconds % 60 === 0) return ['Exit', 'Exit', 'Down', 'Left', ...two(Math.floor(step.seconds / 60)), 'OK'];
   if (step.type === 'countdown') return ['Exit', 'Exit', 'Down', ...typeTime(step.seconds), 'OK'];
   return ['Exit', 'Exit', 'Select', ...digits(step.rounds), 'Select', ...typeTime(step.work), 'Select', ...typeTime(step.rest), 'OK'];
 }
