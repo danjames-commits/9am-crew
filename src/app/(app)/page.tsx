@@ -9,6 +9,8 @@ import { daysBetween } from '@/lib/dates';
 import { nextCycle, positionOn } from '@/lib/programming/engine';
 import { classDays, nextClassDate, nextWeekday, relativeDay, longDate, todayLocal } from '@/lib/dates';
 import { firstName } from '@/lib/ui';
+import { isHalloween } from '@/lib/season';
+import { Bats } from '@/components/Bats';
 import { levelName } from '@/lib/types';
 import { CheckIn } from '@/components/CheckIn';
 import { Avatar } from '@/components/Avatar';
@@ -61,9 +63,13 @@ export default async function TodayPage() {
 
   return (
     <main className="screen">
-      <header className="row between top">
+      <header className="row between top" style={{ position: 'relative' }}>
+        {isHalloween() && <Bats />}
         <div>
-          <div className="eyebrow">{longDate(todayLocal())}</div>
+          <div className="eyebrow">
+            {longDate(todayLocal())}
+            {isHalloween() ? ' · 🎃' : ''}
+          </div>
           <h1 style={{ marginTop: 4 }}>Hi, {firstName(me.display_name)}</h1>
         </div>
         <Link href="/me" aria-label="My settings">

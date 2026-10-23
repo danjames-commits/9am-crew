@@ -1,5 +1,6 @@
 import { avatarColor, initials } from "@/lib/ui";
 import { animalName, customVersion, isAnimal } from "@/lib/animals";
+import { Costume } from "./Costume";
 
 const SIZES = { sm: 34, md: 40, lg: 72, xl: 168 } as const;
 
@@ -49,12 +50,13 @@ export function Avatar({
     return (
       <span
         className="avatar"
-        style={base}
+        style={{ ...base, overflow: "visible" }}
         title={name}
         aria-label={name}
         role="img"
       >
         {initials(name)}
+        <Costume id={id} px={px} />
       </span>
     );
   }
@@ -76,6 +78,7 @@ export function Avatar({
         height={Math.round(px * (custom || picture ? 0.84 : 0.68))}
         style={{ display: "block" }}
       />
+      <Costume id={id} px={px} />
       {/* The big one (tap-to-see card) has the full name right under it, so no initials. */}
       {size !== "xl" && (
         <span
