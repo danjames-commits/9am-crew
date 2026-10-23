@@ -138,19 +138,21 @@ function halifaxTime(ms: number) {
 /**
  * Admins: set the clock's time of day to Halifax time. Types the hours and minutes for
  * the next whole minute, then waits and presses OK right as that minute starts.
- * From the time of day, Left picks the hours and Right the minutes (gym test, Oct 23).
+ * Minutes first, then hours, the way Dan set it by hand (gym video, Oct 23).
  */
 export async function setClockTime(format: 12 | 24) {
   await requireMember({ admin: true });
   const GAP = 2000;
-  const before = ['Exit', 'Exit', 'Left', 'h', 'h', 'Right', 'm', 'm'];
+  const before = ['Exit', 'Right', 'm', 'm', 'Left', 'h', 'h'];
   // Aim for the first whole minute after the typing is done (with a few seconds' room).
   const target = Math.ceil((Date.now() + before.length * (GAP + 600) + 4000) / 60000) * 60000;
   const { h, m } = halifaxTime(target);
   const hour = format === 24 ? h : h % 12 || 12;
   const hh = String(hour).padStart(2, '0');
   const mm = String(m).padStart(2, '0');
-  const buttons = ['Exit', 'Exit', 'Left', hh[0], hh[1], 'Right', mm[0], mm[1]];
+  // Dan's video (Oct 23): Exit, Right (minutes flash), two minute digits, Left (hours flash),
+  // two hour digits, OK. The first digit replaces the old value, so nothing to clear.
+  const buttons = ['Exit', 'Right', mm[0], mm[1], 'Left', hh[0], hh[1]];
   try {
     const clock = await findClock();
     if (!clock) return { error: 'No remote named “Gym clock” in SwitchBot yet.' };
