@@ -1,3 +1,5 @@
+import { addDays, todayLocal, weekday } from './dates';
+
 // The gym clock plan for a workout: which timers each part runs, and the remote
 // button presses that set each one up on the No Limits clock.
 //
@@ -101,3 +103,12 @@ export function parseTime(text: string): number | null {
   if (m) return Math.round(Number(m[1]) * 60);
   return null;
 }
+
+/** The class days whose timers get set now: the rest of this week Monday to Thursday,
+ *  and from Friday on, next Monday to Friday. */
+export function timerWeek(today = todayLocal()): string[] {
+  const wd = weekday(today); // 0 Sunday … 6 Saturday
+  const monday = wd >= 1 && wd <= 4 ? addDays(today, 1 - wd) : addDays(today, wd === 0 ? 1 : 8 - wd);
+  return [0, 1, 2, 3, 4].map((i) => addDays(monday, i)).filter((d) => d >= today);
+}
+
