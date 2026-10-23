@@ -3,14 +3,11 @@ import { buttonsFor, cleanPlan, describeStep, digitsToSeconds, parseTime, stepSe
 import { ALL_CLOCK_BUTTONS } from './clock-buttons';
 
 describe('gym clock plan', () => {
-  it('types a countdown the way the clock takes numbers', () => {
-    expect(buttonsFor({ type: 'countdown', label: '', seconds: 20 })).toEqual(['Exit', 'Exit', 'Down', '0', 'Right', '2', '0', 'OK']);
-    expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual(['Exit', 'Exit', 'Down', '1', '2', 'Right', '0', 'OK']);
-    expect(buttonsFor({ type: 'countdown', label: '', seconds: 3 * 60 + 30 })).toEqual(['Exit', 'Exit', 'Down', '3', 'Right', '3', '0', 'OK']);
-  });
-  it('types intervals', () => {
+  it('types every field as two digits, so old values are wiped', () => {
+    expect(buttonsFor({ type: 'countdown', label: '', seconds: 20 })).toEqual(['Exit', 'Exit', 'Down', 'Left', '0', '0', 'Right', '2', '0', 'OK']);
+    expect(buttonsFor({ type: 'countdown', label: '', seconds: 3 * 60 + 30 })).toEqual(['Exit', 'Exit', 'Down', 'Left', '0', '3', 'Right', '3', '0', 'OK']);
     expect(buttonsFor({ type: 'intervals', label: '', rounds: 3, work: 20, rest: 10 })).toEqual(
-      ['Exit', 'Exit', 'Select', '3', 'Select', 'Left', '0', 'Right', '2', '0', 'Select', 'Left', '0', 'Right', '1', '0', 'OK'],
+      ['Exit', 'Exit', 'Select', '0', '3', 'Select', 'Left', '0', '0', 'Right', '2', '0', 'Select', 'Left', '0', '0', 'Right', '1', '0', 'OK'],
     );
   });
   it('only uses real buttons, and stays under the 24-press limit', () => {

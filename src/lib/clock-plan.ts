@@ -56,25 +56,22 @@ export function cleanPlan(raw: unknown, partCount: number): ClockPlan {
 
 const digits = (n: number) => String(n).split('');
 
-// How the clock takes numbers (gym tests, Oct 23): the first digit replaces what's
-// flashing and the next slides in beside it, like a calculator ("3" → 3, then "0" → 30).
-// So no leading zeros. After Down the minutes are already flashing; Right moves to the
-// seconds. Seconds are always typed, even "0", or the last timer's seconds stay.
+// How the clock takes numbers (gym tests, Oct 23): each field keeps the last timer's value
+// and new digits slide in from the right, two at a time. So every field gets exactly two
+// digits ("0","3" for 3), which wipes out whatever was there. Left picks the minutes,
+// Right the seconds.
+const two = (n: number) => String(n).padStart(2, '0').slice(-2).split('');
 
-/** Minutes, Right, seconds. `left` presses Left first to pick the minutes (intervals). */
-function typeTime(seconds: number, left: boolean): string[] {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return [...(left ? ['Left'] : []), ...digits(m), 'Right', ...digits(s)];
+function typeTime(seconds: number): string[] {
+  return ['Left', ...two(Math.floor(seconds / 60)), 'Right', ...two(seconds % 60)];
 }
 
 /** The remote presses that set up and start one step. */
 export function buttonsFor(step: ClockStep): string[] {
   // Exit twice first, so whatever the clock was left on (a paused timer, a half-set program,
   // a menu) is cleared back to the time of day before the new timer is typed in.
-  if (step.type === 'countdown') return ['Exit', 'Exit', 'Down', ...typeTime(step.seconds, false), 'OK'];
-  // Intervals aren't tested yet: Left kept in case the minutes aren't already selected.
-  return ['Exit', 'Exit', 'Select', ...digits(step.rounds), 'Select', ...typeTime(step.work, true), 'Select', ...typeTime(step.rest, true), 'OK'];
+  if (step.type === 'countdown') return ['Exit', 'Exit', 'Down', ...typeTime(step.seconds), 'OK'];
+  return ['Exit', 'Exit', 'Select', ...two(step.rounds), 'Select', ...typeTime(step.work), 'Select', ...typeTime(step.rest), 'OK'];
 }
 
 /** How long a step runs once started, not counting the lead-in. */
