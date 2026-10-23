@@ -4,6 +4,7 @@ import { ALL_CLOCK_BUTTONS, CLOCK_BUTTONS, learnedName, listDevices, switchbotRe
 import { CLOCK_TESTS } from '@/lib/clock-tests';
 import { ClockRemote } from '@/components/admin/ClockRemote';
 import { ClockTests } from '@/components/admin/ClockTests';
+import { ClockTimeSet } from '@/components/admin/ClockTimeSet';
 import { LearnedButton } from '@/components/admin/LearnedButton';
 import { Icon } from '@/components/Icon';
 
@@ -116,6 +117,11 @@ export default async function ClockPage() {
           Stand where you can see the clock. Tap <b>Send</b>, watch, then mark ✓ or ✗. Add a note if it did something different. Your answers decide how the app will run timers.
         </p>
         <ClockTests tests={CLOCK_TESTS} findings={findings} ready={Boolean(clock)} />
+      </section>
+
+      <section className="stack tight">
+        <h2 style={{ fontSize: 20 }}>Clock’s time of day</h2>
+        <ClockTimeSet />
       </section>
 
       <section className="stack tight">

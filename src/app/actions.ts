@@ -129,6 +129,45 @@ export async function pressClockSequence(buttons: string[]) {
   }
 }
 
+/** The time of day in Halifax at a moment, as hours (0–23) and minutes. */
+function halifaxTime(ms: number) {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Halifax', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(ms));
+  return { h: Number(parts.find((p) => p.type === 'hour')?.value), m: Number(parts.find((p) => p.type === 'minute')?.value) };
+}
+
+/**
+ * Admins: set the clock's time of day to Halifax time. Types the hours and minutes for
+ * the next whole minute, then waits and presses OK right as that minute starts.
+ * From the time of day, Left picks the hours and Right the minutes (gym test, Oct 23).
+ */
+export async function setClockTime(format: 12 | 24) {
+  await requireMember({ admin: true });
+  const GAP = 2000;
+  const before = ['Exit', 'Exit', 'Left', 'h', 'h', 'Right', 'm', 'm'];
+  // Aim for the first whole minute after the typing is done (with a few seconds' room).
+  const target = Math.ceil((Date.now() + before.length * (GAP + 600) + 4000) / 60000) * 60000;
+  const { h, m } = halifaxTime(target);
+  const hour = format === 24 ? h : h % 12 || 12;
+  const hh = String(hour).padStart(2, '0');
+  const mm = String(m).padStart(2, '0');
+  const buttons = ['Exit', 'Exit', 'Left', hh[0], hh[1], 'Right', mm[0], mm[1]];
+  try {
+    const clock = await findClock();
+    if (!clock) return { error: 'No remote named “Gym clock” in SwitchBot yet.' };
+    for (const b of buttons) {
+      await pressButton(clock.deviceId, b);
+      await new Promise((r) => setTimeout(r, GAP));
+    }
+    const wait = target - Date.now();
+    if (wait < 0) return { error: 'SwitchBot was too slow that time. Try again.' };
+    await new Promise((r) => setTimeout(r, wait));
+    await pressButton(clock.deviceId, 'OK');
+    return { ok: true, set: `${hour}:${mm}${format === 12 ? (h < 12 ? ' AM' : ' PM') : ''}` };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'SwitchBot didn’t answer.' };
+  }
+}
+
 /** Admins: note what a clock test did, so the timer can be built on what's true for our clock. */
 export async function recordClockFinding(id: string, result: 'yes' | 'no', note: string) {
   const { supabase, me } = await requireMember({ admin: true });
