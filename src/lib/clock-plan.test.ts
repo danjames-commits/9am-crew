@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { buttonsFor, cleanPlan, describeStep, parseTime, stepSeconds } from './clock-plan';
+import { buttonsFor, cleanPlan, describeStep, digitsToSeconds, parseTime, stepSeconds } from './clock-plan';
 import { CLOCK_TESTS } from './clock-tests';
 import { ALL_CLOCK_BUTTONS } from './clock-buttons';
 
 describe('gym clock plan', () => {
   it('types a countdown the same way as the setup test', () => {
     const test = CLOCK_TESTS.find((t) => t.id === 'start-20s')!;
-    expect(buttonsFor({ type: 'countdown', label: '', seconds: 20 })).toEqual(test.buttons);
-    expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual(['Exit', 'Down', 'Left', '1', '2', 'Right', '0', '0', 'OK']);
+    expect(buttonsFor({ type: 'countdown', label: '', seconds: 20 })).toEqual(['Exit', ...test.buttons]);
+    expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual(['Exit', 'Exit', 'Down', 'Left', '1', '2', 'Right', '0', '0', 'OK']);
   });
   it('types intervals the same way as the setup test', () => {
     const test = CLOCK_TESTS.find((t) => t.id === 'interval')!;
-    expect(buttonsFor({ type: 'intervals', label: '', rounds: 3, work: 20, rest: 10 })).toEqual(test.buttons);
+    expect(buttonsFor({ type: 'intervals', label: '', rounds: 3, work: 20, rest: 10 })).toEqual(['Exit', ...test.buttons]);
   });
   it('only uses real buttons, and stays under the 24-press limit', () => {
     const b = buttonsFor({ type: 'intervals', label: '', rounds: 12, work: 99 * 60 + 59, rest: 59 * 60 });
@@ -21,6 +21,13 @@ describe('gym clock plan', () => {
   it('works out how long things run', () => {
     expect(stepSeconds({ type: 'intervals', label: '', rounds: 8, work: 20, rest: 10 })).toBe(8 * 20 + 7 * 10);
     expect(describeStep({ type: 'intervals', label: '', rounds: 10, work: 60, rest: 0 })).toBe('10 × 1:00 on');
+  });
+  it('reads number-pad typing like a timer', () => {
+    expect(digitsToSeconds('1200')).toBe(720);
+    expect(digitsToSeconds('45')).toBe(45);
+    expect(digitsToSeconds('130')).toBe(90);
+    expect(digitsToSeconds('90')).toBe(90);
+    expect(digitsToSeconds('')).toBe(0);
   });
   it('reads times people type', () => {
     expect(parseTime('12')).toBe(720);

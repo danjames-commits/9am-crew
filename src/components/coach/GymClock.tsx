@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { draftClockTimers, pressClockSequence, saveClockPlan } from '@/app/actions';
-import { buttonsFor, clockTime, describeStep, LEAD_IN, parseTime, stepSeconds, type ClockPlan, type ClockStep } from '@/lib/clock-plan';
+import { buttonsFor, clockTime, describeStep, digitsToSeconds, LEAD_IN, stepSeconds, type ClockPlan, type ClockStep } from '@/lib/clock-plan';
 import { CLOCK_BUTTONS } from '@/lib/clock-buttons';
 import { ClockRemote } from '../admin/ClockRemote';
 import type { Part } from '@/lib/types';
@@ -308,7 +308,7 @@ function StepEditor({ steps: start, part, onSave, onCancel }: { steps: ClockStep
           + Intervals
         </button>
       </div>
-      <p className="small follow-muted">Times like 12:00, 0:45 or 45s. More than one timer runs back to back.</p>
+      <p className="small follow-muted">Type times like a microwave: 1200 is 12:00, 45 is 0:45. More than one timer runs back to back.</p>
       {error && (
         <p className="small" role="alert">
           {error}
@@ -337,28 +337,36 @@ function StepEditor({ steps: start, part, onSave, onCancel }: { steps: ClockStep
   );
 }
 
+/** A time on the number pad, typed like a microwave timer: 1, 2, 0, 0 shows 12:00. */
 function TimeField({ label, seconds, onChange, allowZero = false }: { label: string; seconds: number; onChange: (s: number) => void; allowZero?: boolean }) {
-  const [text, setText] = useState(clockTime(seconds));
+  const toDigits = (sec: number) => String(Math.floor(sec / 60) * 100 + (sec % 60));
+  const [digits, setDigits] = useState(toDigits(seconds));
   const [bad, setBad] = useState(false);
-  useEffect(() => setText(clockTime(seconds)), [seconds]);
+  useEffect(() => setDigits(toDigits(seconds)), [seconds]);
+  const shown = digits ? `${digits.slice(0, -2) || '0'}:${digits.slice(-2).padStart(2, '0')}` : '';
   return (
     <label>
       <span>{label}</span>
       <input
         className="input"
-        inputMode="text"
-        value={text}
+        inputMode="numeric"
+        pattern="[0-9:]*"
+        enterKeyHint="done"
+        autoComplete="off"
+        value={shown}
+        placeholder="0:00"
         aria-invalid={bad}
-        onChange={(e) => setText(e.target.value)}
+        onFocus={(e) => e.currentTarget.select()}
+        onChange={(e) => setDigits(e.target.value.replace(/\D/g, '').replace(/^0+/, '').slice(0, 4))}
         onBlur={() => {
-          const v = parseTime(text);
-          if (v == null || (!allowZero && v < 5) || v > 99 * 60 + 59) {
+          const v = digitsToSeconds(digits);
+          if ((!allowZero && v < 5) || (!digits && !allowZero)) {
             setBad(true);
-            setText(clockTime(seconds));
+            setDigits(toDigits(seconds));
           } else {
             setBad(false);
             onChange(v);
-            setText(clockTime(v));
+            setDigits(toDigits(v));
           }
         }}
       />

@@ -68,8 +68,10 @@ function typeTime(seconds: number): string[] {
 
 /** The remote presses that set up and start one step. */
 export function buttonsFor(step: ClockStep): string[] {
-  if (step.type === 'countdown') return ['Exit', 'Down', ...typeTime(step.seconds), 'OK'];
-  return ['Exit', 'Select', ...digits(step.rounds), 'Select', ...typeTime(step.work), 'Select', ...typeTime(step.rest), 'OK'];
+  // Exit twice first, so whatever the clock was left on (a paused timer, a half-set program,
+  // a menu) is cleared back to the time of day before the new timer is typed in.
+  if (step.type === 'countdown') return ['Exit', 'Exit', 'Down', ...typeTime(step.seconds), 'OK'];
+  return ['Exit', 'Exit', 'Select', ...digits(step.rounds), 'Select', ...typeTime(step.work), 'Select', ...typeTime(step.rest), 'OK'];
 }
 
 /** How long a step runs once started, not counting the lead-in. */
@@ -87,6 +89,16 @@ export function clockTime(seconds: number): string {
 export function describeStep(step: ClockStep): string {
   if (step.type === 'countdown') return `${clockTime(step.seconds)} countdown`;
   return `${step.rounds} × ${clockTime(step.work)} on${step.rest ? ` / ${clockTime(step.rest)} off` : ''}`;
+}
+
+/** Timer-style typing on the number pad: the last two digits are seconds, the rest minutes.
+ *  "1200" → 12:00, "45" → 0:45, "130" → 1:30. Seconds over 59 roll into minutes. */
+export function digitsToSeconds(digits: string): number {
+  const d = digits.replace(/\D/g, '').slice(-4);
+  if (!d) return 0;
+  const s = Number(d.slice(-2));
+  const m = Number(d.slice(0, -2) || 0);
+  return Math.min(99 * 60 + 59, m * 60 + s);
 }
 
 /** Read "12", "12:00", "0:45" or "45s" as seconds. Minutes when there's no colon or s. */

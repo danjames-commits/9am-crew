@@ -631,7 +631,10 @@ Rules:
 - For "for time" with a time cap, use a countdown of the cap.
 - Use what the Strong level does when levels differ in timing; levels almost always share the clock.
 - Give each timer a short label the coach will recognise ("AMRAP", "EMOM 10", "Row intervals").
-- Times in seconds. Never invent rest that isn't written.`;
+- Times in seconds. Never invent rest that isn't written.
+- Keep it simple: usually one timer per part, at most two or three. Coaches start them by hand, so a timer is for a block of work, not each exercise, stretch or short rest inside it.
+- A warm-up or cool-down gets at most one countdown for the whole thing, and only if the text gives its length. A part with mixed pieces and no set time (stretches, holds, drills) gets no timer.
+- Rest between rounds belongs inside an intervals timer, never as its own countdown.`;
 
 /** Claude reads the workout and suggests the clock timers for each part. */
 export async function draftClockPlan(opts: { parts: Part[]; brief: string }): Promise<ClockPlan> {
