@@ -1,3 +1,4 @@
+import { cleanPlan as cleanClockPlan } from '@/lib/clock-plan';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireMember, signedIn } from '@/lib/supabase/server';
@@ -22,7 +23,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
 
   const [{ me }, { data: w }, { names, animals }, { bests, movements }, { data: attendance }, coachNote, { benchmarks }] = await Promise.all([
     requireMember(),
-    supabase.from('workouts').select('id, class_date, title, focus, why, parts, status, equipment_add, equipment_remove').eq('class_date', date).maybeSingle(),
+    supabase.from('workouts').select('id, class_date, title, focus, why, parts, status, equipment_add, equipment_remove, clock_plan').eq('class_date', date).maybeSingle(),
     getPeople(supabase),
     getBests(supabase, userId),
     supabase.from('attendance').select('user_id').eq('class_date', date).order('created_at'),
@@ -72,6 +73,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
             ? {
                 notes: coachNote?.body ?? null,
                 going: (attendance ?? []).map((a) => names[a.user_id] ?? 'Member'),
+                clock: { date: w.class_date, plan: cleanClockPlan(w.clock_plan, (w.parts as Part[]).length), canDraft: aiEnabled() },
               }
             : undefined
         }

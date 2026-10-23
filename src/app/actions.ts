@@ -9,7 +9,8 @@ import { BRIEF_MAX, DEFAULT_COACH_BRIEF, getCoachBrief } from '@/lib/coach-brief
 import { redirect } from 'next/navigation';
 import { requireMember, supabaseServer } from '@/lib/supabase/server';
 import type { LevelPct, Part, PartKind, WorkoutDraft } from '@/lib/types';
-import { aiEnabled, draftWorkout, drawAnimal, planCycle, scaleAdvice, takeAllowance } from '@/lib/ai';
+import { aiEnabled, draftClockPlan, draftWorkout, drawAnimal, planCycle, scaleAdvice, takeAllowance } from '@/lib/ai';
+import { cleanPlan as cleanClockPlan, type ClockPlan } from '@/lib/clock-plan';
 import { cleanSvg, svgVersion } from '@/lib/svg-clean';
 import { cleanPlan, type PlanDraft } from '@/lib/programming/plan';
 import { isWeekday, todayLocal } from '@/lib/dates';
@@ -137,6 +138,39 @@ export async function recordClockFinding(id: string, result: 'yes' | 'no', note:
   if (error) return { error: 'Couldn’t save that.' };
   revalidatePath('/admin/clock');
   return { ok: true };
+}
+
+/** Admins: save the gym clock timers for a workout's parts. */
+export async function saveClockPlan(date: string, plan: ClockPlan) {
+  if (!isDate(date)) return { error: 'Bad date' };
+  const { supabase } = await requireMember({ admin: true });
+  const { data: w } = await supabase.from('workouts').select('parts').eq('class_date', date).maybeSingle();
+  if (!w) return { error: 'No workout that day.' };
+  const clean = cleanClockPlan(plan, (w.parts as Part[]).length);
+  const { error } = await supabase.from('workouts').update({ clock_plan: clean }).eq('class_date', date);
+  if (error) return { error: 'Couldn’t save the timers. Try again.' };
+  revalidatePath(`/workouts/${date}`);
+  return { ok: true, plan: clean };
+}
+
+/** Admins: have Claude read the workout and fill in the clock timers (replaces what's there). */
+export async function draftClockTimers(date: string) {
+  if (!isDate(date)) return { error: 'Bad date' };
+  const { supabase, me } = await requireMember({ admin: true });
+  if (!aiEnabled()) return { error: 'Claude isn’t set up yet.' };
+  const { data: w } = await supabase.from('workouts').select('parts').eq('class_date', date).maybeSingle();
+  if (!w) return { error: 'No workout that day.' };
+  if (!(await takeAllowance(supabase, me.id, 'clock'))) return { error: 'Daily limit reached. Set the timers by hand for now.' };
+  try {
+    const brief = await getCoachBrief(supabase);
+    const plan = await draftClockPlan({ parts: w.parts as Part[], brief: brief.body });
+    const { error } = await supabase.from('workouts').update({ clock_plan: plan }).eq('class_date', date);
+    if (error) return { error: 'Couldn’t save the timers. Try again.' };
+    revalidatePath(`/workouts/${date}`);
+    return { ok: true, plan };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Claude didn’t answer. Try again.' };
+  }
 }
 
 /** Admins: change a workout's equipment list (additions and removals on top of what the app reads). */

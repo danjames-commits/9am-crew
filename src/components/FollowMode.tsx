@@ -7,10 +7,14 @@ import { setOutKit, type KitChanges } from '@/lib/workout-kit';
 import { KitList } from './EquipmentStrip';
 import { YourNumbers } from './YourNumbers';
 import { QuickLog, type QuickLogContext } from './QuickLog';
+import { ClockNowBar, ClockOverview, ClockPartPanel, RemoteSheet, useClockRunner, type ClockInfo, type ClockRunner } from './coach/GymClock';
+import type { ClockPlan } from '@/lib/clock-plan';
 
 export interface CoachInfo {
   notes: string | null;
   going: string[];
+  /** The gym clock's timers for this workout. */
+  clock?: ClockInfo;
 }
 
 const SIZES = [17, 20, 24, 28];
@@ -133,6 +137,13 @@ export function FollowMode({
 
   const part = typeof screen === 'number' ? parts[screen] : null;
 
+  // Gym clock (coaches): the timers for each part, and what's running now.
+  const clockInfo = isCoach ? coach?.clock : undefined;
+  const [plan, setPlan] = useState<ClockPlan>(clockInfo?.plan ?? []);
+  const runner = useClockRunner(plan);
+  const [remoteOpen, setRemoteOpen] = useState(false);
+  const clock = clockInfo ? { info: clockInfo, plan, setPlan, runner, onRemote: () => setRemoteOpen(true) } : null;
+
   return (
     <div className={`follow ${isCoach ? 'coach' : ''}`} role="dialog" aria-modal="true" aria-label={isCoach ? 'Coach mode' : 'Workout mode'} style={{ ['--follow-size' as string]: `${SIZES[size]}px` }}>
       <header className="follow-top">
@@ -143,6 +154,11 @@ export function FollowMode({
           <div className="follow-mode">{isCoach ? 'Coach mode' : 'Workout mode'}</div>
           <div className="follow-title">{title}</div>
         </div>
+        {clock && (
+          <button type="button" className="follow-chip" onClick={() => setRemoteOpen(true)} aria-label="Clock remote">
+            Remote
+          </button>
+        )}
         <div className="follow-settings-wrap" ref={settingsRef}>
           <button type="button" className="follow-chip" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((o) => !o)}>
             {[!isCoach ? LEVELS[level - 1].name : null, hasOutdoor ? (outside ? 'Outside' : 'Inside') : null].filter(Boolean).join(' · ') || 'Aa'}
@@ -206,6 +222,9 @@ export function FollowMode({
         ))}
       </nav>
 
+      {clock && <ClockNowBar runner={runner} parts={parts} onGo={(p) => setAt(screens.indexOf(p))} />}
+      {remoteOpen && <RemoteSheet onClose={() => setRemoteOpen(false)} />}
+
       <div className="follow-body" ref={scroller} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         {screen === 'intro' && (
           <section className="stack loose">
@@ -232,6 +251,7 @@ export function FollowMode({
                 ))}
               </ol>
             </div>
+            {clock && <ClockOverview info={clock.info} parts={parts} plan={plan} setPlan={setPlan} onRemote={clock.onRemote} />}
             <NoteList sections={general} heading="Coach notes for the whole class" />
           </section>
         )}
@@ -246,6 +266,7 @@ export function FollowMode({
             maxes={maxes}
             ctx={ctx}
             notes={perPart[screen as number]}
+            clock={clock}
           />
         )}
 
@@ -293,7 +314,9 @@ function PartScreen({
   maxes,
   ctx,
   notes,
+  clock,
 }: {
+  clock?: { info: ClockInfo; plan: ClockPlan; setPlan: (p: ClockPlan) => void; runner: ClockRunner; onRemote: () => void } | null;
   part: Part;
   index: number;
   isCoach: boolean;
@@ -319,6 +342,7 @@ function PartScreen({
 
       {isCoach ? (
         <>
+          {clock && <ClockPartPanel partIndex={index} part={part} info={clock.info} plan={clock.plan} setPlan={clock.setPlan} runner={clock.runner} onRemote={clock.onRemote} />}
           <NoteList sections={notes} heading="Coach notes" />
           <div className="follow-levels">
             {levelGroups(part, outside, LEVELS.map((l) => l.name)).map((g) => (

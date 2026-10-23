@@ -8,6 +8,7 @@ import { addDays, longDate, shortDate, todayLocal, weekday } from './dates';
 import type { WeatherCall } from './weather-rules';
 import { cleanSvg } from './svg-clean';
 import { getCoachBrief, withBrief } from './coach-brief';
+import { cleanPlan as cleanClockPlan, LEAD_IN, type ClockPlan } from './clock-plan';
 
 // Sonnet writes workouts; Haiku handles the quick, short jobs.
 const BUILD_MODEL = 'claude-sonnet-5-5';
@@ -23,7 +24,7 @@ function client() {
 // ---------------------------------------------------------------
 // Daily limits, so nobody runs up the bill by accident.
 // ---------------------------------------------------------------
-export const DAILY_LIMIT = { build: 60, scale: 8, recap: 5, plan: 20, avatar: 12, prart: 10 } as const;
+export const DAILY_LIMIT = { build: 60, scale: 8, recap: 5, plan: 20, avatar: 12, prart: 10, clock: 30 } as const;
 
 export async function takeAllowance(supabase: SupabaseClient, userId: string, kind: keyof typeof DAILY_LIMIT) {
   const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
@@ -615,4 +616,74 @@ The lift they just hit a new best on: ${opts.movement}.`;
     });
   }
   return null;
+}
+
+// ---------------------------------------------------------------
+// Gym clock: which timers each part runs
+// ---------------------------------------------------------------
+const CLOCK_RULES = `You set up the gym's wall clock for one day's class. The clock has two modes:
+- countdown: one time, e.g. a 12:00 AMRAP, a 15:00 cap, an 8:00 warm-up.
+- intervals: rounds of work then rest, e.g. EMOM 10 = 10 rounds of 1:00 work / 0:00 rest; Tabata = 8 × 0:20 / 0:10; "5 rounds: 3:00 on, 1:00 off".
+A part can have a few timers that run back to back (e.g. a 6:00 countdown, then 4 × 2:00 / 1:00). The app starts each one when the last ends, and the clock adds ${LEAD_IN} seconds of "get ready" before each.
+
+Rules:
+- Only give a part timers when the workout text clearly sets the time: AMRAPs, EMOMs, caps, intervals, timed stations, timed warm-ups or cool-downs. A part written as sets and reps, or "for time" with no cap, gets no timers (leave it out).
+- For "for time" with a time cap, use a countdown of the cap.
+- Use what the Strong level does when levels differ in timing; levels almost always share the clock.
+- Give each timer a short label the coach will recognise ("AMRAP", "EMOM 10", "Row intervals").
+- Times in seconds. Never invent rest that isn't written.`;
+
+/** Claude reads the workout and suggests the clock timers for each part. */
+export async function draftClockPlan(opts: { parts: Part[]; brief: string }): Promise<ClockPlan> {
+  const lines = opts.parts.map((p, i) => {
+    const v = p.versions[2] || p.versions[3] || p.versions[1] || p.versions[0];
+    return `Part ${i} — ${p.label}: ${p.title}${p.minutes ? ` (${p.minutes} min)` : ''}\n${v}`;
+  });
+  const schema = {
+    type: 'object',
+    properties: {
+      parts: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            part: { type: 'integer', description: 'Part number from the list' },
+            label: { type: 'string', description: "The part's label" },
+            steps: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  type: { type: 'string', enum: ['countdown', 'intervals'] },
+                  label: { type: 'string' },
+                  seconds: { type: 'integer', description: 'countdown length; 0 for intervals' },
+                  rounds: { type: 'integer', description: 'intervals only; 0 for countdown' },
+                  work: { type: 'integer', description: 'seconds of work per round; 0 for countdown' },
+                  rest: { type: 'integer', description: 'seconds of rest per round; 0 if none' },
+                },
+                required: ['type', 'label', 'seconds', 'rounds', 'work', 'rest'],
+                additionalProperties: false,
+              },
+            },
+          },
+          required: ['part', 'label', 'steps'],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ['parts'],
+    additionalProperties: false,
+  };
+  const res = await client().messages.create({
+    model: BUILD_MODEL,
+    max_tokens: 2000,
+    system: withBrief(CLOCK_RULES, opts.brief),
+    messages: [{ role: 'user', content: `Today's workout:\n\n${lines.join('\n\n')}\n\nSet up the clock.` }],
+    output_config: { format: { type: 'json_schema', schema } },
+  });
+  if (res.stop_reason === 'refusal') throw new Error('Claude couldn’t set up the clock for this one.');
+  const block = res.content.find((b) => b.type === 'text');
+  if (!block || block.type !== 'text') throw new Error('Claude didn’t send timers back. Try again.');
+  const raw = JSON.parse(block.text) as { parts: unknown };
+  return cleanClockPlan(raw.parts, opts.parts.length).filter((p) => p.steps.length);
 }

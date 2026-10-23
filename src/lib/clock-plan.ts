@@ -1,0 +1,103 @@
+// The gym clock plan for a workout: which timers each part runs, and the remote
+// button presses that set each one up on the No Limits clock.
+//
+// Best guesses until the clock tests on the setup page confirm them; each one is a
+// single constant below so it's a one-line change.
+
+/** Seconds of "get ready" countdown the clock adds before every timer. Set to 0 if F12 turns it off. */
+export const LEAD_IN = 10;
+/** Type minutes as two digits ("0","3") rather than one ("3"). */
+export const TWO_DIGIT_MINUTES = true;
+
+export type ClockStep =
+  | { type: 'countdown'; label: string; seconds: number }
+  | { type: 'intervals'; label: string; rounds: number; work: number; rest: number };
+
+export interface ClockPart {
+  /** Which part of the workout (index), and its label then, in case parts are reordered. */
+  part: number;
+  label: string;
+  steps: ClockStep[];
+}
+
+export type ClockPlan = ClockPart[];
+
+const MAX_SECONDS = 99 * 60 + 59;
+const clamp = (n: unknown, lo: number, hi: number, d: number) => {
+  const v = Math.round(Number(n));
+  return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d;
+};
+
+/** Tidy a plan from the database or from Claude: drop anything the clock can't run. */
+export function cleanPlan(raw: unknown, partCount: number): ClockPlan {
+  if (!Array.isArray(raw)) return [];
+  const out: ClockPlan = [];
+  for (const p of raw) {
+    if (!p || typeof p !== 'object') continue;
+    const part = Number((p as ClockPart).part);
+    if (!Number.isInteger(part) || part < 0 || part >= partCount || out.some((o) => o.part === part)) continue;
+    const steps: ClockStep[] = [];
+    for (const s of Array.isArray((p as ClockPart).steps) ? (p as ClockPart).steps : []) {
+      const label = String((s as ClockStep)?.label ?? '').trim().slice(0, 60);
+      if ((s as ClockStep)?.type === 'countdown') {
+        const seconds = Number((s as { seconds: number }).seconds) >= 1 ? clamp((s as { seconds: number }).seconds, 5, MAX_SECONDS, 0) : 0;
+        if (seconds) steps.push({ type: 'countdown', label, seconds });
+      } else if ((s as ClockStep)?.type === 'intervals') {
+        const i = s as { rounds: number; work: number; rest: number };
+        const rounds = Number(i.rounds) >= 1 ? clamp(i.rounds, 1, 99, 0) : 0;
+        const work = Number(i.work) >= 1 ? clamp(i.work, 5, MAX_SECONDS, 0) : 0;
+        const rest = clamp(i.rest, 0, MAX_SECONDS, 0);
+        if (rounds && work) steps.push({ type: 'intervals', label, rounds, work, rest });
+      }
+      if (steps.length >= 8) break;
+    }
+    out.push({ part, label: String((p as ClockPart).label ?? '').slice(0, 60), steps });
+  }
+  return out.sort((a, b) => a.part - b.part);
+}
+
+const digits = (n: number) => String(n).split('');
+const two = (n: number) => digits(n).length === 1 ? ['0', String(n)] : digits(n);
+
+/** Left, minutes, Right, seconds: the clock's way of typing a time. */
+function typeTime(seconds: number): string[] {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return ['Left', ...(TWO_DIGIT_MINUTES ? two(m) : digits(m)), 'Right', ...two(s)];
+}
+
+/** The remote presses that set up and start one step. */
+export function buttonsFor(step: ClockStep): string[] {
+  if (step.type === 'countdown') return ['Exit', 'Down', ...typeTime(step.seconds), 'OK'];
+  return ['Exit', 'Select', ...digits(step.rounds), 'Select', ...typeTime(step.work), 'Select', ...typeTime(step.rest), 'OK'];
+}
+
+/** How long a step runs once started, not counting the lead-in. */
+export function stepSeconds(step: ClockStep): number {
+  if (step.type === 'countdown') return step.seconds;
+  return step.rounds * step.work + Math.max(0, step.rounds - 1) * step.rest;
+}
+
+export function clockTime(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  return `${m}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+/** "12:00 countdown" or "8 × 0:40 on / 0:20 off". */
+export function describeStep(step: ClockStep): string {
+  if (step.type === 'countdown') return `${clockTime(step.seconds)} countdown`;
+  return `${step.rounds} × ${clockTime(step.work)} on${step.rest ? ` / ${clockTime(step.rest)} off` : ''}`;
+}
+
+/** Read "12", "12:00", "0:45" or "45s" as seconds. Minutes when there's no colon or s. */
+export function parseTime(text: string): number | null {
+  const t = text.trim().toLowerCase();
+  if (!t) return null;
+  let m = /^(\d{1,2}):(\d{1,2})$/.exec(t);
+  if (m) return Number(m[1]) * 60 + Number(m[2]);
+  m = /^(\d{1,3})\s*s(ec)?$/.exec(t);
+  if (m) return Number(m[1]);
+  m = /^(\d{1,2}(\.\d+)?)\s*(m|min)?$/.exec(t);
+  if (m) return Math.round(Number(m[1]) * 60);
+  return null;
+}

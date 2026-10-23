@@ -46,10 +46,16 @@ export function listDevices() {
   return call<SwitchbotDevices>('/devices');
 }
 
-/** The learned clock remote: the infrared remote with "clock" in its name. */
+let clockCache: { at: number; remote: SwitchbotDevices['infraredRemoteList'][number] } | null = null;
+
+/** The learned clock remote: the infrared remote with "clock" in its name.
+ *  Remembered for 10 minutes so each press during class is one call, not two. */
 export async function findClock() {
+  if (clockCache && Date.now() - clockCache.at < 10 * 60 * 1000) return clockCache.remote;
   const { infraredRemoteList } = await listDevices();
-  return infraredRemoteList.find((r) => /clock/i.test(r.deviceName)) ?? null;
+  const remote = infraredRemoteList.find((r) => /clock/i.test(r.deviceName)) ?? null;
+  clockCache = remote ? { at: Date.now(), remote } : null;
+  return remote;
 }
 
 /** Press one learned button on a custom ("Others") remote, by the name it was given in the SwitchBot app. */
@@ -60,23 +66,7 @@ export function pressButton(remoteId: string, button: string) {
   });
 }
 
-/** The clock remote's buttons, laid out like the real one, named as they should be learned. */
-export const CLOCK_BUTTONS: string[][] = [
-  ['Power', 'Set'],
-  ['1', '2', '3'],
-  ['4', '5', '6'],
-  ['7', '8', '9'],
-  ['Star', '0', 'Hash'],
-  ['Up'],
-  ['Left', 'OK', 'Right'],
-  ['Down'],
-  ['Exit', 'Pause', 'Restart', 'Select'],
-  ['F1', 'F2', 'F3'],
-  ['F4', 'F5', 'F6'],
-  ['F7', 'F8', 'F9'],
-  ['F10', 'F11', 'F12'],
-];
-export const ALL_CLOCK_BUTTONS = CLOCK_BUTTONS.flat();
+export { CLOCK_BUTTONS, ALL_CLOCK_BUTTONS } from './clock-buttons';
 
 // The SwitchBot app won't accept button names containing the numbers 1–100,
 // so digits and F-keys are taught spelled out ("One", "F Six").

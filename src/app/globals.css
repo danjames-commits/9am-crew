@@ -579,3 +579,26 @@ body:has(.chat-input:focus) .chat-form { bottom: 0; margin-bottom: 0; }
 /* The screen's bottom padding reserves room for the tab bar. A sticky composer can't sit below
    its normal-flow spot, so with the tab bar hidden that padding left a blank band above the keyboard. */
 body:has(.chat-input:focus) .screen { padding-bottom: 0; }
+
+/* Gym clock in coach mode */
+.clock-card { display: grid; gap: 8px; }
+.clock-card .link-btn { align-self: center; }
+.clock-steps, .clock-overview { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.clock-steps li { display: flex; align-items: center; gap: 10px; }
+.clock-overview li { font-size: calc(var(--follow-size) * 0.85); }
+.clock-now { background: var(--ink); color: var(--ground); border-radius: 14px; padding: 14px; display: grid; gap: 6px; text-align: center; }
+.clock-now.paused .clock-now-time { opacity: 0.55; }
+.clock-now-title { font-weight: 800; font-size: 15px; letter-spacing: 0.02em; }
+.clock-now-time { font-family: var(--display); font-weight: 800; font-size: 56px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--gold); }
+.clock-now-sub { font-size: 14px; opacity: 0.8; }
+.clock-now .btn { background: var(--ground); color: var(--ink); }
+.clock-now .btn.ghost { background: transparent; color: var(--ground); border-color: rgba(255, 255, 255, 0.4); }
+.clock-edit { display: grid; gap: 6px; padding: 10px; border-radius: 12px; background: var(--ground); }
+.clock-edit input { width: 100%; min-height: 40px; padding: 0 10px; border: 1px solid rgba(0, 0, 0, 0.15); border-radius: 10px; font: inherit; font-size: 16px; background: #fff; }
+.clock-edit input[aria-invalid='true'] { border-color: #b42318; }
+.clock-edit label { display: grid; gap: 2px; font-size: 13px; font-weight: 700; color: var(--ink-3); }
+.clock-edit-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.clock-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 0 16px 8px; padding: 8px 14px; border: 0; border-radius: 12px; background: var(--ink); color: var(--ground); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; text-align: left; }
+.clock-bar b { font-family: var(--display); color: var(--gold); font-size: 18px; font-variant-numeric: tabular-nums; }
+.clock-sheet { position: fixed; inset: 0; z-index: 200; background: rgba(0, 0, 0, 0.55); display: flex; align-items: flex-end; justify-content: center; }
+.clock-sheet-inner { width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; background: var(--ground); border-radius: 20px 20px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); display: grid; gap: 12px; }
