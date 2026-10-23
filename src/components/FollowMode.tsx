@@ -154,11 +154,6 @@ export function FollowMode({
           <div className="follow-mode">{isCoach ? 'Coach mode' : 'Workout mode'}</div>
           <div className="follow-title">{title}</div>
         </div>
-        {clock && (
-          <button type="button" className="follow-chip" onClick={() => setRemoteOpen(true)} aria-label="Clock remote">
-            Remote
-          </button>
-        )}
         <div className="follow-settings-wrap" ref={settingsRef}>
           <button type="button" className="follow-chip" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((o) => !o)}>
             {[!isCoach ? LEVELS[level - 1].name : null, hasOutdoor ? (outside ? 'Outside' : 'Inside') : null].filter(Boolean).join(' · ') || 'Aa'}

@@ -168,19 +168,7 @@ export function ClockPartPanel({
 
   return (
     <div className="follow-card clock-card">
-      <div className="row between">
-        <div className="follow-eyebrow" style={{ margin: 0 }}>
-          Gym clock
-        </div>
-        <div className="row" style={{ gap: 6 }}>
-          <button type="button" className="link-btn" onClick={() => setEditing(true)}>
-            {steps.length ? 'Change' : 'Add timer'}
-          </button>
-          <button type="button" className="link-btn" onClick={onRemote}>
-            Remote
-          </button>
-        </div>
-      </div>
+      <ClockHeading onRemote={onRemote} />
 
       {here && runner.view ? (
         <div className={`clock-now ${here.phase}`}>
@@ -226,14 +214,24 @@ export function ClockPartPanel({
                 <b>{s.label || (s.type === 'countdown' ? 'Countdown' : 'Intervals')}</b>
                 <span className="follow-muted"> · {describeStep(s)}</span>
               </span>
-              <button type="button" className="btn small primary" disabled={Boolean(runner.run && runner.run.phase === 'sending')} onClick={() => runner.start(partIndex, i)}>
+              {i === 0 && (
+                <button type="button" className="btn small primary" onClick={() => setEditing(true)}>
+                  Change
+                </button>
+              )}
+              <button type="button" className="btn small go" disabled={Boolean(runner.run && runner.run.phase === 'sending')} onClick={() => runner.start(partIndex, i)}>
                 Start
               </button>
             </li>
           ))}
         </ol>
       ) : (
-        <p className="follow-muted small">No timers for this part. Tap Add timer, or use the Remote.</p>
+        <div className="row between" style={{ gap: 10 }}>
+          <p className="follow-muted small">No timers for this part.</p>
+          <button type="button" className="btn small primary" onClick={() => setEditing(true)}>
+            Add timer
+          </button>
+        </div>
       )}
 
       {elsewhere && <p className="small follow-muted">A timer from another part is running. Starting one here replaces it.</p>}
@@ -378,14 +376,7 @@ export function ClockOverview({ info, parts, plan, setPlan, onRemote }: { info: 
   const withTimers = plan.filter((p) => p.steps.length && parts[p.part]);
   return (
     <div className="follow-card clock-card">
-      <div className="row between">
-        <div className="follow-eyebrow" style={{ margin: 0 }}>
-          Gym clock
-        </div>
-        <button type="button" className="link-btn" onClick={onRemote}>
-          Remote
-        </button>
-      </div>
+      <ClockHeading onRemote={onRemote} />
       {withTimers.length ? (
         <ul className="clock-overview">
           {withTimers.map((p) => (
@@ -428,15 +419,34 @@ export function ClockOverview({ info, parts, plan, setPlan, onRemote }: { info: 
   );
 }
 
+/** "Gym clock" with the manual remote right beside it. */
+function ClockHeading({ onRemote }: { onRemote: () => void }) {
+  return (
+    <div className="row" style={{ gap: 10, alignItems: 'center' }}>
+      <div className="follow-eyebrow" style={{ margin: 0 }}>
+        Gym clock
+      </div>
+      <button type="button" className="clock-remote-chip" onClick={onRemote}>
+        Manual remote
+      </button>
+    </div>
+  );
+}
+
 /** The whole remote, for going manual. */
 export function RemoteSheet({ onClose }: { onClose: () => void }) {
   return (
     <div className="clock-sheet" role="dialog" aria-modal="true" aria-label="Clock remote">
       <div className="clock-sheet-inner">
         <div className="row between">
-          <h2 className="follow-h" style={{ fontSize: 22 }}>
-            Clock remote
-          </h2>
+          <div>
+            <h2 className="follow-h" style={{ fontSize: 22 }}>
+              Manual remote
+            </h2>
+            <p className="small follow-muted" style={{ margin: 0 }}>
+              Same buttons as the real clock remote.
+            </p>
+          </div>
           <button type="button" className="follow-x" onClick={onClose} aria-label="Close remote">
             ✕
           </button>
