@@ -57,9 +57,12 @@ export function cleanPlan(raw: unknown, partCount: number): ClockPlan {
 const digits = (n: number) => String(n).split('');
 
 // How the clock takes numbers (gym tests, Oct 23): each field keeps the last timer's value
-// and new digits slide in from the right, two at a time. So every field gets exactly two
-// digits ("0","3" for 3), which wipes out whatever was there. Left picks the minutes,
-// Right the seconds.
+// and new digits slide in from the right, so leftovers mix with what's typed. Dan's way to
+// start clean: Exit, Down, 0, Right, 0, 0, Exit, Down leaves a countdown at 0:00 with the
+// minutes flashing. From there: the minutes, Right, the seconds, OK. Zeros are already there,
+// so a zero field is skipped.
+export const CLEAR_COUNTDOWN = ['Exit', 'Down', '0', 'Right', '0', '0', 'Exit', 'Down'];
+
 const two = (n: number) => String(n).padStart(2, '0').slice(-2).split('');
 
 function typeTime(seconds: number): string[] {
@@ -68,9 +71,12 @@ function typeTime(seconds: number): string[] {
 
 /** The remote presses that set up and start one step. */
 export function buttonsFor(step: ClockStep): string[] {
-  // Exit twice first, so whatever the clock was left on (a paused timer, a half-set program,
-  // a menu) is cleared back to the time of day before the new timer is typed in.
-  if (step.type === 'countdown') return ['Exit', 'Exit', 'Down', ...typeTime(step.seconds), 'OK'];
+  if (step.type === 'countdown') {
+    const m = Math.floor(step.seconds / 60);
+    const s = step.seconds % 60;
+    return [...CLEAR_COUNTDOWN, ...(m ? digits(m) : []), ...(s ? ['Right', ...digits(s)] : []), 'OK'];
+  }
+  // Intervals aren't tested yet: two digits per field to push out leftovers.
   return ['Exit', 'Exit', 'Select', ...two(step.rounds), 'Select', ...typeTime(step.work), 'Select', ...typeTime(step.rest), 'OK'];
 }
 
