@@ -357,7 +357,7 @@ function PartScreen({
           <PartBody body={shown.body} className="part-body follow-text" />
           {countsRounds(part) && <RoundCounter id={`${ctx.classDate}:${index}`} />}
           {part.lift && <YourNumbers part={shown.useOutdoor ? { ...part, versions: shown.versions } : part} level={level} maxes={maxes} />}
-          <QuickLog part={part} level={level} outside={outside} ctx={ctx} big />
+          <QuickLog part={part} level={level} outside={outside} ctx={ctx} big counterId={countsRounds(part) ? `${ctx.classDate}:${index}` : undefined} />
         </>
       )}
     </section>

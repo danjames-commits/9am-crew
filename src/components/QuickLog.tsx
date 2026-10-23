@@ -6,6 +6,7 @@ import type { Benchmark } from '@/lib/benchmarks';
 import { weightFor } from '@/lib/programming/engine';
 import { shortDate } from '@/lib/dates';
 import { BenchmarkLogForm } from './BenchmarkLogForm';
+import { parseRound } from '@/lib/round-parse';
 
 type LiftResult = { error?: string; ok?: boolean; isPr?: boolean; at?: number } | null;
 
@@ -24,7 +25,7 @@ export function partBenchmark(p: Part, outside: boolean, benchmarks: Benchmark[]
 }
 
 /** "Log your lift" / "Log your result" right under a part of the workout. */
-export function QuickLog({ part, level, outside, ctx, big = false }: { part: Part; level: number; outside: boolean; ctx: QuickLogContext; big?: boolean }) {
+export function QuickLog({ part, level, outside, ctx, big = false, counterId }: { part: Part; level: number; outside: boolean; ctx: QuickLogContext; big?: boolean; /** The round counter on this screen, to start Rounds from its count. */ counterId?: string }) {
   const bench = partBenchmark(part, outside, ctx.benchmarks);
   // Before the day: say it's a benchmark and that logging opens on the day.
   if (ctx.classDate > ctx.today) {
@@ -35,7 +36,7 @@ export function QuickLog({ part, level, outside, ctx, big = false }: { part: Par
     ) : null;
   }
   if (bench) {
-    return <QuickBenchmark bench={bench} level={level} ctx={ctx} big={big} />;
+    return <QuickBenchmark bench={bench} level={level} ctx={ctx} big={big} roundText={(outside && part.outdoor ? part.outdoor.versions : part.versions)[level - 1] ?? ''} counterId={counterId} />;
   }
   const lift = part.lift;
   // Gentle does an easier movement that isn't tracked.
@@ -45,8 +46,16 @@ export function QuickLog({ part, level, outside, ctx, big = false }: { part: Par
   return <QuickLift part={part} level={level} movement={movement} ctx={ctx} big={big} />;
 }
 
-function QuickBenchmark({ bench, level, ctx, big }: { bench: Benchmark; level: number; ctx: QuickLogContext; big: boolean }) {
+function QuickBenchmark({ bench, level, ctx, big, roundText, counterId }: { bench: Benchmark; level: number; ctx: QuickLogContext; big: boolean; roundText: string; counterId?: string }) {
   const [open, setOpen] = useState(false);
+  const counted = () => {
+    if (!counterId) return 0;
+    try {
+      return Number(localStorage.getItem(`rounds:${counterId}`)) || 0;
+    } catch {
+      return 0;
+    }
+  };
   if (!open) {
     return (
       <button type="button" className={`btn ${big ? 'big' : ''} log-btn`} onClick={() => setOpen(true)}>
@@ -62,7 +71,7 @@ function QuickBenchmark({ bench, level, ctx, big }: { bench: Benchmark; level: n
           Close
         </button>
       </div>
-      <BenchmarkLogForm benchmarks={[bench]} myLevel={level} today={ctx.today} fixed={{ benchmarkId: bench.id, date: ctx.classDate, level }} />
+      <BenchmarkLogForm benchmarks={[bench]} myLevel={level} today={ctx.today} fixed={{ benchmarkId: bench.id, date: ctx.classDate, level, round: parseRound(roundText), rounds: counted() }} />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useState, useTransition } from 'react';
 import { logBenchmark } from '@/app/actions';
 import type { Benchmark } from '@/lib/benchmarks';
 import { LEVELS } from '@/lib/types';
+import { partialRound, type RoundItem } from '@/lib/round-parse';
 
 const UNIT: Partial<Record<Benchmark['score'], string>> = { distance: 'Metres', weight: 'Pounds', calories: 'Calories' };
 
@@ -21,7 +22,7 @@ export function BenchmarkLogForm({
   myLevel: number;
   today: string;
   /** Logging from a workout: this benchmark, this day, this level. */
-  fixed?: { benchmarkId: number; date: string; level: number };
+  fixed?: { benchmarkId: number; date: string; level: number; round?: RoundItem[]; rounds?: number };
   onDone?: () => void;
 }) {
   const [benchmarkId, setBenchmarkId] = useState<number>(fixed?.benchmarkId ?? benchmarks[0]?.id);
@@ -30,7 +31,10 @@ export function BenchmarkLogForm({
   const [unknownDate, setUnknownDate] = useState(false);
   const [min, setMin] = useState('');
   const [sec, setSec] = useState('');
-  const [rounds, setRounds] = useState('');
+  const [rounds, setRounds] = useState(fixed?.rounds ? String(fixed.rounds) : '');
+  // How far into the unfinished round, movement by movement (when the workout lists them).
+  const roundItems = fixed?.round ?? [];
+  const [partial, setPartial] = useState<number[]>(() => roundItems.map(() => 0));
   const [reps, setReps] = useState('');
   const [amount, setAmount] = useState('');
   const [capped, setCapped] = useState(false);
@@ -48,6 +52,14 @@ export function BenchmarkLogForm({
     setAmount('');
     setCapped(false);
     setNote('');
+    setPartial(roundItems.map(() => 0));
+  }
+
+  function setPart(i: number, v: number) {
+    const next = partial.map((x, j) => (j === i ? Math.max(0, Math.min(roundItems[i].count, v)) : x));
+    setPartial(next);
+    const { reps: r } = partialRound(roundItems, next);
+    setReps(r ? String(r) : '');
   }
 
   function save(e: React.FormEvent) {
@@ -63,7 +75,7 @@ export function BenchmarkLogForm({
         reps,
         amount,
         capped,
-        note,
+        note: [note.trim(), b!.score === 'rounds_reps' ? partialRound(roundItems, partial).note : ''].filter(Boolean).join(' · ').slice(0, 300),
         workout_date: fixed?.date ?? null,
       });
       if ('error' in r && r.error) return setMsg({ error: r.error });
@@ -139,6 +151,31 @@ export function BenchmarkLogForm({
             + Extra reps
             <input type="number" inputMode="numeric" min={0} value={reps} onChange={(e) => setReps(e.target.value)} />
           </label>
+        </div>
+      )}
+      {b.score === 'rounds_reps' && roundItems.length > 0 && (
+        <div className="stack tight">
+          <div className="field-label">In the round you didn’t finish</div>
+          <div className="partial-list">
+            {roundItems.map((it, i) => (
+              <div key={i} className="partial-row">
+                <span className="grow">
+                  {it.name} <span className="muted small">/ {it.count}{it.unit === 'reps' ? '' : ` ${it.unit}`}</span>
+                </span>
+                <button type="button" className="partial-step" aria-label={`Fewer ${it.name}`} onClick={() => setPart(i, partial[i] - (it.unit === 'm' ? 5 : 1))} disabled={!partial[i]}>
+                  −
+                </button>
+                <span className="partial-n">{partial[i]}</span>
+                <button type="button" className="partial-step" aria-label={`More ${it.name}`} onClick={() => setPart(i, partial[i] + (it.unit === 'm' ? 5 : 1))} disabled={partial[i] >= it.count}>
+                  +
+                </button>
+                <button type="button" className={`partial-all ${partial[i] === it.count ? 'on' : ''}`} onClick={() => setPart(i, partial[i] === it.count ? 0 : it.count)}>
+                  All
+                </button>
+              </div>
+            ))}
+          </div>
+          <p className="muted small" style={{ margin: 0 }}>Extra reps fills in from this. Carries, runs and calories go in your note.</p>
         </div>
       )}
       {b.score === 'reps' && (
