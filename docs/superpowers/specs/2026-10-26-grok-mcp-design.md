@@ -137,7 +137,7 @@ The preview output is the part Jake actually reads. Each day should show what ch
 
 ## Data
 
-One new migration, `migration-010-mcp.sql`:
+One new migration, `migration-024-mcp.sql`:
 - A table for change sets with these columns:
   - id
   - created_by
