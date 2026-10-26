@@ -8,7 +8,7 @@ import { CLOCK_TESTS } from '@/lib/clock-tests';
 import { BRIEF_MAX, DEFAULT_COACH_BRIEF, getCoachBrief } from '@/lib/coach-brief';
 import { redirect } from 'next/navigation';
 import { requireMember, supabaseServer } from '@/lib/supabase/server';
-import type { LevelPct, Part, PartKind, WorkoutDraft } from '@/lib/types';
+import type { Part, WorkoutDraft } from '@/lib/types';
 import { aiEnabled, draftClockPlan, draftWorkout, drawAnimal, planCycle, scaleAdvice, takeAllowance } from '@/lib/ai';
 import { cleanPlan as cleanClockPlan, type ClockPlan } from '@/lib/clock-plan';
 import { partsFingerprint } from '@/lib/clock-week';
@@ -18,6 +18,7 @@ import { isWeekday, todayLocal } from '@/lib/dates';
 import { getBests, getSchedule } from '@/lib/data';
 import { classWeather } from '@/lib/weather';
 import { isAnimal } from '@/lib/animals';
+import { cleanParts, cleanWorkoutFields } from '@/lib/workout-clean';
 import { cleanCoachNotes } from '@/lib/coach-notes';
 import { isNewBest, readScore, type Benchmark, type BenchResult, type ScoreType } from '@/lib/benchmarks';
 
@@ -415,45 +416,6 @@ export async function saveProgram(input: { cycle_start: string; cycle_weeks: num
 
 // ---------------- Admin: workouts ----------------
 
-const KINDS: PartKind[] = ['warmup', 'strength', 'skill', 'conditioning', 'cooldown'];
-
-function cleanParts(parts: unknown): Part[] | null {
-  if (!Array.isArray(parts) || parts.length > 12) return null;
-  const out: Part[] = [];
-  for (const p of parts as Part[]) {
-    if (!p || !KINDS.includes(p.kind) || !Array.isArray(p.versions) || p.versions.length !== 4) return null;
-    const versions = p.versions.map((v) => String(v ?? '').slice(0, 1500)) as Part['versions'];
-    const part: Part = {
-      kind: p.kind,
-      label: String(p.label ?? '').slice(0, 60),
-      title: String(p.title ?? '').slice(0, 80),
-      versions,
-    };
-    if (typeof p.minutes === 'number' && p.minutes > 0 && p.minutes < 120) part.minutes = Math.round(p.minutes);
-    if (p.outdoor && Array.isArray(p.outdoor.versions) && p.outdoor.versions.length === 4) {
-      part.outdoor = {
-        title: String(p.outdoor.title ?? '').slice(0, 80),
-        versions: p.outdoor.versions.map((v) => String(v ?? '').slice(0, 1500)) as Part['versions'],
-      };
-      if (typeof p.outdoor.benchmark === 'string' && p.outdoor.benchmark.trim()) part.outdoor.benchmark = p.outdoor.benchmark.trim().slice(0, 60);
-    }
-    if (typeof p.benchmark === 'string' && p.benchmark.trim()) part.benchmark = p.benchmark.trim().slice(0, 60);
-    if (p.lift && typeof p.lift.movement === 'string' && Array.isArray(p.lift.pct) && p.lift.pct.length === 4) {
-      part.lift = {
-        movement: p.lift.movement.slice(0, 60),
-        pct: p.lift.pct.map((x) => (typeof x === 'number' && x > 0 && x <= 110 ? Math.round(x) : null)) as LevelPct,
-      };
-      if (Number.isInteger(p.lift.sets) && p.lift.sets! > 0 && p.lift.sets! <= 12) part.lift.sets = p.lift.sets;
-      if (Number.isInteger(p.lift.reps) && p.lift.reps! > 0 && p.lift.reps! <= 20) part.lift.reps = p.lift.reps;
-      if (typeof p.lift.gentleMovement === 'string') part.lift.gentleMovement = p.lift.gentleMovement.slice(0, 60);
-      if (p.lift.mode === 'percent' || p.lift.mode === 'build') part.lift.mode = p.lift.mode;
-      if (typeof p.lift.note === 'string' && p.lift.note.trim()) part.lift.note = p.lift.note.trim().slice(0, 200);
-    }
-    out.push(part);
-  }
-  return out;
-}
-
 export async function saveWorkout(input: {
   class_date: string;
   title: string;
@@ -465,7 +427,7 @@ export async function saveWorkout(input: {
 }) {
   const { supabase } = await requireMember({ admin: true });
   if (!isDate(input.class_date)) return { error: 'Bad date' };
-  const title = input.title.trim().slice(0, 80);
+  const { title, focus, why } = cleanWorkoutFields(input);
   if (!title) return { error: 'Give the workout a name.' };
   const parts = cleanParts(input.parts);
   if (!parts) return { error: 'Something is wrong with the workout parts.' };
@@ -473,8 +435,8 @@ export async function saveWorkout(input: {
     {
       class_date: input.class_date,
       title,
-      focus: input.focus.slice(0, 80),
-      why: input.why.slice(0, 600),
+      focus,
+      why,
       parts,
       status: input.status === 'published' ? 'published' : 'draft',
       updated_at: new Date().toISOString(),
