@@ -13,7 +13,7 @@ export interface ChatMessage {
   id: number;
   user_id: string | null;
   body: string;
-  kind: 'text' | 'pr' | 'recap';
+  kind: 'text' | 'pr' | 'recap' | 'milestone';
   lift_log_id: number | null;
   created_at: string;
 }
@@ -160,6 +160,22 @@ export function ChatRoom({
     }
     const name = names[m.user_id ?? ''] ?? 'Member';
     const mine = m.user_id === meId;
+    if (m.kind === 'milestone') {
+      const n = parseInt(m.body, 10) || 0;
+      return (
+        <div key={m.id} className="milestone-card" title={timeAgo(m.created_at)}>
+          {m.user_id && <PersonAvatar id={m.user_id} name={name} animal={animals[m.user_id]} />}
+          <div className="grow">
+            <div className="milestone-n">
+              🎉 {n} classes
+            </div>
+            <div className="small">
+              {mine ? 'You’ve' : `${firstName(name)} has`} shown up for {n} classes. {n >= 100 ? 'Legend.' : n >= 50 ? 'That’s a habit.' : 'Keep it rolling!'}
+            </div>
+          </div>
+        </div>
+      );
+    }
     const showName = !mine && (i === 0 || messages[i - 1].user_id !== m.user_id || messages[i - 1].kind === 'pr');
     if (m.kind === 'pr' && m.lift_log_id) {
       const these = cheers.filter((c) => c.lift_log_id === m.lift_log_id);

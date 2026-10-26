@@ -36,6 +36,18 @@ export default async function TodayPage() {
     workouts: later.map((d) => (ws ?? []).find((w) => w.class_date === d) ?? null) as DigestDay['workout'][],
     att: (att ?? []) as { class_date: string; user_id: string }[],
   }));
+  // A class milestone you hit in the last couple of days, to celebrate here too.
+  const milestoneP = signedIn().then(({ supabase: db, userId }) =>
+    db
+      .from('messages')
+      .select('body')
+      .eq('user_id', userId)
+      .eq('kind', 'milestone')
+      .gte('created_at', new Date(Date.now() - 2 * 86400000).toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  );
   const [{ me }, { data: workout }, { data: attendance }, { names, animals }, admin] = await Promise.all([
     requireMember(),
     supabase.from('workouts').select('id, title, focus, status, parts').eq('class_date', classDate).maybeSingle(),
@@ -76,6 +88,10 @@ export default async function TodayPage() {
           <Avatar id={me.id} name={me.display_name} animal={me.animal} />
         </Link>
       </header>
+
+      <Suspense fallback={null}>
+        <MilestoneBanner p={milestoneP} />
+      </Suspense>
 
       {me.is_admin && (
         <Link href="/admin" className="card row" style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -144,5 +160,22 @@ async function ComingUp({ days: daysP, meId, isAdmin }: { days: Promise<{ dates:
       isAdmin={isAdmin}
       rsvp={{ mine: att.filter((a) => a.user_id === meId).map((a) => a.class_date), others }}
     />
+  );
+}
+
+async function MilestoneBanner({ p }: { p: PromiseLike<{ data: { body: string } | null }> }) {
+  const { data } = await p;
+  const n = data ? parseInt(data.body, 10) : 0;
+  if (!n) return null;
+  return (
+    <div className="milestone-card">
+      <span style={{ fontSize: 34 }} aria-hidden="true">
+        🎉
+      </span>
+      <div className="grow">
+        <div className="milestone-n">{n} classes!</div>
+        <div className="small">You&apos;ve shown up {n} times. The crew&apos;s been told in the chat.</div>
+      </div>
+    </div>
   );
 }

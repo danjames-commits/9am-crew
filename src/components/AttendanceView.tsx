@@ -1,6 +1,6 @@
 import { firstName } from '@/lib/ui';
 import { addDays, mondayOf } from '@/lib/dates';
-import { bestGoalStreak, goalBoard, goalStreak, recentWeeks, weekCounts, type AttendanceRow } from '@/lib/attendance';
+import { bestGoalStreak, goalBoard, goalStreak, nextMilestone, recentWeeks, weekCounts, type AttendanceRow } from '@/lib/attendance';
 import { LiftsTabs } from './LiftsTabs';
 import { Avatar } from './Avatar';
 import { PersonAvatar } from './PersonAvatar';
@@ -91,6 +91,17 @@ export function AttendanceView({
               : 'Goal hit this week. Nice work.'
             : `${goal - thisWeek} more this week to hit your goal${streak > 0 ? ` and make it ${streak + 1} ${weeksWord(streak + 1)} in a row` : ''}.`}
         </p>
+        {(() => {
+          const { prev, next } = nextMilestone(mine.length);
+          return (
+            <div className="milestone-next small" aria-label={`${next - mine.length} classes to ${next}`}>
+              <span>🎉 {next - mine.length} to {next}</span>
+              <span className="milestone-bar" aria-hidden="true">
+                <span style={{ width: `${((mine.length - prev) / (next - prev)) * 100}%` }} />
+              </span>
+            </div>
+          );
+        })()}
         <GoalPicker goal={goalSet ? goal : null} />
       </section>
 

@@ -116,3 +116,14 @@ export function recentWeeks(mine: Set<string>, held: Set<string>, doneThrough: s
     };
   });
 }
+
+/** Class milestones: 10, 25, 50, 75, 100, then every 50 to 500, then every 100 (matches the database). */
+export function nextMilestone(n: number) {
+  if (n < 10) return { prev: 0, next: 10 };
+  if (n < 25) return { prev: 10, next: 25 };
+  if (n < 50) return { prev: 25, next: 50 };
+  if (n < 75) return { prev: 50, next: 75 };
+  if (n < 100) return { prev: 75, next: 100 };
+  if (n < 500) return { prev: Math.floor(n / 50) * 50, next: Math.floor(n / 50) * 50 + 50 };
+  return { prev: Math.floor(n / 100) * 100, next: Math.floor(n / 100) * 100 + 100 };
+}

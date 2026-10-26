@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bestGoalStreak, goalBoard, goalStreak, monthWeeks, recentWeeks } from './attendance';
+import { bestGoalStreak, goalBoard, goalStreak, monthWeeks, nextMilestone, recentWeeks } from './attendance';
 
 // 2026-10-19 is a Monday.
 describe('goalStreak', () => {
@@ -59,5 +59,11 @@ describe('recentWeeks', () => {
   it('marks in, missed, no class and ahead', () => {
     const w = recentWeeks(new Set(['2026-10-19', '2026-10-22']), new Set(['2026-10-19', '2026-10-20']), '2026-10-21', 1);
     expect(w[0].days.map((d) => d.mark)).toEqual(['in', 'missed', 'none', 'ahead', 'ahead']);
+  });
+});
+
+describe('class milestones', () => {
+  it('steps 10, 25, 50, 75, 100, then by 50, then by 100', () => {
+    expect([0, 9, 10, 24, 25, 60, 99, 100, 149, 480, 500, 640].map((n) => nextMilestone(n).next)).toEqual([10, 10, 25, 25, 50, 75, 100, 150, 150, 500, 600, 700]);
   });
 });
