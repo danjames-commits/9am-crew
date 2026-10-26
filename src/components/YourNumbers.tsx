@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Part } from '@/lib/types';
 import { aimRange, setPlan, weightFor } from '@/lib/programming/engine';
+import { PlateTable } from './PlateTable';
 
 /** Turns "5×5 @ 76%" into this person's own warm-ups and work sets. */
 export function YourNumbers({ part, level, maxes, bar = 45 }: { part: Part; level: number; maxes: Record<string, number>; bar?: number }) {
@@ -59,19 +60,7 @@ export function YourNumbers({ part, level, maxes, bar = 45 }: { part: Part; leve
   return (
     <div className="small" style={box}>
       <b>Your numbers</b> <span style={{ opacity: 0.8 }}>({pct}% of your {movement.toLowerCase()})</span>
-      <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 6 }}>
-        <tbody>
-          {lines.map((l, k) => (
-            <tr key={k} style={{ borderTop: k ? '1px solid rgba(23,66,61,0.15)' : 'none', fontWeight: l.label === 'Work' ? 800 : 500 }}>
-              <td style={{ padding: '6px 0' }}>{l.label}</td>
-              <td style={{ padding: '6px 0', textAlign: 'right' }}>
-                {l.sets > 1 ? `${l.sets} × ` : ''}
-                {l.reps} @ {l.weight == null ? (i === 0 ? 'light' : 'empty bar') : `${l.weight} lb`}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <PlateTable lines={lines} lightLabel={i === 0 ? 'light' : 'empty bar'} />
     </div>
   );
 }
