@@ -1,8 +1,8 @@
 // Checks a batch of proposed programming changes and turns them into clean ops.
 // Pure: the caller loads the context, and the SQL functions apply the ops.
-import { cleanCoachNotes } from '../coach-notes';
+import { cleanCoachNotes, COACH_NOTES_MAX } from '../coach-notes';
 import { isWeekday } from '../dates';
-import { gentleChoices } from '../programming/engine';
+import { gentleChoices, STYLES } from '../programming/engine';
 import { cleanPlan, WEEKDAYS, type PlanDraft } from '../programming/plan';
 import type { Part } from '../types';
 import { checkParts, cleanWorkoutFields } from '../workout-clean';
@@ -134,7 +134,8 @@ function checkDayChange(c: Record<string, unknown>, n: number, ctx: ChangeContex
 
   if (c.kind === 'put_coach_notes') {
     if (!existing) problem(`There is no workout on ${date}, so it can't have coach notes. Add the workout first (put_day with coach_notes).`);
-    const body = cleanCoachNotes(c.body) || null;
+    if (typeof c.body !== 'string') problem(`${date}: coach notes "body" must be text. Send "" to clear the notes.`);
+    const body = cleanNotes(c.body, date, item);
     item.before = { notes: oldNotes } satisfies NotesPreview;
     item.after = { notes: body } satisfies NotesPreview;
     if (body !== oldNotes) item.ops.push({ op: 'put_notes', date, body });
@@ -161,7 +162,8 @@ function checkDayChange(c: Record<string, unknown>, n: number, ctx: ChangeContex
   const before: DayPreview | null = existingRow ? { ...existingRow } : null;
   const after: DayPreview = { ...row };
   if (c.coach_notes !== undefined) {
-    op.notes = cleanCoachNotes(c.coach_notes) || null;
+    if (typeof c.coach_notes !== 'string') problem(`${date}: coach_notes must be text. Send "" to clear the notes, or leave it out to keep them.`);
+    op.notes = cleanNotes(c.coach_notes, date, item);
     after.notes = op.notes;
     if (before) before.notes = oldNotes;
   }
@@ -169,6 +171,13 @@ function checkDayChange(c: Record<string, unknown>, n: number, ctx: ChangeContex
   item.after = after;
   if (!before || !same(before, after)) item.ops.push(op);
   return item;
+}
+
+/** Cleaned notes, or null when blank. Warns when the text is cut. */
+function cleanNotes(raw: unknown, date: string, item: ItemResult): string | null {
+  if (typeof raw === 'string' && raw.replace(/\r\n?/g, '\n').trim().length > COACH_NOTES_MAX)
+    item.warnings.push(`${date}: coach notes cut to ${COACH_NOTES_MAX} characters`);
+  return cleanCoachNotes(raw) || null;
 }
 
 function checkCycleChange(c: Record<string, unknown>, n: number, ctx: ChangeContext): ItemResult {
@@ -222,7 +231,13 @@ function checkPlan(plan: Record<string, unknown>, ctx: ChangeContext, item: Item
   const days = asObj(plan.days);
   const gentle = gentleChoices(ctx.lifts);
   for (const { n, long } of WEEKDAYS) {
+    if (!days[n] || typeof days[n] !== 'object') {
+      item.problems.push(`${where}: ${long} is missing from the plan's days.`);
+      continue;
+    }
     const d = asObj(days[n]);
+    if (!STYLES.includes(d.style as never)) item.problems.push(`${where}, ${long}: unknown style "${String(d.style)}" (use ${STYLES.join(', ')}).`);
+    if (d.skill != null && d.skill !== 'pullup') item.problems.push(`${where}, ${long}: unknown skill "${String(d.skill)}" (use "pullup" or null).`);
     if (d.lift != null && !ctx.lifts.includes(String(d.lift))) item.problems.push(`${where}, ${long}: "${String(d.lift)}" is not on the lift list (${ctx.lifts.join(', ')}).`);
     if (d.gentle != null && !gentle.includes(String(d.gentle))) item.problems.push(`${where}, ${long}: Gentle movement "${String(d.gentle)}" is not one of: ${gentle.join(', ')}.`);
   }
@@ -230,6 +245,18 @@ function checkPlan(plan: Record<string, unknown>, ctx: ChangeContext, item: Item
   if (error || !clean) {
     item.problems.push(`${where}: ${error ?? 'the plan is not valid.'}`);
     return null;
+  }
+  const long = (v: unknown, max: number) => String(v ?? '').trim().length > max;
+  if (long(plan.name, 80)) item.warnings.push(`${where}: name cut to 80 characters`);
+  if (long(plan.why, 1500)) item.warnings.push(`${where}: "why" cut to 1500 characters`);
+  if (long(plan.brief, 1500)) item.warnings.push(`${where}: brief cut to 1500 characters`);
+  const goals = Array.isArray(plan.goals) ? plan.goals.map((g) => String(g ?? '').trim()).filter(Boolean) : [];
+  if (goals.some((g) => g.length > 60)) item.warnings.push(`${where}: goals cut to 60 characters each`);
+  if (goals.length > 8) item.warnings.push(`${where}: only the first 8 goals kept`);
+  for (const { n, long: day } of WEEKDAYS) {
+    const d = asObj(days[n]);
+    if (long(d.focus, 60)) item.warnings.push(`${where}, ${day}: focus cut to 60 characters`);
+    if (long(d.notes, 200)) item.warnings.push(`${where}, ${day}: notes cut to 200 characters`);
   }
   return { start_date: clean.start_date, week_count: clean.weeks.length, name: clean.name, why: clean.why, brief: clean.brief, goals: clean.goals, weeks: clean.weeks, days: clean.days };
 }

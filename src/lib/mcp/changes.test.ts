@@ -118,6 +118,23 @@ describe('validateChanges: days', () => {
     expect(text.items[0].ops[0]).toMatchObject({ notes: 'Go easy' });
   });
 
+  it('long notes are cut with a warning', () => {
+    const r = validateChanges([{ kind: 'put_coach_notes', date: '2026-11-05', body: 'x'.repeat(2100) }], ctx());
+    expect(r.ok).toBe(true);
+    expect(r.items[0].warnings.join(' ')).toMatch(/2000/);
+    expect(r.items[0].ops[0]).toMatchObject({ body: 'x'.repeat(2000) });
+  });
+
+  it('notes that are not text are refused, not cleared', () => {
+    const notes = { '2026-11-05': { body: 'Old', updated_at: 'n1' } };
+    const missing = validateChanges([{ kind: 'put_coach_notes', date: '2026-11-05' }], ctx({ notes }));
+    expect(missing.ok).toBe(false);
+    const nullNotes = validateChanges([put('2026-11-05', { coach_notes: null })], ctx({ notes }));
+    expect(nullNotes.ok).toBe(false);
+    const numberNotes = validateChanges([put('2026-11-05', { coach_notes: 5 })], ctx({ notes }));
+    expect(numberNotes.ok).toBe(false);
+  });
+
   it('seen stamps', () => {
     const r = validateChanges([put('2026-11-05', { title: 'New title' }), put('2026-11-06')], ctx({ notes: { '2026-11-05': { body: 'Old', updated_at: 'n1' } } }));
     expect(r.ok).toBe(true);
@@ -144,6 +161,23 @@ describe('validateChanges: cycles', () => {
     const plan = { ...p, days: { ...p.days, '2': { ...p.days['2'], lift: 'Zercher squat' } } };
     const r = validateChanges([{ kind: 'create_cycle', plan }], ctx());
     expect(r.items[0].problems.join(' ')).toMatch(/Zercher squat/);
+  });
+
+  it('cycle text cut with a warning', () => {
+    const p = builtInPlan('2027-01-04');
+    const r = validateChanges([{ kind: 'create_cycle', plan: { ...p, name: 'n'.repeat(90), days: { ...p.days, '3': { ...p.days['3'], notes: 'z'.repeat(250) } } } }], ctx());
+    expect(r.ok).toBe(true);
+    expect(r.items[0].warnings.join(' ')).toMatch(/name cut to 80/);
+    expect(r.items[0].warnings.join(' ')).toMatch(/Wednesday: notes cut to 200/);
+  });
+
+  it('cycle missing day or bad style', () => {
+    const p = builtInPlan('2027-01-04');
+    const { '4': _gone, ...fewer } = p.days;
+    const missing = validateChanges([{ kind: 'create_cycle', plan: { ...p, days: fewer } }], ctx());
+    expect(missing.items[0].problems.join(' ')).toMatch(/Thursday is missing/);
+    const yoga = validateChanges([{ kind: 'create_cycle', plan: { ...p, days: { ...p.days, '2': { ...p.days['2'], style: 'yoga' as never } } } }], ctx());
+    expect(yoga.items[0].problems.join(' ')).toMatch(/Tuesday: unknown style "yoga"/);
   });
 
   it('cycle create makes a clean row', () => {
