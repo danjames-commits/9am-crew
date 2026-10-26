@@ -451,8 +451,19 @@ r = await db.query(`select name from public.cycles where id = ${started.id}`);
 assert.equal(r.rows[0].name, 'Renamed');
 ok('mcp: push edits a running cycle but will not move it');
 
-// Undo a renamed running cycle: refused, it has started.
+// Undo a rename of a running cycle: fine, it stays where it is.
+await as(A, `select public.mcp_undo(${set})`);
+r = await db.query(`select name, start_date::text from public.cycles where id = ${started.id}`);
+assert.deepEqual([r.rows[0].name, r.rows[0].start_date], ['Running', '2020-01-06']);
+// Undo that would bring back a deleted cycle that has since started: refused.
+const gone = (await as(A, `insert into public.cycles (start_date, week_count, name, weeks, days) values ('2099-11-02', 3, 'Gone', '${wk(3)}', '{}') returning id, to_jsonb(updated_at) #>> '{}' as s`)).rows[0];
+set = await mkSet([{ op: 'delete_cycle', id: Number(gone.id) }], { days: {}, notes: {}, cycles: { [gone.id]: gone.s } });
+await as(A, `select public.mcp_push(${set})`);
+await db.query(`update public.mcp_change_sets set before = jsonb_set(before, '{cycles,${gone.id},start_date}', '"2020-03-02"') where id = ${set}`); // time passes
 await failsWith(A, `select public.mcp_undo(${set})`, /cycle \d+ has already started/);
+r = await db.query(`select count(*)::int as n from public.cycles where id = ${gone.id}`);
+assert.equal(r.rows[0].n, 0);
+// Undo that would delete a created cycle that has since started: refused.
 set = await mkSet([{ op: 'create_cycle', row: cycleRow('2099-09-07', 'Autumn') }]);
 r = await as(A, `select public.mcp_push(${set}) as res`);
 const autumn = r.rows[0].res.cycles[0];
@@ -460,6 +471,6 @@ await db.query(`update public.cycles set start_date = '2020-02-03' where id = ${
 await failsWith(A, `select public.mcp_undo(${set})`, /cycle \d+ has already started/);
 r = await db.query(`select count(*)::int as n from public.cycles where id = ${autumn}`);
 assert.equal(r.rows[0].n, 1);
-ok('mcp: undo never touches a cycle that has started');
+ok('mcp: undo edits a running cycle back, but never deletes, moves or brings back a started one');
 
 console.log(`\nDatabase checks passed: ${passed}`);

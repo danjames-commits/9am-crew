@@ -203,6 +203,7 @@ declare
   k text;
   v jsonb;
   cols text;
+  started date;
   stale text[] := '{}';
 begin
   if not public.is_admin() then raise exception 'admins only'; end if;
@@ -243,10 +244,16 @@ begin
     raise exception 'changed since that push: %', array_to_string(stale, ', ');
   end if;
 
-  -- Never remove, move or bring back a cycle that has started.
+  -- Never remove, move or bring back a cycle that has started. Editing one in place is fine.
   for k, v in select * from jsonb_each(cs.before->'cycles') loop
-    if (select c.start_date from public.cycles c where c.id = k::bigint) <= today
-       or (jsonb_typeof(v) <> 'null' and (v->>'start_date')::date <= today) then
+    select c.start_date into started from public.cycles c where c.id = k::bigint;
+    if jsonb_typeof(v) = 'null' then
+      if found and started <= today then raise exception 'cycle % has already started', k; end if;
+    elsif found then
+      if (started <= today or (v->>'start_date')::date <= today) and (v->>'start_date')::date <> started then
+        raise exception 'cycle % has already started', k;
+      end if;
+    elsif (v->>'start_date')::date <= today then
       raise exception 'cycle % has already started', k;
     end if;
   end loop;
