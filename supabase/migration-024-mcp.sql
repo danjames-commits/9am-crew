@@ -132,6 +132,7 @@ begin
           delete from public.workout_coach_notes n where n.class_date = d;
         end if;
       when 'create_cycle' then
+        if (op->'row'->>'start_date')::date <= today then raise exception 'new cycle must start after today'; end if;
         begin
           insert into public.cycles (start_date, week_count, name, why, brief, goals, weeks, days)
             select r.start_date, r.week_count, r.name, r.why, r.brief, r.goals, r.weeks, r.days
@@ -142,6 +143,12 @@ begin
         end;
         b_cycles := b_cycles || jsonb_build_object(cid::text, null); -- created: undo deletes it
       when 'update_cycle' then
+        select c.start_date into started from public.cycles c where c.id = (op->>'id')::bigint;
+        if not found then raise exception 'cycle % no longer exists', op->>'id'; end if;
+        -- A running cycle can be edited, but not moved.
+        if started <= today and (op->'row'->>'start_date')::date is distinct from started then
+          raise exception 'cycle % has already started', op->>'id';
+        end if;
         begin
           update public.cycles c set start_date = r.start_date, week_count = r.week_count, name = r.name, why = r.why,
               brief = r.brief, goals = r.goals, weeks = r.weeks, days = r.days, updated_at = now()
@@ -150,7 +157,6 @@ begin
         exception when exclusion_violation then
           raise exception 'those dates overlap another cycle';
         end;
-        if not found then raise exception 'cycle % no longer exists', op->>'id'; end if;
       when 'delete_cycle' then
         select c.start_date into started from public.cycles c where c.id = (op->>'id')::bigint;
         if not found then raise exception 'cycle % no longer exists', op->>'id'; end if;
@@ -164,7 +170,8 @@ begin
   for k in select jsonb_object_keys(b_days) loop
     a_days := a_days || jsonb_build_object(k, (select w.updated_at from public.workouts w where w.class_date = k::date));
   end loop;
-  for k in select jsonb_object_keys(b_notes) loop
+  -- Notes on every touched day too, so undo notices a note added after the push.
+  for k in select jsonb_object_keys(b_notes || b_days) loop
     a_notes := a_notes || jsonb_build_object(k, (select n.updated_at from public.workout_coach_notes n where n.class_date = k::date));
   end loop;
   for k in select jsonb_object_keys(b_cycles) loop
@@ -235,6 +242,14 @@ begin
   if cardinality(stale) > 0 then
     raise exception 'changed since that push: %', array_to_string(stale, ', ');
   end if;
+
+  -- Never remove, move or bring back a cycle that has started.
+  for k, v in select * from jsonb_each(cs.before->'cycles') loop
+    if (select c.start_date from public.cycles c where c.id = k::bigint) <= today
+       or (jsonb_typeof(v) <> 'null' and (v->>'start_date')::date <= today) then
+      raise exception 'cycle % has already started', k;
+    end if;
+  end loop;
 
   -- Days before notes: a note needs its workout.
   for k, v in select * from jsonb_each(cs.before->'days') loop
