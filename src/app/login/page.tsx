@@ -2,6 +2,7 @@
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase/client';
+import { safeNext } from '@/lib/safe-next';
 
 type Mode = 'signin' | 'signup' | 'forgot';
 
@@ -16,8 +17,7 @@ export default function LoginPage() {
 function LoginForm() {
   const router = useRouter();
   const nextParam = useSearchParams().get('next');
-  // Same rule as auth/callback: only paths on this site.
-  const next = nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//') ? nextParam : '/';
+  const next = safeNext(nextParam, typeof window === 'undefined' ? '' : window.location.origin);
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
