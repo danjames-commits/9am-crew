@@ -73,9 +73,26 @@ export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: s
   };
   const loads = planLoads(lines.map((l) => l.weight), bar);
   const anyPlates = lines.some((l) => l.weight != null && l.weight >= bar);
+  // Plates only ever go on, so the heaviest set's stack is everything to grab (two of each, one per side).
+  const fullest = loads.reduce<number[]>((acc, l) => (l && l.side.length > acc.length ? l.side : acc), []);
+  const grab = [...new Set(fullest)].sort((a, b) => b - a).map((p) => ({ p, n: fullest.filter((x) => x === p).length * 2 }));
 
   return (
     <>
+      {grab.length > 0 && (
+        <div className="plate-grab" aria-label={`Plates to grab: ${grab.map((g) => `${g.n} × ${g.p}`).join(', ')}, and a ${bar} lb bar`}>
+          <span className="plate-grab-label">Grab</span>
+          {grab.map((g) => {
+            const look = LOOK[String(g.p)];
+            return (
+              <span key={g.p} className="plate-chip" style={{ background: look.fill, color: look.ink }}>
+                {g.n} × {g.p}
+              </span>
+            );
+          })}
+          <span className="plate-grab-bar">+ {bar} lb bar</span>
+        </div>
+      )}
       <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 6 }}>
         <tbody>
           {lines.map((l, k) => {
