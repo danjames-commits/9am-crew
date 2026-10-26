@@ -1,32 +1,49 @@
-// Which plates go on each side of the bar for a weight, with the gym's plates.
+// Which plates go on each side of the bar, with the gym's plates and the way people
+// actually load a bar: big plates (45, 35, 25, 15, 10) first, and at most one small
+// change plate (5, 2.5 or 1) on the outside, never on its own (Dan, Oct 26).
 
 export const GYM_PLATES = [45, 35, 25, 15, 10, 5, 2.5, 1] as const;
+export const BIG_PLATES = [45, 35, 25, 15, 10] as const;
+export const SMALL_PLATES = [5, 2.5, 1] as const;
 export const BARS = [45, 35, 15] as const;
 
 export interface Loading {
-  /** Plates for one side, heaviest (on first, closest to the middle) to lightest. */
+  /** Plates for one side, from the middle out. */
   side: number[];
-  /** What the bar actually weighs with these plates (can be a touch under when it doesn't split evenly). */
+  /** What the bar weighs with these plates. Rounded to the nearest weight that loads cleanly. */
   total: number;
 }
 
-/** Fewest plates per side, biggest first. null if it's less than the bar. */
-export function loadBar(weight: number, bar: number = 45): Loading | null {
-  if (weight < bar) return null;
-  let left = Math.round(((weight - bar) / 2) * 2) / 2; // per side, to the nearest 0.5
-  const side: number[] = [];
-  for (const p of GYM_PLATES) {
-    while (left >= p - 1e-9) {
-      side.push(p);
-      left = Math.round((left - p) * 2) / 2;
+const sum = (ps: number[]) => ps.reduce((a, b) => a + b, 0);
+
+/** Every sensible way to load one side: up to 6 big plates, heaviest in, then maybe one small one. */
+const SIDES: number[][] = (() => {
+  const out: number[][] = [[]];
+  const grow = (side: number[], from: number) => {
+    for (let i = from; i < BIG_PLATES.length; i++) {
+      const next = [...side, BIG_PLATES[i]];
+      out.push(next);
+      for (const s of SMALL_PLATES) out.push([...next, s]);
+      if (next.length < 6) grow(next, i);
     }
+  };
+  grow([], 0);
+  return out;
+})();
+
+/** The loadable weight nearest to `weight` (a tie goes to the lighter one). */
+function nearest(weight: number, bar: number) {
+  let best = bar;
+  for (const side of SIDES) {
+    const t = bar + 2 * sum(side);
+    if (Math.abs(t - weight) < Math.abs(best - weight) - 1e-9 || (Math.abs(Math.abs(t - weight) - Math.abs(best - weight)) < 1e-9 && t < best)) best = t;
   }
-  return { side, total: bar + 2 * side.reduce((a, b) => a + b, 0) };
+  return best;
 }
 
 /**
  * Going from one set to the next: plates come off from the outside in, so keep what
- * both sets share at the bottom of the stack, take the rest off, put the new ones on.
+ * both sets share next to the collar, take the rest off, put the new ones on.
  */
 export function plateChange(from: number[], to: number[]) {
   let keep = 0;
@@ -34,44 +51,41 @@ export function plateChange(from: number[], to: number[]) {
   return { off: from.slice(keep), on: to.slice(keep) };
 }
 
-/** Fewest plates (from those no heavier than `max`) making up `amount` per side, or null. */
-function fill(amount: number, max: number): number[] | null {
-  let left = Math.round(amount * 2) / 2;
-  const out: number[] = [];
-  for (const p of GYM_PLATES) {
-    if (p > max) continue;
-    while (left >= p - 1e-9) {
-      out.push(p);
-      left = Math.round((left - p) * 2) / 2;
+/** Of the ways to make this weight, the one that's least work from what's on now (then fewest plates). */
+function bestSide(total: number, bar: number, now: number[]) {
+  let best: number[] = [];
+  let cost = Infinity;
+  for (const side of SIDES) {
+    if (Math.abs(bar + 2 * sum(side) - total) > 1e-9) continue;
+    const { off, on } = plateChange(now, side);
+    const c = 3 * (off.length + on.length) + 2 * side.length;
+    if (c < cost) {
+      cost = c;
+      best = side;
     }
   }
-  return left === 0 ? out : null;
+  return best;
 }
 
-/**
- * Plates for a run of sets, building up. When the next set can be made by adding a plate
- * or two on top of what's already on (lighter plates outside heavier ones), do that;
- * otherwise load it fresh with the fewest plates.
- */
+/** Plates for one weight, from an empty bar. null if it's lighter than the bar. */
+export function loadBar(weight: number, bar: number = 45): Loading | null {
+  if (weight < bar) return null;
+  const total = nearest(weight, bar);
+  return { side: bestSide(total, bar, []), total };
+}
+
+/** Plates for a run of sets, building up, each loaded the easiest way from the set before. */
 export function planLoads(weights: (number | null)[], bar = 45): (Loading | null)[] {
-  let prev: number[] = [];
+  let now: number[] = [];
   return weights.map((w) => {
     if (w == null) {
-      prev = [];
+      now = [];
       return { side: [], total: bar };
     }
-    const fresh = loadBar(w, bar);
-    if (!fresh) return null;
-    const have = prev.reduce((a, b) => a + b, 0);
-    const extra = (fresh.total - bar) / 2 - have;
-    let pick = fresh.side;
-    if (prev.length && extra > 0) {
-      const add = fill(extra, Math.min(...prev));
-      const freshChanges = plateChange(prev, fresh.side);
-      if (add && add.length <= freshChanges.off.length + freshChanges.on.length && prev.length + add.length <= fresh.side.length + 1) pick = [...prev, ...add];
-    }
-    prev = pick;
-    return { side: pick, total: fresh.total };
+    if (w < bar) return null;
+    const total = nearest(w, bar);
+    now = bestSide(total, bar, now);
+    return { side: now, total };
   });
 }
 

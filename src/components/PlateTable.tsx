@@ -98,7 +98,7 @@ export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: s
                   <td style={{ padding: '6px 0' }}>{l.label}</td>
                   <td style={{ padding: '6px 0', textAlign: 'right' }}>
                     {l.sets > 1 ? `${l.sets} × ` : ''}
-                    {l.reps} @ {l.weight == null ? lightLabel : `${l.weight} lb`}
+                    {l.reps} @ {l.weight == null ? lightLabel : `${load && l.weight >= bar ? load.total : l.weight} lb`}
                     {canOpen && <span className="plate-chev" aria-hidden="true">{isOpen ? '▴' : '▾'}</span>}
                   </td>
                 </tr>
@@ -109,7 +109,6 @@ export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: s
                       <div className="plate-lines">
                         <div>
                           <b>Each side:</b> {load.side.length ? plateList(load.side) : 'nothing, just the bar'}
-                          {load.total !== l.weight && <span> (makes {load.total} lb)</span>}
                         </div>
                         {change && k > 0 && (change.off.length > 0 || change.on.length > 0) && (
                           <div>
