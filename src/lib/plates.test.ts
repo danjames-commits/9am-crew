@@ -32,14 +32,25 @@ describe('loading the bar', () => {
     expect(plateChange([45], [45, 5])).toEqual({ off: [], on: [5] });
     expect(plateChange([15, 5], [35])).toEqual({ off: [15, 5], on: [35] });
   });
-  it('builds up by adding on top when that is simpler', () => {
-    expect(planLoads([null, 60, 85, 115, 145]).map((l) => l && [l.side, l.total])).toEqual([
-      [[], 45],
-      [[10], 65],
-      [[10, 10], 85],
-      [[35], 115],
-      [[35, 15], 145],
+  it('builds up by only adding plates, like Dan loads a deadlift', () => {
+    // Deadlift at 170: warm-ups 70, 100, 135.
+    expect(planLoads([70, 100, 135, 170]).map((l) => l && [l.side, l.total])).toEqual([
+      [[15], 75],
+      [[15, 10], 95],
+      [[15, 10, 25], 145],
+      [[15, 10, 25, 10, 2.5], 170],
     ]);
-    expect(planLoads([135, 155]).map((l) => l?.side)).toEqual([[45], [45, 10]]);
+  });
+  it('never takes plates off, hits the work weight, keeps the small plate last', () => {
+    for (const work of [95, 135, 145, 170, 185, 225, 255, 275, 315, 365, 405]) {
+      const warm = [0.4, 0.6, 0.8].map((f) => Math.round((work * f) / 5) * 5).filter((w) => w > 45 && w < work);
+      const loads = planLoads([null, ...warm, work]);
+      const work_ = loads[loads.length - 1]!;
+      expect(work_.total).toBe(work);
+      for (let i = 2; i < loads.length; i++) expect(loads[i]!.side.slice(0, loads[i - 1]!.side.length)).toEqual(loads[i - 1]!.side);
+      const small = work_.side.filter((p) => p <= 5);
+      expect(small.length).toBeLessThanOrEqual(1);
+      if (small.length) expect(work_.side[work_.side.length - 1]).toBe(small[0]);
+    }
   });
 });
