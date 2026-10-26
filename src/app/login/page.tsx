@@ -1,12 +1,23 @@
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase/client';
 
 type Mode = 'signin' | 'signup' | 'forgot';
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const nextParam = useSearchParams().get('next');
+  // Same rule as auth/callback: only paths on this site.
+  const next = nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//') ? nextParam : '/';
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +43,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       setBusy(false);
       if (error) return setError('That email and password don’t match. Try again, or reset your password.');
-      router.replace('/');
+      router.replace(next);
       router.refresh();
       return;
     }
@@ -50,7 +61,7 @@ export default function LoginPage() {
       setBusy(false);
       if (error) return setError(error.message.includes('registered') ? 'That email already has an account. Sign in instead.' : error.message);
       if (!data.session) return setInfo('Check your email to confirm your address, then come back and sign in.');
-      router.replace('/');
+      router.replace(next);
       router.refresh();
       return;
     }

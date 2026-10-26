@@ -39,7 +39,9 @@ export async function proxy(request: NextRequest) {
   if (!signedIn && path !== '/login' && !path.startsWith('/auth/')) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
-    url.search = '';
+    // The OAuth consent page comes back after sign-in.
+    const next = path === '/oauth/consent' ? request.nextUrl.pathname + request.nextUrl.search : null;
+    url.search = next ? `?next=${encodeURIComponent(next)}` : '';
     return NextResponse.redirect(url);
   }
   if (signedIn && path === '/login') {

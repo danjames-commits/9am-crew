@@ -33,3 +33,11 @@ python3 supabase/cycle1.py
 ```
 
 The script checks the program first (4 versions per part, allowed part and week kinds, lifts in the movements list, 45 weekdays inside the 9 weeks) and writes nothing if a check fails. The movements list is the seeded one; if admins have added movements in the app, add them to `MOVEMENTS` in the script.
+
+## Grok connector
+
+Grok connects to the app at `https://9amcrew.ca/api/mcp` and signs in through Supabase's OAuth server. Only admins can allow it.
+
+- Supabase dashboard → Authentication → OAuth Server: turn it on, turn on dynamic client registration, and set the authorization path to `/oauth/consent`.
+- Grok: add a custom connector with the URL `https://9amcrew.ca/api/mcp`, then sign in when asked and tap Allow.
+- To revoke access: Supabase dashboard → OAuth apps, or remove the connector in Grok.
