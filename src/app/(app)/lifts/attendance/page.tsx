@@ -18,7 +18,8 @@ export default async function AttendancePage() {
     supabase.from('profiles').select('id, weekly_goal, show_in_showups').eq('approved', true),
   ]);
   const ran = new Set((held ?? []).map((w) => w.class_date));
-  const goals = Object.fromEntries((goalRows ?? []).map((g) => [g.id, g.weekly_goal ?? 1]));
+  // Only people who've picked a weekly goal (blank means not set yet).
+  const goals = Object.fromEntries((goalRows ?? []).filter((g) => g.weekly_goal != null).map((g) => [g.id, g.weekly_goal as number]));
   // People who've opted out of the leaderboard (they still see their own numbers).
   const hidden = (goalRows ?? []).filter((g) => g.show_in_showups === false).map((g) => g.id as string);
   return (

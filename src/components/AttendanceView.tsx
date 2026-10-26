@@ -33,6 +33,8 @@ export function AttendanceView({
   rows: AttendanceRow[];
   held: string[];
 }) {
+  const goalSet = goals[userId] != null;
+  // Until you pick one, your own numbers count against 1 a week; you're not on the board yet.
   const goal = goals[userId] ?? 1;
   const mine = rows.filter((r) => r.user_id === userId).map((r) => r.class_date);
   const thisWeek = weekCounts(mine).get(mondayOf(doneThrough)) ?? 0;
@@ -81,13 +83,15 @@ export function AttendanceView({
           </div>
         </div>
         <p className="small" style={{ color: 'var(--gold)' }}>
-          {thisWeek >= goal
+          {!goalSet
+            ? 'Pick a weekly goal below to start your streak and join the board.'
+            : thisWeek >= goal
             ? streak >= 2 && streak >= best
               ? 'Goal hit, and your longest streak yet!'
               : 'Goal hit this week. Nice work.'
             : `${goal - thisWeek} more this week to hit your goal${streak > 0 ? ` and make it ${streak + 1} ${weeksWord(streak + 1)} in a row` : ''}.`}
         </p>
-        <GoalPicker goal={goal} />
+        <GoalPicker goal={goalSet ? goal : null} />
       </section>
 
       <AttendanceCalendar pages={pages} />

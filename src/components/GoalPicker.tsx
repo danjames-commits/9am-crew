@@ -4,9 +4,10 @@ import { useRouter } from 'next/navigation';
 import { setWeeklyGoal } from '@/app/actions';
 
 /** Your weekly goal as one quiet line; tap Change to pick 1 to 5 classes a week. */
-export function GoalPicker({ goal }: { goal: number }) {
-  const [value, setValue] = useState(goal);
-  const [open, setOpen] = useState(false);
+export function GoalPicker({ goal }: { goal: number | null }) {
+  const [value, setValue] = useState<number | null>(goal);
+  // No goal yet: show the choices straight away.
+  const [open, setOpen] = useState(goal == null);
   const [error, setError] = useState('');
   const [saving, start] = useTransition();
   const router = useRouter();
@@ -29,12 +30,20 @@ export function GoalPicker({ goal }: { goal: number }) {
     <div className="goal-line">
       <div className="row between">
         <span className="small">
-          Goal: <b>{value} {value === 1 ? 'class' : 'classes'} a week</b>
+          {value == null ? (
+            <b>Set your weekly goal</b>
+          ) : (
+            <>
+              Goal: <b>{value} {value === 1 ? 'class' : 'classes'} a week</b>
+            </>
+          )}
           {saving && <span className="muted"> · saving…</span>}
         </span>
-        <button type="button" className="link-btn small" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
-          {open ? 'Done' : 'Change'}
-        </button>
+        {value != null && (
+          <button type="button" className="link-btn small" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+            {open ? 'Done' : 'Change'}
+          </button>
+        )}
       </div>
       {open && (
         <div className="stack tight" style={{ marginTop: 10 }}>

@@ -50,8 +50,8 @@ describe('goalBoard', () => {
     ]);
     expect(b.find((r) => r.user_id === 'two')!.classes).toBe(6);
   });
-  it('goal defaults to 1 a week', () => {
-    expect(goalBoard(rows, {}, '2026-10-01', '2026-10-20').map((r) => r.hits)).toEqual([3, 3]);
+  it('leaves off people who have not set a goal', () => {
+    expect(goalBoard(rows, {}, '2026-10-01', '2026-10-20')).toEqual([]);
   });
 });
 

@@ -80,9 +80,11 @@ export function goalBoard(rows: AttendanceRow[], goals: Record<string, number>, 
     if (r.class_date > doneThrough) continue;
     byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r.class_date]);
   }
+  // Only people who've set a weekly goal are on the board.
   const list = [...byUser]
+    .filter(([user_id]) => goals[user_id] != null)
     .map(([user_id, dates]) => {
-      const goal = goals[user_id] ?? 1;
+      const goal = goals[user_id];
       const counts = weekCounts(dates);
       const hitWeeks = weeks.filter((w) => (counts.get(w) ?? 0) >= goal);
       const classes = dates.filter((d) => weeks.includes(mondayOf(d))).length;
