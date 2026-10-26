@@ -39,6 +39,8 @@ await db.exec(readFileSync(new URL('../supabase/migration-017-coach-brief.sql', 
 await db.exec(readFileSync(new URL('../supabase/migration-018-pr-art.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-019-equipment.sql', import.meta.url), 'utf8'));
 await db.exec(readFileSync(new URL('../supabase/migration-020-clock-findings.sql', import.meta.url), 'utf8'));
+// 021-023 need pg_net and cron, which PGlite doesn't have.
+await db.exec(readFileSync(new URL('../supabase/migration-024-mcp.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -315,5 +317,176 @@ await as(A, `select public.admin_remove_member('${C}')`);
 r = await db.query(`select count(*)::int as n from public.profiles`);
 assert.equal(r.rows[0].n, 2);
 ok('admin can remove a member');
+
+// MCP change sets: Grok's previews, pushed and undone all-or-nothing.
+async function failsWith(user, sql, re) {
+  let msg = null;
+  try { await as(user, sql); } catch (e) { msg = e.message; }
+  assert.ok(msg !== null, `expected failure matching ${re}`);
+  assert.match(msg, re);
+}
+const noSeen = { days: {}, notes: {}, cycles: {} };
+const mkSet = async (ops, seen = noSeen) =>
+  (await as(A, `insert into public.mcp_change_sets (summary, ops, seen) values ('test', $1, $2) returning id`, [JSON.stringify(ops), JSON.stringify(seen)])).rows[0].id;
+const dayRow = (title) => ({ title, focus: 'Legs', why: 'Because', parts: [], status: 'draft' });
+const putDay = (date, title, extra = {}) => ({ op: 'put_day', date, row: dayRow(title), ...extra });
+// A stamp formatted the way PostgREST sends it (ISO 8601 with offset), not Postgres's text form.
+const stampOf = async (table, where) => (await db.query(`select to_jsonb(updated_at) #>> '{}' as s from public.${table} where ${where}`)).rows[0].s;
+const dayExists = async (d) => (await db.query(`select count(*)::int as n from public.workouts where class_date = '${d}'`)).rows[0].n === 1;
+const noteOf = async (d) => (await db.query(`select body from public.workout_coach_notes where class_date = '${d}'`)).rows[0]?.body ?? null;
+const statusOf = async (id) => (await db.query(`select status from public.mcp_change_sets where id = ${id}`)).rows[0].status;
+
+let set = await mkSet([putDay('2099-01-05', 'Nope')]);
+r = await as(B, `select count(*)::int as n from public.mcp_change_sets`);
+assert.equal(r.rows[0].n, 0);
+await fails(B, `select public.mcp_push(${set})`, 'member pushes');
+await fails(B, `select public.mcp_undo()`, 'member undoes');
+assert.equal(await dayExists('2099-01-05'), false);
+ok('mcp: member cannot see or call');
+
+set = await mkSet([putDay('2099-01-06', 'Tuesday', { notes: 'Bring bands' }), putDay('2099-01-07', 'Wednesday')]);
+r = await as(A, `select public.mcp_push(${set}) as res`);
+assert.deepEqual(r.rows[0].res, { ok: true, set_id: set, days: ['2099-01-06', '2099-01-07'], cycles: [] });
+assert.equal(await dayExists('2099-01-06'), true);
+assert.equal(await dayExists('2099-01-07'), true);
+assert.equal(await noteOf('2099-01-06'), 'Bring bands');
+assert.equal(await statusOf(set), 'pushed');
+ok('mcp: push applies all ops');
+
+await failsWith(A, `select public.mcp_push(${set})`, /already pushed/);
+await as(A, `select public.mcp_undo(${set})`);
+await failsWith(A, `select public.mcp_undo(${set})`, /already undone/);
+assert.equal(await statusOf(set), 'undone');
+ok('mcp: double push / double undo refused');
+
+assert.equal(await dayExists('2099-01-06'), false);
+assert.equal(await noteOf('2099-01-06'), null);
+assert.equal(await dayExists('2099-01-07'), false);
+ok('mcp: create day with notes, then undo');
+
+await as(A, cyc('2099-03-02', 4));
+set = await mkSet([putDay('2099-01-12', 'Monday'), { op: 'create_cycle', row: { start_date: '2099-03-09', week_count: 3, name: 'Clash', why: '', brief: '', goals: [], weeks: JSON.parse(wk(3)), days: {} } }]);
+await failsWith(A, `select public.mcp_push(${set})`, /those dates overlap another cycle/);
+assert.equal(await dayExists('2099-01-12'), false);
+assert.equal(await statusOf(set), 'preview');
+ok('mcp: all or nothing');
+
+await as(A, `insert into public.workouts (class_date, title) values ('2099-01-08', 'Thursday')`);
+set = await mkSet([putDay('2099-01-08', 'Grok Thursday')], { days: { '2099-01-08': await stampOf('workouts', `class_date = '2099-01-08'`) }, notes: {}, cycles: {} });
+await as(A, `update public.workouts set title = 'Hand edit', updated_at = now() where class_date = '2099-01-08'`);
+await failsWith(A, `select public.mcp_push(${set})`, /changed since preview: 2099-01-08/);
+r = await db.query(`select title from public.workouts where class_date = '2099-01-08'`);
+assert.equal(r.rows[0].title, 'Hand edit');
+ok('mcp: stale preview refused');
+
+set = await mkSet([putDay('2020-01-06', 'Long ago')]);
+await failsWith(A, `select public.mcp_push(${set})`, /2020-01-06 is no longer in the future/);
+ok('mcp: push refuses a day that is no longer future');
+
+await as(A, `insert into public.workouts (class_date, title, equipment_add) values ('2099-01-09', 'Original', '{Rower}')`);
+const origStamp = await stampOf('workouts', `class_date = '2099-01-09'`);
+set = await mkSet([putDay('2099-01-09', 'Edited')], { days: { '2099-01-09': origStamp }, notes: {}, cycles: {} });
+await as(A, `select public.mcp_push(${set})`);
+r = await db.query(`select title, equipment_add from public.workouts where class_date = '2099-01-09'`);
+assert.deepEqual([r.rows[0].title, r.rows[0].equipment_add], ['Edited', ['Rower']]);
+await as(A, `select public.mcp_undo()`); // no id: the latest push
+r = await db.query(`select title, equipment_add, focus from public.workouts where class_date = '2099-01-09'`);
+assert.deepEqual([r.rows[0].title, r.rows[0].equipment_add, r.rows[0].focus], ['Original', ['Rower'], '']);
+assert.equal(await stampOf('workouts', `class_date = '2099-01-09'`), origStamp);
+ok('mcp: undo restores an edited day and keeps other columns');
+
+await as(A, `insert into public.workouts (class_date, title, equipment_add) values ('2099-01-13', 'Gone soon', '{Bike}')`);
+await as(A, `insert into public.workout_coach_notes (class_date, body) values ('2099-01-13', 'Keep it')`);
+set = await mkSet([{ op: 'delete_day', date: '2099-01-13' }], {
+  days: { '2099-01-13': await stampOf('workouts', `class_date = '2099-01-13'`) },
+  notes: { '2099-01-13': await stampOf('workout_coach_notes', `class_date = '2099-01-13'`) },
+  cycles: {},
+});
+await as(A, `select public.mcp_push(${set})`);
+assert.equal(await dayExists('2099-01-13'), false);
+await as(A, `select public.mcp_undo(${set})`);
+r = await db.query(`select title, equipment_add from public.workouts where class_date = '2099-01-13'`);
+assert.deepEqual([r.rows[0].title, r.rows[0].equipment_add], ['Gone soon', ['Bike']]);
+assert.equal(await noteOf('2099-01-13'), 'Keep it');
+ok('mcp: undo brings back a deleted day and its notes');
+
+const cid = (await as(A, `insert into public.cycles (start_date, week_count, name, weeks, days) values ('2099-06-01', 4, 'Summer', '${wk(4)}', '{}') returning id`)).rows[0].id;
+set = await mkSet([{ op: 'delete_cycle', id: Number(cid) }], { days: {}, notes: {}, cycles: { [cid]: await stampOf('cycles', `id = ${cid}`) } });
+r = await as(A, `select public.mcp_push(${set}) as res`);
+assert.deepEqual(r.rows[0].res.cycles, [Number(cid)]);
+r = await db.query(`select count(*)::int as n from public.cycles where id = ${cid}`);
+assert.equal(r.rows[0].n, 0);
+await as(A, `select public.mcp_undo(${set})`);
+r = await db.query(`select name, start_date::text from public.cycles where id = ${cid}`);
+assert.deepEqual([r.rows[0].name, r.rows[0].start_date], ['Summer', '2099-06-01']);
+ok('mcp: undo restores a deleted cycle with its id');
+
+await as(A, `insert into public.workouts (class_date, title) values ('2099-01-14', 'Wednesday')`);
+set = await mkSet([putDay('2099-01-14', 'Pushed')], { days: { '2099-01-14': await stampOf('workouts', `class_date = '2099-01-14'`) }, notes: {}, cycles: {} });
+await as(A, `select public.mcp_push(${set})`);
+await as(A, `update public.workouts set title = 'Coach fix', updated_at = now() where class_date = '2099-01-14'`);
+await failsWith(A, `select public.mcp_undo(${set})`, /changed since that push: 2099-01-14/);
+r = await db.query(`select title from public.workouts where class_date = '2099-01-14'`);
+assert.equal(r.rows[0].title, 'Coach fix');
+ok('mcp: undo refused after a later edit');
+
+set = await mkSet([putDay('2099-01-15', 'Thursday')]);
+await as(A, `select public.mcp_push(${set})`);
+await as(A, `insert into public.workout_coach_notes (class_date, body) values ('2099-01-15', 'Added by hand')`);
+await failsWith(A, `select public.mcp_undo(${set})`, /changed since that push: notes 2099-01-15/);
+assert.equal(await noteOf('2099-01-15'), 'Added by hand');
+ok('mcp: undo refused when a note was added after the push');
+
+set = await mkSet([{ ...putDay('2099-01-16', 'Friday'), row: { ...dayRow('Friday'), status: 'published' } }]);
+await as(A, `select public.mcp_push(${set})`);
+const fri = (await db.query(`select id from public.workouts where class_date = '2099-01-16'`)).rows[0].id;
+await as(B, `insert into public.comments (workout_id, body) values (${fri}, 'See you there')`);
+await failsWith(A, `select public.mcp_undo(${set})`, /day 2099-01-16 has member comments now/);
+assert.equal(await dayExists('2099-01-16'), true);
+assert.equal(await statusOf(set), 'pushed');
+ok('mcp: undo will not delete a created day that has comments now');
+
+const cycleRow = (start, name) => ({ start_date: start, week_count: 3, name, why: '', brief: '', goals: [], weeks: JSON.parse(wk(3)), days: {} });
+set = await mkSet([{ op: 'create_cycle', row: cycleRow('2020-01-06', 'Past') }]);
+await failsWith(A, `select public.mcp_push(${set})`, /new cycle must start after today/);
+ok('mcp: push refuses a new cycle that starts in the past');
+
+const started = (await db.query(`insert into public.cycles (start_date, week_count, name, weeks, days) values ('2020-01-06', 3, 'Running', '${wk(3)}', '{}') returning id, to_jsonb(updated_at) #>> '{}' as s`)).rows[0];
+set = await mkSet([{ op: 'update_cycle', id: Number(started.id), row: cycleRow('2099-09-07', 'Moved') }], { days: {}, notes: {}, cycles: { [started.id]: started.s } });
+await failsWith(A, `select public.mcp_push(${set})`, /cycle \d+ has already started/);
+set = await mkSet([{ op: 'update_cycle', id: Number(started.id), row: cycleRow('2020-01-06', 'Renamed') }], { days: {}, notes: {}, cycles: { [started.id]: started.s } });
+await as(A, `select public.mcp_push(${set})`);
+r = await db.query(`select name from public.cycles where id = ${started.id}`);
+assert.equal(r.rows[0].name, 'Renamed');
+ok('mcp: push edits a running cycle but will not move it');
+
+// Undo a rename of a running cycle: fine, it stays where it is.
+await as(A, `select public.mcp_undo(${set})`);
+r = await db.query(`select name, start_date::text from public.cycles where id = ${started.id}`);
+assert.deepEqual([r.rows[0].name, r.rows[0].start_date], ['Running', '2020-01-06']);
+// Undo that would bring back a deleted cycle that has since started: refused.
+const gone = (await as(A, `insert into public.cycles (start_date, week_count, name, weeks, days) values ('2099-11-02', 3, 'Gone', '${wk(3)}', '{}') returning id, to_jsonb(updated_at) #>> '{}' as s`)).rows[0];
+set = await mkSet([{ op: 'delete_cycle', id: Number(gone.id) }], { days: {}, notes: {}, cycles: { [gone.id]: gone.s } });
+await as(A, `select public.mcp_push(${set})`);
+await db.query(`update public.mcp_change_sets set before = jsonb_set(before, '{cycles,${gone.id},start_date}', '"2020-03-02"') where id = ${set}`); // time passes
+await failsWith(A, `select public.mcp_undo(${set})`, /cycle \d+ has already started/);
+r = await db.query(`select count(*)::int as n from public.cycles where id = ${gone.id}`);
+assert.equal(r.rows[0].n, 0);
+// Undo that would delete a created cycle that has since started: refused.
+set = await mkSet([{ op: 'create_cycle', row: cycleRow('2099-09-07', 'Autumn') }]);
+r = await as(A, `select public.mcp_push(${set}) as res`);
+const autumn = r.rows[0].res.cycles[0];
+await db.query(`update public.cycles set start_date = '2020-02-03' where id = ${autumn}`); // time passes; stamp unchanged
+await failsWith(A, `select public.mcp_undo(${set})`, /cycle \d+ has already started/);
+r = await db.query(`select count(*)::int as n from public.cycles where id = ${autumn}`);
+assert.equal(r.rows[0].n, 1);
+ok('mcp: undo edits a running cycle back, but never deletes, moves or brings back a started one');
+
+const later = (await db.query(`insert into public.cycles (start_date, week_count, name, weeks, days) values ('2099-12-07', 3, 'Later', '${wk(3)}', '{}') returning id, to_jsonb(updated_at) #>> '{}' as s`)).rows[0];
+set = await mkSet([{ op: 'update_cycle', id: Number(later.id), row: cycleRow('2020-03-02', 'Back in time') }], { days: {}, notes: {}, cycles: { [later.id]: later.s } });
+await failsWith(A, `select public.mcp_push(${set})`, /cycle \d+ must start after today/);
+r = await db.query(`select name, start_date::text from public.cycles where id = ${later.id}`);
+assert.deepEqual([r.rows[0].name, r.rows[0].start_date], ['Later', '2099-12-07']);
+ok('mcp: push will not move an unstarted cycle to today or earlier');
 
 console.log(`\nDatabase checks passed: ${passed}`);

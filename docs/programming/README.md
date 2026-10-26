@@ -41,3 +41,26 @@ Grok connects to the app at `https://9amcrew.ca/api/mcp` and signs in through Su
 - Supabase dashboard → Authentication → OAuth Server: turn it on, turn on dynamic client registration, and set the authorization path to `/oauth/consent`.
 - Grok: add a custom connector with the URL `https://9amcrew.ca/api/mcp`, then sign in when asked and tap Allow.
 - To revoke access: Supabase dashboard → OAuth apps, or remove the connector in Grok.
+
+### What Grok can do
+
+Read tools:
+
+- `list_cycles`: all cycles with goals and a one-line summary per week.
+- `get_cycle`: one cycle in full, including its per-weekday plan.
+- `get_days`: the workout for each class day in a date range (up to a set maximum), with an `editable` flag.
+- `list_movements`: the lifts the gym tracks, and the gentle alternatives allowed for easier versions.
+
+Write tools (preview → push → undo):
+
+- `preview_changes`: checks a batch of changes to future days, coach notes or cycles and saves it as a preview. Nothing changes in the app.
+- `push_changes`: applies a preview, only after the coach says push. It applies all the changes or none.
+- `undo_push`: reverses the latest push, or one by id. It refuses if a changed day was edited since.
+- `list_pushes`: recent pushes and previews, newest first.
+
+Rules:
+
+- Only future days (after today, Halifax time) can change. Today and earlier are read-only.
+- Started cycles can be edited, but not moved or deleted.
+- A preview expires after 24 hours.
+- Run `supabase/migration-024-mcp.sql` in the Supabase SQL editor before the write tools work.
