@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { todayLocal } from '../dates';
 import { gentleChoices } from '../programming/engine';
 import type { McpCaller } from './auth';
-import { validateChanges, type Change } from './changes';
+import { MAX_CHANGES, validateChanges, type Change } from './changes';
 import { loadContext } from './context';
 import { previewText } from './diff';
 import { checkRange, dayView, MAX_RANGE_DAYS, weekdaysBetween, type CycleSpan, type WorkoutRow } from './read';
@@ -42,7 +42,7 @@ const change = z.discriminatedUnion('kind', [
     why: z.string().optional(),
     parts: z.unknown().describe('The whole list of parts for the day, as get_days returns it'),
     status: status.optional(),
-    coach_notes: z.string().optional().describe('Leave out to keep the notes, "" to clear them'),
+    coach_notes: z.string().nullable().optional().describe('Leave out to keep the notes, "" to clear them'),
   }),
   z.object({ kind: z.literal('delete_day'), date: z.string() }),
   z.object({ kind: z.literal('put_coach_notes'), date: z.string(), body: z.string().describe('"" clears the notes') }),
@@ -153,8 +153,8 @@ export function registerTools(server: McpServer): void {
     {
       title: 'Preview changes',
       description:
-        'Check a batch of changes to future workout days, coach notes or cycles and save it as a preview. Nothing changes in the app. Always show the returned preview text to the coach and wait for them to say push before calling push_changes. Send whole days and whole cycle plans: read them first with get_days or get_cycle, edit, and send back.',
-      inputSchema: z.object({ changes: z.array(change) }),
+        'Check a batch of changes to future workout days, coach notes or cycles and save it as a preview. Nothing changes in the app. Always show the returned preview text to the coach and wait for them to say push before calling push_changes. Send whole days and whole cycle plans: read them first with get_days or get_cycle, edit, and send back. Leave coach_notes out to keep a day\'s notes as they are.',
+      inputSchema: z.object({ changes: z.array(change).max(MAX_CHANGES) }),
     },
     async ({ changes }, ctx) => {
       const caller = callerOf(ctx);

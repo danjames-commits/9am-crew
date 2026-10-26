@@ -145,9 +145,11 @@ begin
       when 'update_cycle' then
         select c.start_date into started from public.cycles c where c.id = (op->>'id')::bigint;
         if not found then raise exception 'cycle % no longer exists', op->>'id'; end if;
-        -- A running cycle can be edited, but not moved.
+        -- A running cycle can be edited, but not moved. One that hasn't started can't move to today or earlier.
         if started <= today and (op->'row'->>'start_date')::date is distinct from started then
           raise exception 'cycle % has already started', op->>'id';
+        elsif started > today and (op->'row'->>'start_date')::date <= today then
+          raise exception 'cycle % must start after today', op->>'id';
         end if;
         begin
           update public.cycles c set start_date = r.start_date, week_count = r.week_count, name = r.name, why = r.why,
@@ -255,6 +257,15 @@ begin
       end if;
     elsif (v->>'start_date')::date <= today then
       raise exception 'cycle % has already started', k;
+    end if;
+  end loop;
+
+  -- Undoing a created day deletes it, and its comments with it: refuse once members have commented.
+  for k, v in select * from jsonb_each(cs.before->'days') loop
+    if jsonb_typeof(v) = 'null' and exists (
+      select 1 from public.comments c join public.workouts w on w.id = c.workout_id where w.class_date = k::date
+    ) then
+      raise exception 'day % has member comments now', k;
     end if;
   end loop;
 

@@ -437,6 +437,15 @@ await failsWith(A, `select public.mcp_undo(${set})`, /changed since that push: n
 assert.equal(await noteOf('2099-01-15'), 'Added by hand');
 ok('mcp: undo refused when a note was added after the push');
 
+set = await mkSet([{ ...putDay('2099-01-16', 'Friday'), row: { ...dayRow('Friday'), status: 'published' } }]);
+await as(A, `select public.mcp_push(${set})`);
+const fri = (await db.query(`select id from public.workouts where class_date = '2099-01-16'`)).rows[0].id;
+await as(B, `insert into public.comments (workout_id, body) values (${fri}, 'See you there')`);
+await failsWith(A, `select public.mcp_undo(${set})`, /day 2099-01-16 has member comments now/);
+assert.equal(await dayExists('2099-01-16'), true);
+assert.equal(await statusOf(set), 'pushed');
+ok('mcp: undo will not delete a created day that has comments now');
+
 const cycleRow = (start, name) => ({ start_date: start, week_count: 3, name, why: '', brief: '', goals: [], weeks: JSON.parse(wk(3)), days: {} });
 set = await mkSet([{ op: 'create_cycle', row: cycleRow('2020-01-06', 'Past') }]);
 await failsWith(A, `select public.mcp_push(${set})`, /new cycle must start after today/);
@@ -472,5 +481,12 @@ await failsWith(A, `select public.mcp_undo(${set})`, /cycle \d+ has already star
 r = await db.query(`select count(*)::int as n from public.cycles where id = ${autumn}`);
 assert.equal(r.rows[0].n, 1);
 ok('mcp: undo edits a running cycle back, but never deletes, moves or brings back a started one');
+
+const later = (await db.query(`insert into public.cycles (start_date, week_count, name, weeks, days) values ('2099-12-07', 3, 'Later', '${wk(3)}', '{}') returning id, to_jsonb(updated_at) #>> '{}' as s`)).rows[0];
+set = await mkSet([{ op: 'update_cycle', id: Number(later.id), row: cycleRow('2020-03-02', 'Back in time') }], { days: {}, notes: {}, cycles: { [later.id]: later.s } });
+await failsWith(A, `select public.mcp_push(${set})`, /cycle \d+ must start after today/);
+r = await db.query(`select name, start_date::text from public.cycles where id = ${later.id}`);
+assert.deepEqual([r.rows[0].name, r.rows[0].start_date], ['Later', '2099-12-07']);
+ok('mcp: push will not move an unstarted cycle to today or earlier');
 
 console.log(`\nDatabase checks passed: ${passed}`);

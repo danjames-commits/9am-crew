@@ -28,6 +28,11 @@ describe('dayView', () => {
     expect(dayView(null, '2026-11-05', null, cycles, '2026-11-01').cycle).toEqual({ id: 1, name: 'Autumn' });
     expect(dayView(null, '2027-01-05', null, cycles, '2026-11-01').cycle).toBeNull();
   });
+  it('treats the cycle end date as the first day after it', () => {
+    const six: CycleSpan[] = [{ id: 2, name: 'Winter', start_date: '2026-11-02', end_date: '2026-12-14' }];
+    expect(dayView(null, '2026-12-11', null, six, '2026-11-01').cycle).toEqual({ id: 2, name: 'Winter' });
+    expect(dayView(null, '2026-12-14', null, six, '2026-11-01').cycle).toBeNull();
+  });
   it('includes row fields and coach notes', () => {
     const v = dayView(row, '2026-11-04', 'go easy', cycles, '2026-11-01');
     expect(v).toMatchObject({ exists: true, title: 'Heavy day', status: 'published', coach_notes: 'go easy' });

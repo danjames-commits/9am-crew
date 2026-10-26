@@ -6,11 +6,12 @@ import { gentleChoices, STYLES } from '../programming/engine';
 import { cleanPlan, WEEKDAYS, type PlanDraft } from '../programming/plan';
 import type { Part } from '../types';
 import { checkParts, cleanWorkoutFields } from '../workout-clean';
+import { isRealDate } from './read';
 
 export type Status = 'draft' | 'published';
 
 export type Change =
-  | { kind: 'put_day'; date: string; title: string; focus?: string; why?: string; parts: unknown; status?: Status; coach_notes?: string }
+  | { kind: 'put_day'; date: string; title: string; focus?: string; why?: string; parts: unknown; status?: Status; coach_notes?: string | null }
   | { kind: 'delete_day'; date: string }
   | { kind: 'put_coach_notes'; date: string; body: string }
   | { kind: 'create_cycle'; plan: PlanDraft }
@@ -49,8 +50,7 @@ export type NotesPreview = { notes: string | null };
 
 export const MAX_CHANGES = 100;
 
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-const isDate = (s: unknown): s is string => typeof s === 'string' && DATE_RE.test(s);
+const isDate = (s: unknown): s is string => typeof s === 'string' && isRealDate(s);
 
 /** Deep equality that ignores key order and keys set to undefined. */
 export function same(a: unknown, b: unknown): boolean {
@@ -113,7 +113,7 @@ function checkOne(c: Record<string, unknown>, n: number, ctx: ChangeContext): It
 
 function checkDayChange(c: Record<string, unknown>, n: number, ctx: ChangeContext): ItemResult {
   const date = c.date;
-  if (!isDate(date)) return { target: `change ${n}`, ops: [], problems: [`Change ${n}: the date must be YYYY-MM-DD.`], warnings: [], before: null, after: null };
+  if (!isDate(date)) return { target: `change ${n}`, ops: [], problems: [`Change ${n}: the date must be a real date, YYYY-MM-DD.`], warnings: [], before: null, after: null };
   const item: ItemResult = { target: `day ${date}`, ops: [], problems: [], warnings: [], before: null, after: null };
   const problem = (msg: string) => item.problems.push(msg);
   if (date <= ctx.today) problem(`${date} is not in the future. Only days after today (${ctx.today}) can be changed.`);
@@ -142,8 +142,8 @@ function checkDayChange(c: Record<string, unknown>, n: number, ctx: ChangeContex
     return item;
   }
 
-  // put_day
-  const fields = cleanWorkoutFields({ title: c.title, focus: c.focus, why: c.why });
+  // put_day. Focus and why left out keep what the day has (blank for a new day).
+  const fields = cleanWorkoutFields({ title: c.title, focus: c.focus ?? existing?.focus, why: c.why ?? existing?.why });
   const checked = checkParts(c.parts);
   item.problems.push(...fields.problems.map((p) => `${date}: ${p}`), ...checked.problems.map((p) => `${date}: ${p}`));
   item.warnings.push(...fields.warnings, ...checked.warnings);
@@ -162,7 +162,8 @@ function checkDayChange(c: Record<string, unknown>, n: number, ctx: ChangeContex
   const before: DayPreview | null = existingRow ? { ...existingRow } : null;
   const after: DayPreview = { ...row };
   if (c.coach_notes !== undefined) {
-    if (typeof c.coach_notes !== 'string') problem(`${date}: coach_notes must be text. Send "" to clear the notes, or leave it out to keep them.`);
+    // null means no notes, as get_days shows a day without them: same as "".
+    if (c.coach_notes !== null && typeof c.coach_notes !== 'string') problem(`${date}: coach_notes must be text. Send "" to clear the notes, or leave it out to keep them.`);
     op.notes = cleanNotes(c.coach_notes, date, item);
     after.notes = op.notes;
     if (before) before.notes = oldNotes;

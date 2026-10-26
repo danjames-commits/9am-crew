@@ -1,7 +1,9 @@
 // Loads what validateChanges needs to check a batch: only the days and cycles it touches.
+// Dates that aren't real are left out here; validateChanges explains them.
 import { todayLocal } from '../dates';
 import type { McpCaller } from './auth';
 import type { Change, ChangeContext, CycleRow, DayRow } from './changes';
+import { isRealDate } from './read';
 
 type WorkoutRow = DayRow & { id: number; class_date: string; updated_at: string };
 type NotesRow = { class_date: string; body: string; updated_at: string };
@@ -10,7 +12,7 @@ type CycleDbRow = CycleRow & { id: number; updated_at: string };
 const empty = { data: [], error: null };
 
 export async function loadContext({ supabase }: McpCaller, changes: Change[]): Promise<ChangeContext> {
-  const dates = [...new Set(changes.flatMap((c) => ('date' in c && typeof c.date === 'string' ? [c.date] : [])))];
+  const dates = [...new Set(changes.flatMap((c) => ('date' in c && typeof c.date === 'string' && isRealDate(c.date) ? [c.date] : [])))];
   const ids = [...new Set(changes.flatMap((c) => ('id' in c && typeof c.id === 'number' ? [c.id] : [])))];
 
   const [w, n, m, cy] = await Promise.all([

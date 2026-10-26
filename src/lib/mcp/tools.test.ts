@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { McpServer, type RegisteredTool, type ServerContext } from '@modelcontextprotocol/server';
+import type { ZodType } from 'zod';
+import { dayView } from './read';
 import { registerTools } from './tools';
 
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }));
@@ -63,7 +65,10 @@ describe('write tools', () => {
     registerTools(server);
     const tools = (server as unknown as { _registeredTools: Record<string, RegisteredTool> })._registeredTools;
     const tables: Record<string, unknown[]> = {
-      workouts: [{ class_date: '2999-11-04', id: 7, title: 'Heavy day', focus: 'Squat', why: 'x', parts: [], status: 'draft', updated_at: '2999-01-01T00:00:00Z' }],
+      workouts: [
+        { class_date: '2999-11-04', id: 7, title: 'Heavy day', focus: 'Squat', why: 'x', parts: [], status: 'draft', updated_at: '2999-01-01T00:00:00Z' },
+        { class_date: '2999-11-05', id: 8, title: 'Quiet day', focus: 'Rest', why: 'y', parts: [], status: 'published', updated_at: '2999-01-01T00:00:00Z' },
+      ],
       workout_coach_notes: [{ class_date: '2999-11-04', body: 'go easy', updated_at: '2999-01-02T00:00:00Z' }],
       comments: [],
       movements: [{ name: 'Back Squat' }],
@@ -91,8 +96,13 @@ describe('write tools', () => {
       },
     };
     const ctx = { http: { authInfo: { extra: { supabase, userId: 'u1' } } } } as unknown as ServerContext;
-    const run = async (name: string, args: unknown) => (await tools[name].executor(args, ctx)) as Result;
-    return { run, inserts, rpcs };
+    // Like the SDK's tools/call handler: check the input schema, then run the tool on the parsed args.
+    const run = async (name: string, args: unknown): Promise<Result> => {
+      const parsed = (tools[name].inputSchema as ZodType).safeParse(args);
+      if (!parsed.success) return { isError: true, content: [{ text: parsed.error.message }] };
+      return (await tools[name].executor(parsed.data, ctx)) as Result;
+    };
+    return { run, inserts, rpcs, tables };
   };
   const day = { kind: 'put_day', date: '2999-11-04', title: 'Heavy day', focus: 'Squat', why: 'x', parts: [] };
 
@@ -121,6 +131,26 @@ describe('write tools', () => {
     const out = JSON.parse((await run('preview_changes', { changes: [day] })).content[0].text);
     expect(out).toMatchObject({ ok: true, change_set_id: null });
     expect(out.text.endsWith('Nothing to push — every item is unchanged.')).toBe(true);
+    expect(inserts).toHaveLength(0);
+  });
+
+  it('a day from get_days with no notes goes back unchanged', async () => {
+    const { run, inserts, tables } = setup();
+    const view = dayView(tables.workouts[1] as never, '2999-11-05', null, [], '2999-10-01');
+    expect(view.coach_notes).toBeNull();
+    const res = await run('preview_changes', { changes: [{ ...view, kind: 'put_day' }] });
+    expect(res.isError).toBeFalsy();
+    const out = JSON.parse(res.content[0].text);
+    expect(out).toMatchObject({ ok: true, change_set_id: null });
+    expect(out.text).toContain('no change');
+    expect(inserts).toHaveLength(0);
+  });
+
+  it('refuses more than 100 changes', async () => {
+    const { run, inserts } = setup();
+    const many = Array.from({ length: 101 }, (_, i) => ({ kind: 'delete_day', date: `2999-11-${String((i % 28) + 1).padStart(2, '0')}` }));
+    const res = await run('preview_changes', { changes: many });
+    expect(res.isError).toBe(true);
     expect(inserts).toHaveLength(0);
   });
 

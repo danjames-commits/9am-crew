@@ -7,7 +7,7 @@ export const MAX_RANGE_DAYS = 70;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-const isRealDate = (d: string) => DATE_RE.test(d) && !Number.isNaN(Date.parse(d + 'T12:00:00Z')) && new Date(d + 'T12:00:00Z').toISOString().slice(0, 10) === d;
+export const isRealDate = (d: string) => DATE_RE.test(d) && !Number.isNaN(Date.parse(d + 'T12:00:00Z')) && new Date(d + 'T12:00:00Z').toISOString().slice(0, 10) === d;
 
 /** An error message for a bad range, or null if it's fine. */
 export function checkRange(from: string, to: string): string | null {
@@ -17,6 +17,7 @@ export function checkRange(from: string, to: string): string | null {
   return null;
 }
 
+// end_date is exclusive: cycles store daterange(start_date, end_date), which is [start, end).
 export type CycleSpan = { id: number; name: string; start_date: string; end_date: string };
 
 export type WorkoutRow = {
@@ -45,7 +46,7 @@ export type DayView = {
 };
 
 export function dayView(row: WorkoutRow | null, date: string, note: string | null, cycles: CycleSpan[], today: string): DayView {
-  const c = cycles.find((x) => x.start_date <= date && date <= x.end_date);
+  const c = cycles.find((x) => x.start_date <= date && date < x.end_date);
   const base: DayView = {
     date,
     weekday: NAMES[weekday(date)],

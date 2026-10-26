@@ -125,14 +125,41 @@ describe('validateChanges: days', () => {
     expect(r.items[0].ops[0]).toMatchObject({ body: 'x'.repeat(2000) });
   });
 
-  it('notes that are not text are refused, not cleared', () => {
+  it('notes that are not text (or null) are refused, not cleared', () => {
     const notes = { '2026-11-05': { body: 'Old', updated_at: 'n1' } };
     const missing = validateChanges([{ kind: 'put_coach_notes', date: '2026-11-05' }], ctx({ notes }));
     expect(missing.ok).toBe(false);
     const nullNotes = validateChanges([put('2026-11-05', { coach_notes: null })], ctx({ notes }));
-    expect(nullNotes.ok).toBe(false);
+    expect(nullNotes.ok).toBe(true);
     const numberNotes = validateChanges([put('2026-11-05', { coach_notes: 5 })], ctx({ notes }));
     expect(numberNotes.ok).toBe(false);
+  });
+
+  it('null notes mean no notes: they clear, and match a day without notes', () => {
+    const cleared = validateChanges([put('2026-11-05', { coach_notes: null })], ctx({ notes: { '2026-11-05': { body: 'Old', updated_at: 'n1' } } }));
+    expect(cleared.ok).toBe(true);
+    expect(cleared.items[0].ops[0]).toMatchObject({ op: 'put_day', notes: null });
+    const none = validateChanges([put('2026-11-05', { coach_notes: null })], ctx());
+    expect(none.ok).toBe(true);
+    expect(none.items[0].ops).toEqual([]);
+  });
+
+  it('dates that are not real get the date problem', () => {
+    const r = validateChanges([put('2026-02-30'), { kind: 'delete_day', date: 'next monday' }], ctx());
+    expect(r.ok).toBe(false);
+    expect(r.items[0].problems).toEqual(['Change 1: the date must be a real date, YYYY-MM-DD.']);
+    expect(r.items[1].problems).toEqual(['Change 2: the date must be a real date, YYYY-MM-DD.']);
+  });
+
+  it('focus and why left out keep the existing ones; new days get blanks', () => {
+    const { focus: _f, why: _w, ...bare } = put('2026-11-05');
+    const kept = validateChanges([bare], ctx());
+    expect(kept.ok).toBe(true);
+    expect(kept.items[0].ops).toEqual([]);
+    const retitled = validateChanges([{ ...bare, title: 'New title' }], ctx());
+    expect(retitled.items[0].ops[0]).toMatchObject({ row: { title: 'New title', focus: 'Legs', why: 'Build strength' } });
+    const fresh = validateChanges([{ ...bare, date: '2026-11-06' }], ctx());
+    expect(fresh.items[0].ops[0]).toMatchObject({ row: { focus: '', why: '' } });
   });
 
   it('seen stamps', () => {
