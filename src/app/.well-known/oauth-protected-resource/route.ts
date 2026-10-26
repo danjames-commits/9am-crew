@@ -2,6 +2,6 @@ import { metadataCorsOptionsRequestHandler, protectedResourceHandler } from 'mcp
 
 export const GET = protectedResourceHandler({
   authServerUrls: [process.env.NEXT_PUBLIC_SUPABASE_URL + '/auth/v1'],
-  resourceUrl: 'https://9amcrew.ca',
+  resourceUrl: 'https://9amcrew.ca/api/mcp',
 });
 export const OPTIONS = metadataCorsOptionsRequestHandler();
