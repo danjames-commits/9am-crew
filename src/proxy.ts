@@ -24,6 +24,8 @@ export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname === '/api/warm') return response;
   // The morning timer job: checked by its one-time ticket, not a sign-in.
   if (request.nextUrl.pathname === '/api/clock-job') return response;
+  // The MCP connector and its OAuth metadata: the route checks its own bearer token.
+  if (request.nextUrl.pathname === '/api/mcp' || request.nextUrl.pathname.startsWith('/.well-known/')) return response;
   // Warming a tab itself (?warm=1): let it reach the page, which loads its code and
   // then sends the signed-out ping to /login. Pages check sign-in on their own.
   if (request.nextUrl.searchParams.has('warm') && WARM_TABS.has(request.nextUrl.pathname) && !request.cookies.getAll().length) {
