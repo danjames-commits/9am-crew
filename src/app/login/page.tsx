@@ -1,23 +1,13 @@
 'use client';
-import { Suspense, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { safeNext } from '@/lib/safe-next';
 
 type Mode = 'signin' | 'signup' | 'forgot';
 
 export default function LoginPage() {
-  return (
-    <Suspense>
-      <LoginForm />
-    </Suspense>
-  );
-}
-
-function LoginForm() {
   const router = useRouter();
-  const nextParam = useSearchParams().get('next');
-  const next = safeNext(nextParam, typeof window === 'undefined' ? '' : window.location.origin);
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,12 +28,13 @@ function LoginForm() {
     setError('');
     setInfo('');
     const supabase = supabaseBrowser();
+    const next = () => safeNext(new URLSearchParams(window.location.search).get('next'), window.location.origin);
 
     if (mode === 'signin') {
       const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       setBusy(false);
       if (error) return setError('That email and password don’t match. Try again, or reset your password.');
-      router.replace(next);
+      router.replace(next());
       router.refresh();
       return;
     }
@@ -61,7 +52,7 @@ function LoginForm() {
       setBusy(false);
       if (error) return setError(error.message.includes('registered') ? 'That email already has an account. Sign in instead.' : error.message);
       if (!data.session) return setInfo('Check your email to confirm your address, then come back and sign in.');
-      router.replace(next);
+      router.replace(next());
       router.refresh();
       return;
     }

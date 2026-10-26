@@ -1,10 +1,9 @@
 // The tools the Grok connector can call. Each one acts as the signed-in admin.
-import type { McpServer } from '@modelcontextprotocol/server';
+import type { McpServer, ServerContext } from '@modelcontextprotocol/server';
+import { z } from 'zod';
 import type { McpCaller } from './auth';
 
-type Ctx = { http?: { authInfo?: { extra?: Record<string, unknown> } } };
-
-export function callerOf(ctx: Ctx): McpCaller {
+export function callerOf(ctx: ServerContext): McpCaller {
   const caller = ctx.http?.authInfo?.extra as McpCaller | undefined;
   if (!caller?.supabase || !caller.userId) throw new Error('Not signed in');
   return caller;
@@ -17,8 +16,12 @@ type WeekRow = { kind: string; label: string; pct: number; sets: number; reps: n
 export function registerTools(server: McpServer): void {
   server.registerTool(
     'list_cycles',
-    { title: 'List cycles', description: 'List all programming cycles with their goals and a one-line summary of each week.' },
-    async (_args: unknown, ctx: Ctx) => {
+    {
+      title: 'List cycles',
+      description: 'List all programming cycles with their goals and a one-line summary of each week.',
+      inputSchema: z.object({}),
+    },
+    async (_args, ctx) => {
       const { supabase } = callerOf(ctx);
       const { data, error } = await supabase
         .from('cycles')

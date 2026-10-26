@@ -19,13 +19,22 @@ export default async function ConsentPage({ searchParams }: { searchParams: Prom
       <h1>Connect an app</h1>
       <div className="card stack">
         <p>
-          Let {data.client.name} read and change 9am Crew programming as you? It can edit future workouts, coach notes and cycles. It can’t see
-          or change members.
+          <strong>Let {data.client.name} read and change 9am Crew programming as you?</strong>
         </p>
+        <p>It will act with your admin access. Only allow this if you just started connecting it from Grok.</p>
+        <p className="muted small">Sends you back to: {hostOf(data.redirect_uri)}</p>
       </div>
       <ConsentForm authorizationId={id} />
     </main>
   );
+}
+
+function hostOf(uri: string): string {
+  try {
+    return new URL(uri).host;
+  } catch {
+    return uri;
+  }
 }
 
 function Problem({ text }: { text: string }) {

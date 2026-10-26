@@ -30,10 +30,12 @@ export async function adminFromToken(token: string | undefined, deps: Deps = {})
     const sub = await verify(token);
     if (!sub) return null;
     const supabase = client(token);
-    const { data } = await supabase.from('profiles').select('is_admin, approved').eq('id', sub).single();
+    const { data, error } = await supabase.from('profiles').select('is_admin, approved').eq('id', sub).single();
+    if (error) console.error('MCP auth profile lookup failed', error);
     if (!data?.is_admin || !data?.approved) return null;
     return { supabase, userId: sub };
-  } catch {
+  } catch (e) {
+    console.error('MCP auth failed', e);
     return null;
   }
 }
