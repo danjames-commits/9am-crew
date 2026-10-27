@@ -9,9 +9,9 @@ describe('gym clock plan', () => {
     expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual([...clear, '1', '2', 'OK']);
     expect(buttonsFor({ type: 'countdown', label: '', seconds: 3 * 60 + 30 })).toEqual([...clear, '3', 'Right', '3', '0', 'OK']);
   });
-  it('clears intervals first, then types only what is needed', () => {
+  it('zeroes each interval field right before typing it', () => {
     expect(buttonsFor({ type: 'intervals', label: '', rounds: 3, work: 20, rest: 10 })).toEqual(
-      ['Exit', 'Select', '0', 'Select', '0', 'Right', '0', '0', 'Select', '0', 'Right', '0', '0', 'Exit', 'Select', '3', 'Select', 'Right', '2', '0', 'Select', 'Right', '1', '0', 'OK'],
+      ['Exit', 'Select', '0', '3', 'Select', '0', 'Right', '0', '2', '0', 'Select', '0', 'Right', '0', '1', '0', 'OK'],
     );
   });
   it('only uses real buttons, and stays under the 24-press limit', () => {
