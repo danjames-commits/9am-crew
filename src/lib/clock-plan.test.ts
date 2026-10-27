@@ -20,7 +20,7 @@ describe('gym clock plan', () => {
     expect(b.every((x) => ALL_CLOCK_BUTTONS.includes(x))).toBe(true);
   });
   it('works out how long things run', () => {
-    expect(stepSeconds({ type: 'intervals', label: '', rounds: 8, work: 20, rest: 10 })).toBe(8 * 20 + 7 * 10);
+    expect(stepSeconds({ type: 'intervals', label: '', rounds: 8, work: 20, rest: 10 })).toBe(8 * 30); // rest after the last round too
     expect(describeStep({ type: 'intervals', label: '', rounds: 10, work: 60, rest: 0 })).toBe('10 × 1:00 on');
   });
   it('reads number-pad typing like a timer', () => {

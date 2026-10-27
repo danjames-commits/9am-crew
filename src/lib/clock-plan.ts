@@ -83,7 +83,8 @@ export function buttonsFor(step: ClockStep): string[] {
 /** How long a step runs once started, not counting the lead-in. */
 export function stepSeconds(step: ClockStep): number {
   if (step.type === 'countdown') return step.seconds;
-  return step.rounds * step.work + Math.max(0, step.rounds - 1) * step.rest;
+  // The clock rests after the last round too (Dan's test, Oct 27).
+  return step.rounds * (step.work + step.rest);
 }
 
 export function clockTime(seconds: number): string {
