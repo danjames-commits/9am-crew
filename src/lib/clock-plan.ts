@@ -65,10 +65,6 @@ export const CLEAR_COUNTDOWN = ['Exit', 'Down', '0', 'Right', '0', '0', 'Exit', 
 
 const two = (n: number) => String(n).padStart(2, '0').slice(-2).split('');
 
-function typeTime(seconds: number): string[] {
-  return ['Left', ...two(Math.floor(seconds / 60)), 'Right', ...two(seconds % 60)];
-}
-
 /** The remote presses that set up and start one step. */
 export function buttonsFor(step: ClockStep): string[] {
   if (step.type === 'countdown') {
@@ -76,8 +72,11 @@ export function buttonsFor(step: ClockStep): string[] {
     const s = step.seconds % 60;
     return [...CLEAR_COUNTDOWN, ...(m ? digits(m) : []), ...(s ? ['Right', ...digits(s)] : []), 'OK'];
   }
-  // Intervals aren't tested yet: two digits per field to push out leftovers.
-  return ['Exit', 'Exit', 'Select', ...two(step.rounds), 'Select', ...typeTime(step.work), 'Select', ...typeTime(step.rest), 'OK'];
+  // Intervals (Dan's videos, Oct 27): Select shows the rounds, then Select for the work time (H1)
+  // and again for the rest (H2). Each time field starts on the minutes, Right moves to the
+  // seconds. Every field gets exactly two digits, which pushes out last time's numbers.
+  const time = (sec: number) => [...two(Math.floor(sec / 60)), 'Right', ...two(sec % 60)];
+  return ['Exit', 'Select', ...two(step.rounds), 'Select', ...time(step.work), 'Select', ...time(step.rest), 'OK'];
 }
 
 /** How long a step runs once started, not counting the lead-in. */
