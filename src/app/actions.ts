@@ -121,8 +121,8 @@ export async function pressClockSequence(buttons: string[]) {
     if (!clock) return { error: 'No remote named “Gym clock” in SwitchBot yet.' };
     for (const b of buttons) {
       await pressButton(clock.deviceId, b);
-      // A long gap: SwitchBot can deliver presses late or out of order when they come quickly (gym test, Oct 23).
-      await new Promise((r) => setTimeout(r, 2000));
+      // A gap so presses arrive in order. 2 s was safe but slow; 1 s once clearing first fixed the leftovers (Dan, Oct 27).
+      await new Promise((r) => setTimeout(r, 1000));
     }
     return { ok: true };
   } catch (e) {
@@ -143,7 +143,7 @@ function halifaxTime(ms: number) {
  */
 export async function setClockTime(format: 12 | 24) {
   await requireMember({ admin: true });
-  const GAP = 2000;
+  const GAP = 1000;
   const before = ['Exit', 'Right', 'm', 'm', 'Left', 'h', 'h'];
   // Aim for the first whole minute after the typing is done (with a few seconds' room).
   const target = Math.ceil((Date.now() + before.length * (GAP + 600) + 4000) / 60000) * 60000;
