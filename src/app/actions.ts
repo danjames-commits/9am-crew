@@ -115,7 +115,7 @@ export async function pressClock(button: string) {
 /** Admins: press a short run of clock buttons in order (for the Try it tests). */
 export async function pressClockSequence(buttons: string[]) {
   await requireMember({ admin: true });
-  if (!buttons.length || buttons.length > 24 || !buttons.every((b) => ALL_CLOCK_BUTTONS.includes(b))) return { error: 'Unknown button' };
+  if (!buttons.length || buttons.length > 40 || !buttons.every((b) => ALL_CLOCK_BUTTONS.includes(b))) return { error: 'Unknown button' };
   try {
     const clock = await findClock();
     if (!clock) return { error: 'No remote named “Gym clock” in SwitchBot yet.' };

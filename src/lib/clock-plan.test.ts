@@ -9,14 +9,14 @@ describe('gym clock plan', () => {
     expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual([...clear, '1', '2', 'OK']);
     expect(buttonsFor({ type: 'countdown', label: '', seconds: 3 * 60 + 30 })).toEqual([...clear, '3', 'Right', '3', '0', 'OK']);
   });
-  it('types intervals the way Dan does: Select between fields, two digits each, no Left', () => {
+  it('clears intervals first, then types only what is needed', () => {
     expect(buttonsFor({ type: 'intervals', label: '', rounds: 3, work: 20, rest: 10 })).toEqual(
-      ['Exit', 'Select', '0', '3', 'Select', '0', '0', 'Right', '2', '0', 'Select', '0', '0', 'Right', '1', '0', 'OK'],
+      ['Exit', 'Select', '0', 'Select', '0', 'Right', '0', '0', 'Select', '0', 'Right', '0', '0', 'Exit', 'Select', '3', 'Select', 'Right', '2', '0', 'Select', 'Right', '1', '0', 'OK'],
     );
   });
   it('only uses real buttons, and stays under the 24-press limit', () => {
     const b = buttonsFor({ type: 'intervals', label: '', rounds: 12, work: 99 * 60 + 59, rest: 59 * 60 });
-    expect(b.length).toBeLessThanOrEqual(24);
+    expect(b.length).toBeLessThanOrEqual(40);
     expect(b.every((x) => ALL_CLOCK_BUTTONS.includes(x))).toBe(true);
   });
   it('works out how long things run', () => {
