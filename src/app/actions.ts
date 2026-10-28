@@ -115,6 +115,9 @@ export async function setWeeklyGoal(goal: number) {
   return { ok: true };
 }
 
+/** Time between presses. 1 s missed some presses on Oct 28; Dan asked for a third more. */
+const CLOCK_GAP = 1333;
+
 /**
  * Press clock buttons in order through SwitchBot, and note each press (how long SwitchBot took,
  * and what it said) in clock_log, so a timer that doesn't show up can be traced afterwards.
@@ -136,7 +139,7 @@ async function runPresses(supabase: Awaited<ReturnType<typeof requireMember>>['s
           presses.push({ b, ms: Date.now() - t, err: error });
           break;
         }
-        // A gap so presses arrive in order. 2 s was safe but slow; 1 s once clearing first fixed the leftovers (Dan, Oct 27).
+        // A gap so presses arrive in order and the clock catches each one (see CLOCK_GAP).
         if (gap && i < buttons.length - 1) await new Promise((r) => setTimeout(r, gap));
       }
   } catch (e) {
@@ -160,7 +163,7 @@ export async function pressClock(button: string) {
 export async function pressClockSequence(buttons: string[], source = 'timer') {
   const { supabase } = await requireMember({ coach: true });
   if (!buttons.length || buttons.length > 40 || !buttons.every((b) => ALL_CLOCK_BUTTONS.includes(b))) return { error: 'Unknown button' };
-  return runPresses(supabase, String(source).slice(0, 40), buttons, 1000);
+  return runPresses(supabase, String(source).slice(0, 40), buttons, CLOCK_GAP);
 }
 
 /** The time of day in Halifax at a moment, as hours (0–23) and minutes. */
