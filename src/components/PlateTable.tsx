@@ -43,8 +43,7 @@ export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: s
       if (BARS.includes(b as (typeof BARS)[number])) setBar(b);
     } catch {}
   }, []);
-  const nextBar = () => {
-    const b = BARS[(BARS.indexOf(bar as (typeof BARS)[number]) + 1) % BARS.length];
+  const pickBar = (b: number) => {
     setBar(b);
     try {
       localStorage.setItem('bar-weight', String(b));
@@ -57,15 +56,22 @@ export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: s
 
   return (
     <>
+      {lines.some((l) => l.weight != null) && (
+        <div className="plate-bars" role="group" aria-label="Bar weight">
+          <span>Bar</span>
+          {BARS.map((b) => (
+            <button key={b} type="button" aria-pressed={bar === b} onClick={() => pickBar(b)}>
+              {b} lb
+            </button>
+          ))}
+        </div>
+      )}
       {grab.length > 0 && (
-        <div className="plate-grab" aria-label={`Plates to grab: ${grab.map((g) => `${g.n} × ${g.p}`).join(', ')}, and a ${bar} lb bar`}>
+        <div className="plate-grab" aria-label={`Plates to grab: ${grab.map((g) => `${g.n} × ${g.p}`).join(', ')}`}>
           <span className="plate-grab-label">Grab</span>
           {grab.map((g) => (
             <Plate key={g.p} p={g.p} n={g.n} />
           ))}
-          <button type="button" className="plate-bar-btn" onClick={nextBar} aria-label={`Bar is ${bar} lb. Tap to change.`}>
-            {bar} lb bar ▾
-          </button>
         </div>
       )}
       <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 6 }}>
