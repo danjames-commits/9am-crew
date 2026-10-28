@@ -36,7 +36,7 @@ const getMember = cache(async () => {
   const { supabase, userId } = await getAuth();
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, display_name, level, is_admin, approved, animal')
+    .select('id, display_name, level, is_admin, is_coach, approved, animal')
     .eq('id', userId)
     .single<Profile>();
   if (!profile) redirect('/login');
@@ -53,8 +53,10 @@ export async function signedIn() {
 
 /** The signed-in member. Sends people who aren't signed in to /login and
  *  people waiting for approval to /waiting. */
-export async function requireMember(opts: { admin?: boolean } = {}) {
+export async function requireMember(opts: { admin?: boolean; coach?: boolean } = {}) {
   const member = await getMember();
   if (opts.admin && !member.me.is_admin) redirect('/');
+  // Coaches run class (coach mode, notes, the gym clock); admins can do all of that too.
+  if (opts.coach && !member.me.is_admin && !member.me.is_coach) redirect('/');
   return member;
 }

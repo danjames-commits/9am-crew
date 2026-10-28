@@ -1,6 +1,6 @@
 'use client';
 import { useState, useTransition } from 'react';
-import { setMember, removeMember } from '@/app/actions';
+import { setCoach, setMember, removeMember } from '@/app/actions';
 import { Avatar } from '../Avatar';
 import { levelName } from '@/lib/types';
 
@@ -9,6 +9,7 @@ interface Member {
   display_name: string;
   level: number;
   is_admin: boolean;
+  is_coach?: boolean;
   approved: boolean;
   animal?: string | null;
 }
@@ -29,7 +30,7 @@ export function MemberRow({ m, isMe }: { m: Member; isMe: boolean }) {
       <div className="grow">
         <div style={{ fontWeight: 700 }}>
           {m.display_name}
-          {isMe ? ' (you)' : ''} {m.is_admin && <span className="badge">ADMIN</span>}
+          {isMe ? ' (you)' : ''} {m.is_admin && <span className="badge">ADMIN</span>} {m.is_coach && !m.is_admin && <span className="badge gold">COACH</span>}
         </div>
         <div className="muted small">{m.approved ? levelName(m.level) : 'Waiting for approval'}</div>
       </div>
@@ -50,6 +51,11 @@ export function MemberRow({ m, isMe }: { m: Member; isMe: boolean }) {
             </>
           ) : (
             <>
+              {!m.is_admin && (
+                <button className="btn small ghost" disabled={pending} onClick={() => act(() => setCoach(m.id, !m.is_coach))}>
+                  {m.is_coach ? 'Remove coach' : 'Make coach'}
+                </button>
+              )}
               <button className="btn small ghost" disabled={pending} onClick={() => act(() => setMember(m.id, true, !m.is_admin))}>
                 {m.is_admin ? 'Remove admin' : 'Make admin'}
               </button>

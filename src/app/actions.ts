@@ -98,9 +98,9 @@ export async function setWeeklyGoal(goal: number) {
   return { ok: true };
 }
 
-/** Admins: press one button on the gym clock's remote, through the SwitchBot hub. */
+/** Coaches: press one button on the gym clock's remote, through the SwitchBot hub. */
 export async function pressClock(button: string) {
-  await requireMember({ admin: true });
+  await requireMember({ coach: true });
   if (!ALL_CLOCK_BUTTONS.includes(button)) return { error: 'Unknown button' };
   try {
     const clock = await findClock();
@@ -112,9 +112,9 @@ export async function pressClock(button: string) {
   }
 }
 
-/** Admins: press a short run of clock buttons in order (for the Try it tests). */
+/** Coaches: press a run of clock buttons in order (timers in coach mode, and the setup tests). */
 export async function pressClockSequence(buttons: string[]) {
-  await requireMember({ admin: true });
+  await requireMember({ coach: true });
   if (!buttons.length || buttons.length > 40 || !buttons.every((b) => ALL_CLOCK_BUTTONS.includes(b))) return { error: 'Unknown button' };
   try {
     const clock = await findClock();
@@ -183,24 +183,24 @@ export async function recordClockFinding(id: string, result: 'yes' | 'no', note:
   return { ok: true };
 }
 
-/** Admins: save the gym clock timers for a workout's parts. */
+/** Coaches: save the gym clock timers for a workout's parts. */
 export async function saveClockPlan(date: string, plan: ClockPlan) {
   if (!isDate(date)) return { error: 'Bad date' };
-  const { supabase } = await requireMember({ admin: true });
+  const { supabase } = await requireMember({ coach: true });
   const { data: w } = await supabase.from('workouts').select('parts').eq('class_date', date).maybeSingle();
   if (!w) return { error: 'No workout that day.' };
   const clean = cleanClockPlan(plan, (w.parts as Part[]).length);
   // Marked as the coach's, so Claude won't redo them if the workout changes.
-  const { error } = await supabase.from('workouts').update({ clock_plan: clean, clock_by: 'coach' }).eq('class_date', date);
+  const { error } = await supabase.rpc('set_clock_plan', { d: date, plan: clean, by_who: 'coach', fp: null });
   if (error) return { error: 'Couldn’t save the timers. Try again.' };
   revalidatePath(`/workouts/${date}`);
   return { ok: true, plan: clean };
 }
 
-/** Admins: have Claude read the workout and fill in the clock timers (replaces what's there). */
+/** Coaches: have Claude read the workout and fill in the clock timers (replaces what's there). */
 export async function draftClockTimers(date: string) {
   if (!isDate(date)) return { error: 'Bad date' };
-  const { supabase, me } = await requireMember({ admin: true });
+  const { supabase, me } = await requireMember({ coach: true });
   if (!aiEnabled()) return { error: 'Claude isn’t set up yet.' };
   const { data: w } = await supabase.from('workouts').select('parts').eq('class_date', date).maybeSingle();
   if (!w) return { error: 'No workout that day.' };
@@ -208,10 +208,7 @@ export async function draftClockTimers(date: string) {
   try {
     const brief = await getCoachBrief(supabase);
     const plan = await draftClockPlan({ parts: w.parts as Part[], brief: brief.body });
-    const { error } = await supabase
-      .from('workouts')
-      .update({ clock_plan: plan, clock_by: 'claude', clock_for: partsFingerprint(w.parts) })
-      .eq('class_date', date);
+    const { error } = await supabase.rpc('set_clock_plan', { d: date, plan, by_who: 'claude', fp: partsFingerprint(w.parts) });
     if (error) return { error: 'Couldn’t save the timers. Try again.' };
     revalidatePath(`/workouts/${date}`);
     return { ok: true, plan };
@@ -478,6 +475,15 @@ export async function deleteWorkout(classDate: string) {
 export async function setMember(memberId: string, approved: boolean, isAdmin: boolean) {
   const { supabase } = await requireMember({ admin: true });
   const { error } = await supabase.rpc('admin_set_member', { member: memberId, set_approved: approved, set_admin: isAdmin });
+  if (error) return { error: error.message };
+  revalidatePath('/admin/members');
+  return { ok: true };
+}
+
+/** Admins: make someone a coach (coach mode, notes, gym clock), or not. */
+export async function setCoach(memberId: string, on: boolean) {
+  const { supabase } = await requireMember({ admin: true });
+  const { error } = await supabase.rpc('admin_set_coach', { member: memberId, on_off: on });
   if (error) return { error: error.message };
   revalidatePath('/admin/members');
   return { ok: true };

@@ -55,6 +55,8 @@ export interface Profile {
   display_name: string;
   level: number;
   is_admin: boolean;
+  /** Runs class: coach mode, coach notes and the gym clock (admins can too). */
+  is_coach?: boolean;
   approved: boolean;
   animal?: string | null;
 }

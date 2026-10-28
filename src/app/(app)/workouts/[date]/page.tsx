@@ -28,7 +28,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
     getBests(supabase, userId),
     supabase.from('attendance').select('user_id').eq('class_date', date).order('created_at'),
     requireMember().then(async ({ me }) =>
-      me.is_admin ? (await supabase.from('workout_coach_notes').select('body').eq('class_date', date).maybeSingle<{ body: string }>()).data : null,
+      me.is_admin || me.is_coach ? (await supabase.from('workout_coach_notes').select('body').eq('class_date', date).maybeSingle<{ body: string }>()).data : null,
     ),
     getBenchmarks(supabase, userId),
   ]);
@@ -69,7 +69,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
         meta={upcoming ? <WhosComing classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} /> : null}
         log={{ movements, benchmarks, today: todayLocal() }}
         coach={
-          me.is_admin
+          me.is_admin || me.is_coach
             ? {
                 notes: coachNote?.body ?? null,
                 going: (attendance ?? []).map((a) => names[a.user_id] ?? 'Member'),
@@ -81,7 +81,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
       {coachNote?.body && (
         <details className="card coach-notes" style={{ marginTop: 8 }}>
           <summary>
-            <span className="eyebrow">Coach notes · admins only</span>
+            <span className="eyebrow">Coach notes · coaches only</span>
             <span className="chev"><Icon name="next" size={18} /></span>
           </summary>
           <dl>
