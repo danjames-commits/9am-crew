@@ -28,7 +28,7 @@ function TestCard({ n, test, finding, ready }: { n: number; test: ClockTest; fin
   function send() {
     setStatus('');
     startSend(async () => {
-      const r = await pressClockSequence(test.buttons);
+      const r = await pressClockSequence(test.buttons, `test ${test.id}`);
       setStatus(r && 'error' in r && r.error ? r.error : 'Sent. Watch the clock.');
     });
   }

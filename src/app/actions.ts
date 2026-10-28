@@ -115,36 +115,52 @@ export async function setWeeklyGoal(goal: number) {
   return { ok: true };
 }
 
-/** Coaches: press one button on the gym clock's remote, through the SwitchBot hub. */
-export async function pressClock(button: string) {
-  await requireMember({ coach: true });
-  if (!ALL_CLOCK_BUTTONS.includes(button)) return { error: 'Unknown button' };
+/**
+ * Press clock buttons in order through SwitchBot, and note each press (how long SwitchBot took,
+ * and what it said) in clock_log, so a timer that doesn't show up can be traced afterwards.
+ */
+async function runPresses(supabase: Awaited<ReturnType<typeof requireMember>>['supabase'], source: string, buttons: string[], gap: number) {
+  const presses: { b: string; ms: number; err?: string }[] = [];
+  let error: string | null = null;
   try {
     const clock = await findClock();
-    if (!clock) return { error: 'No remote named “Gym clock” in SwitchBot yet.' };
-    await pressButton(clock.deviceId, button);
-    return { ok: true };
+    if (!clock) error = 'No remote named “Gym clock” in SwitchBot yet.';
+    else
+      for (const [i, b] of buttons.entries()) {
+        const t = Date.now();
+        try {
+          await pressButton(clock.deviceId, b);
+          presses.push({ b, ms: Date.now() - t });
+        } catch (e) {
+          error = e instanceof Error ? e.message : 'SwitchBot didn’t answer.';
+          presses.push({ b, ms: Date.now() - t, err: error });
+          break;
+        }
+        // A gap so presses arrive in order. 2 s was safe but slow; 1 s once clearing first fixed the leftovers (Dan, Oct 27).
+        if (gap && i < buttons.length - 1) await new Promise((r) => setTimeout(r, gap));
+      }
   } catch (e) {
-    return { error: e instanceof Error ? e.message : 'SwitchBot didn’t answer.' };
+    error = e instanceof Error ? e.message : 'SwitchBot didn’t answer.';
   }
+  await supabase.from('clock_log').insert({ source, presses, ok: !error, error }).then(
+    () => null,
+    () => null,
+  );
+  return error ? { error } : { ok: true as const };
+}
+
+/** Coaches: press one button on the gym clock's remote, through the SwitchBot hub. */
+export async function pressClock(button: string) {
+  const { supabase } = await requireMember({ coach: true });
+  if (!ALL_CLOCK_BUTTONS.includes(button)) return { error: 'Unknown button' };
+  return runPresses(supabase, 'remote', [button], 0);
 }
 
 /** Coaches: press a run of clock buttons in order (timers in coach mode, and the setup tests). */
-export async function pressClockSequence(buttons: string[]) {
-  await requireMember({ coach: true });
+export async function pressClockSequence(buttons: string[], source = 'timer') {
+  const { supabase } = await requireMember({ coach: true });
   if (!buttons.length || buttons.length > 40 || !buttons.every((b) => ALL_CLOCK_BUTTONS.includes(b))) return { error: 'Unknown button' };
-  try {
-    const clock = await findClock();
-    if (!clock) return { error: 'No remote named “Gym clock” in SwitchBot yet.' };
-    for (const b of buttons) {
-      await pressButton(clock.deviceId, b);
-      // A gap so presses arrive in order. 2 s was safe but slow; 1 s once clearing first fixed the leftovers (Dan, Oct 27).
-      await new Promise((r) => setTimeout(r, 1000));
-    }
-    return { ok: true };
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : 'SwitchBot didn’t answer.' };
-  }
+  return runPresses(supabase, String(source).slice(0, 40), buttons, 1000);
 }
 
 /** The time of day in Halifax at a moment, as hours (0–23) and minutes. */

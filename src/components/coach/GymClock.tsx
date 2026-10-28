@@ -45,7 +45,8 @@ export function useClockRunner(plan: ClockPlan) {
     busy.current = true;
     setError('');
     setRun({ part, step, phase: 'sending', endsAt: 0, left: 0 });
-    const r = await pressClockSequence(buttonsFor(s));
+    // If the app was updated while this page was open, the call fails; say so instead of hanging.
+    const r = await pressClockSequence(buttonsFor(s), `timer ${describeStep(s)}`).catch(() => ({ error: 'The app was just updated. Pull down to reload, then try again.' }));
     busy.current = false;
     if (r && 'error' in r && r.error) {
       setError(r.error);
@@ -56,7 +57,7 @@ export function useClockRunner(plan: ClockPlan) {
   }, []);
 
   const send = useCallback(async (buttons: string[]) => {
-    const r = await pressClockSequence(buttons);
+    const r = await pressClockSequence(buttons, 'control').catch(() => ({ error: 'The app was just updated. Pull down to reload, then try again.' }));
     if (r && 'error' in r && r.error) setError(r.error);
     return !(r && 'error' in r && r.error);
   }, []);
