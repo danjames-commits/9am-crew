@@ -2,6 +2,7 @@ import { requireMember, signedIn } from '@/lib/supabase/server';
 import { MeForm } from '@/components/MeForm';
 import { svgVersion } from '@/lib/svg-clean';
 import { signOut } from '@/app/actions';
+import { NotificationSettings } from '@/components/NotificationSettings';
 
 export default async function MePage() {
   const { supabase, userId } = await signedIn();
@@ -15,6 +16,7 @@ export default async function MePage() {
       <MeForm id={me.id} name={me.display_name} level={me.level} animal={me.animal ?? null} drawn={drawn ? { name: drawn.name, prompt: drawn.prompt, version: svgVersion(drawn.svg) } : null}
         privacy={{ showInShowups: prefs?.show_in_showups ?? true, sharePrs: prefs?.share_prs ?? true }}
       />
+      <NotificationSettings isAdmin={me.is_admin} />
       <div className="card stack">
         <h2>Put it on your home screen</h2>
         <p className="muted">

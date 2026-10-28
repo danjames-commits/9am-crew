@@ -24,6 +24,8 @@ export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname === '/api/warm') return response;
   // The morning timer job: checked by its one-time ticket, not a sign-in.
   if (request.nextUrl.pathname === '/api/clock-job') return response;
+  // Notifications from the database: checked by their one-time ticket.
+  if (request.nextUrl.pathname === '/api/push') return response;
   // The MCP connector and its OAuth metadata: the route checks its own bearer token.
   if (request.nextUrl.pathname === '/api/mcp' || request.nextUrl.pathname.startsWith('/.well-known/')) return response;
   // Warming a tab itself (?warm=1): let it reach the page, which loads its code and
@@ -53,5 +55,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|animals/|favicon.ico|icon.png|apple-icon.png|icon-maskable-512.png|icon-192.png|icon-512.png|manifest.webmanifest).*)'],
+  matcher: ['/((?!sw.js|_next/static|_next/image|animals/|favicon.ico|icon.png|apple-icon.png|icon-maskable-512.png|icon-192.png|icon-512.png|manifest.webmanifest).*)'],
 };
