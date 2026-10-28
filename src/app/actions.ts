@@ -88,6 +88,23 @@ export async function setLevel(level: number) {
 }
 
 /** Your weekly attendance goal: 1 to 5 classes a week. */
+/** After class: save someone's quick survey (or that they skipped it). Only saved for now. */
+export async function saveSurvey(classDate: string, answer: { hard: number; length: number } | 'skip') {
+  if (!isDate(classDate)) return { error: 'Bad date' };
+  const { supabase, me } = await requireMember();
+  const ok = (n: number) => Number.isInteger(n) && n >= 1 && n <= 3;
+  const row: { class_date: string; level: number; skipped?: boolean; hard?: number; length?: number } | null =
+    answer === 'skip'
+      ? { class_date: classDate, skipped: true, level: me.level }
+      : ok(answer.hard) && ok(answer.length)
+        ? { class_date: classDate, hard: answer.hard, length: answer.length, level: me.level }
+        : null;
+  if (!row) return { error: 'Pick an answer for both.' };
+  const { error } = await supabase.from('workout_surveys').upsert(row, { onConflict: 'user_id,class_date', ignoreDuplicates: true });
+  if (error) return { error: 'Couldn’t save that. Try again.' };
+  return { ok: true };
+}
+
 export async function setWeeklyGoal(goal: number) {
   const { supabase, me } = await requireMember();
   const n = Math.round(goal);

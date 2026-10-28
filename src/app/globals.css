@@ -705,3 +705,8 @@ html.halloween body::before {
 .plate-off { opacity: 0.8; }
 .plate-bar-btn { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 2px 12px; border: 1.5px solid currentColor; border-radius: 16px; background: rgba(255, 255, 255, 0.6); font: inherit; font-size: 14px; font-weight: 800; color: inherit; cursor: pointer; white-space: nowrap; }
 .place-pick { display: grid; gap: 6px; padding-bottom: 4px; }
+
+/* After-class survey */
+.survey-sheet { position: fixed; inset: 0; z-index: 150; background: rgba(0, 0, 0, 0.45); display: flex; align-items: flex-end; justify-content: center; }
+.survey-card { width: 100%; max-width: 560px; background: var(--ground); border-radius: 22px 22px 0 0; padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); max-height: 92vh; overflow-y: auto; }
+.survey-thanks { font-family: var(--display); font-weight: 800; font-size: 24px; text-align: center; padding: 24px 0; }

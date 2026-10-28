@@ -5,9 +5,8 @@ import { requireMember, signedIn } from '@/lib/supabase/server';
 import { maybePostRecap } from '@/lib/recap';
 import { getPeople, getSchedule } from '@/lib/data';
 import { WeekDigest, type DigestDay } from '@/components/WeekDigest';
-import { daysBetween } from '@/lib/dates';
 import { nextCycle, positionOn } from '@/lib/programming/engine';
-import { classDays, nextClassDate, nextWeekday, relativeDay, longDate, todayLocal } from '@/lib/dates';
+import { addDays, classDays, daysBetween, lastClassDone, longDate, nextClassDate, nextWeekday, relativeDay, shortDate, todayLocal } from '@/lib/dates';
 import { firstName } from '@/lib/ui';
 import { isHalloween } from '@/lib/season';
 import { Bats } from '@/components/Bats';
@@ -16,6 +15,7 @@ import { CheckIn } from '@/components/CheckIn';
 import { Avatar } from '@/components/Avatar';
 import { Icon } from '@/components/Icon';
 import { classWeather } from '@/lib/weather';
+import { SurveyPopup } from '@/components/SurveyPopup';
 import type { Part } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
@@ -91,6 +91,9 @@ export default async function TodayPage() {
 
       <Suspense fallback={null}>
         <MilestoneBanner p={milestoneP} />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SurveyCheck />
       </Suspense>
 
       {me.is_admin && (
@@ -178,4 +181,29 @@ async function MilestoneBanner({ p }: { p: PromiseLike<{ data: { body: string } 
       </div>
     </div>
   );
+}
+
+/** After a class you signed up for (from 10 AM until the end of the next day): a quick survey, once. */
+async function SurveyCheck() {
+  const { supabase, userId } = await signedIn();
+  const done = lastClassDone();
+  const from = addDays(todayLocal(), -1);
+  if (done < from) return null;
+  const { data: went } = await supabase
+    .from('attendance')
+    .select('class_date')
+    .eq('user_id', userId)
+    .gte('class_date', from)
+    .lte('class_date', done)
+    .order('class_date', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!went) return null;
+  const [{ data: answered }, { data: w }] = await Promise.all([
+    supabase.from('workout_surveys').select('class_date').eq('user_id', userId).eq('class_date', went.class_date).maybeSingle(),
+    supabase.from('workouts').select('title').eq('class_date', went.class_date).eq('status', 'published').maybeSingle(),
+  ]);
+  if (answered || !w) return null;
+  const when = went.class_date === todayLocal() ? 'Today' : shortDate(went.class_date).split(' · ')[0];
+  return <SurveyPopup classDate={went.class_date} when={when} title={w.title} />;
 }
