@@ -704,3 +704,4 @@ html.halloween body::before {
 .plate-add .plate-chip { font-size: 11px; padding: 0 6px; }
 .plate-off { opacity: 0.8; }
 .plate-bar-btn { display: inline-flex; align-items: center; gap: 4px; min-height: 32px; padding: 2px 12px; border: 1.5px solid currentColor; border-radius: 16px; background: rgba(255, 255, 255, 0.6); font: inherit; font-size: 14px; font-weight: 800; color: inherit; cursor: pointer; white-space: nowrap; }
+.place-pick { display: grid; gap: 6px; padding-bottom: 4px; }
