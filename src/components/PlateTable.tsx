@@ -1,5 +1,5 @@
 'use client';
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BARS, planLoads, plateChange, plateList } from '@/lib/plates';
 
 interface Line {
@@ -20,44 +20,22 @@ const LOOK: Record<string, { h: number; w: number; fill: string; ink: string }> 
   '1': { h: 19, w: 4, fill: '#b9c0c4', ink: '#221829' },
 };
 
-/** One side of the bar, drawn: the sleeve with its plates, each labelled. */
-function BarDrawing({ side }: { side: number[] }) {
-  const H = 92;
-  const mid = 42;
-  const gap = 2;
-  let x = 40;
-  const plates = side.map((p) => {
-    const look = LOOK[String(p)];
-    const w = look.w * 2.6;
-    const el = { p, x, w, look };
-    x += w + gap;
-    return el;
-  });
-  const sleeveEnd = Math.max(x + 18, 150);
+/** A small plate chip in the plate's colour. */
+function Plate({ p, n }: { p: number; n?: number }) {
+  const look = LOOK[String(p)];
   return (
-    <svg viewBox={`0 0 ${sleeveEnd + 4} ${H}`} width="100%" height={H} role="img" aria-label={side.length ? `Each side: ${plateList(side)}` : 'Just the bar'}>
-      {/* bar shaft and collar */}
-      <rect x="0" y={mid - 3} width="34" height="6" rx="2" fill="#9aa3a8" />
-      <rect x="32" y={mid - 9} width="7" height="18" rx="2" fill="#6d777c" />
-      {/* sleeve */}
-      <rect x="38" y={mid - 5} width={sleeveEnd - 38} height="10" rx="3" fill="#b9c0c4" />
-      {plates.map(({ p, x: px, w, look }, k) => (
-        <g key={k}>
-          <rect x={px} y={mid - (look.h * 1.25) / 2} width={w} height={look.h * 1.25} rx="2.5" fill={look.fill} stroke="rgba(0,0,0,0.25)" strokeWidth="0.8" />
-        </g>
-      ))}
-      {plates.map(({ p, x: px, w }, k) => (
-        <text key={`t${k}`} x={px + w / 2} y={H - 2} textAnchor="middle" fontSize="10" fontWeight="800" fill="currentColor">
-          {p}
-        </text>
-      ))}
-    </svg>
+    <span className="plate-chip" style={{ background: look.fill, color: look.ink }}>
+      {n ? `${n} × ` : ''}
+      {p}
+    </span>
   );
 }
 
-/** The sets table. Tap a set to see which plates go on each side, and what changes from the set before. */
+/**
+ * The sets, each with what to put on the bar (per side) under it, and a "Grab" list of
+ * every plate the lift needs. Plates only ever go on, so it's all "add this".
+ */
 export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: string }) {
-  const [open, setOpen] = useState<number | null>(null);
   const [bar, setBar] = useState<number>(45);
   useEffect(() => {
     try {
@@ -65,15 +43,15 @@ export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: s
       if (BARS.includes(b as (typeof BARS)[number])) setBar(b);
     } catch {}
   }, []);
-  const pickBar = (b: number) => {
+  const nextBar = () => {
+    const b = BARS[(BARS.indexOf(bar as (typeof BARS)[number]) + 1) % BARS.length];
     setBar(b);
     try {
       localStorage.setItem('bar-weight', String(b));
     } catch {}
   };
   const loads = planLoads(lines.map((l) => l.weight), bar);
-  const anyPlates = lines.some((l) => l.weight != null && l.weight >= bar);
-  // Plates only ever go on, so the heaviest set's stack is everything to grab (two of each, one per side).
+  // The heaviest set's stack is everything to grab (two of each, one per side).
   const fullest = loads.reduce<number[]>((acc, l) => (l && l.side.length > acc.length ? l.side : acc), []);
   const grab = [...new Set(fullest)].sort((a, b) => b - a).map((p) => ({ p, n: fullest.filter((x) => x === p).length * 2 }));
 
@@ -82,78 +60,43 @@ export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: s
       {grab.length > 0 && (
         <div className="plate-grab" aria-label={`Plates to grab: ${grab.map((g) => `${g.n} × ${g.p}`).join(', ')}, and a ${bar} lb bar`}>
           <span className="plate-grab-label">Grab</span>
-          {grab.map((g) => {
-            const look = LOOK[String(g.p)];
-            return (
-              <span key={g.p} className="plate-chip" style={{ background: look.fill, color: look.ink }}>
-                {g.n} × {g.p}
-              </span>
-            );
-          })}
-          <span className="plate-grab-bar">+ {bar} lb bar</span>
+          {grab.map((g) => (
+            <Plate key={g.p} p={g.p} n={g.n} />
+          ))}
+          <button type="button" className="plate-bar-btn" onClick={nextBar} aria-label={`Bar is ${bar} lb. Tap to change.`}>
+            + {bar} lb bar ▾
+          </button>
         </div>
       )}
       <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: 6 }}>
         <tbody>
           {lines.map((l, k) => {
             const load = loads[k];
-            const canOpen = anyPlates && l.weight != null && load !== null;
-            const isOpen = open === k && canOpen;
             const prev = k > 0 ? loads[k - 1] : null;
-            const change = load && prev ? plateChange(prev.side, load.side) : load ? { off: [], on: load.side } : null;
+            const add = load && l.weight != null && l.weight >= bar ? plateChange(prev?.side ?? [], load.side) : null;
             return (
-              <Fragment key={k}>
-                <tr
-                  className={`plate-row ${canOpen ? 'tap' : ''} ${isOpen ? 'open' : ''}`}
-                  style={{ borderTop: k ? '1px solid rgba(23,66,61,0.15)' : 'none', fontWeight: l.label === 'Work' ? 800 : 500 }}
-                  onClick={() => canOpen && setOpen(isOpen ? null : k)}
-                  onKeyDown={(e) => canOpen && (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), setOpen(isOpen ? null : k))}
-                  tabIndex={canOpen ? 0 : undefined}
-                  role={canOpen ? 'button' : undefined}
-                  aria-expanded={canOpen ? isOpen : undefined}
-                >
-                  <td style={{ padding: '6px 0' }}>{l.label}</td>
-                  <td style={{ padding: '6px 0', textAlign: 'right' }}>
-                    {l.sets > 1 ? `${l.sets} × ` : ''}
-                    {l.reps} @ {l.weight == null ? lightLabel : `${load && l.weight >= bar ? load.total : l.weight} lb`}
-                    {canOpen && <span className="plate-chev" aria-hidden="true">{isOpen ? '▴' : '▾'}</span>}
-                  </td>
-                </tr>
-                {isOpen && load && (
-                  <tr className="plate-detail">
-                    <td colSpan={2}>
-                      <BarDrawing side={load.side} />
-                      <div className="plate-lines">
-                        <div>
-                          <b>Each side:</b> {load.side.length ? plateList(load.side) : 'nothing, just the bar'}
-                        </div>
-                        {change && k > 0 && (change.off.length > 0 || change.on.length > 0) && (
-                          <div>
-                            <b>From the last set:</b>{' '}
-                            {[change.off.length ? `take off ${plateList(change.off)}` : '', change.on.length ? `put on ${plateList(change.on)}` : '']
-                              .filter(Boolean)
-                              .join(', then ')}{' '}
-                            each side
-                          </div>
-                        )}
-                      </div>
-                      <div className="plate-bars" role="group" aria-label="Bar weight">
-                        <span>Bar</span>
-                        {BARS.map((b) => (
-                          <button key={b} type="button" aria-pressed={bar === b} onClick={() => pickBar(b)}>
-                            {b} lb
-                          </button>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </Fragment>
+              <tr key={k} style={{ borderTop: k ? '1px solid rgba(23,66,61,0.15)' : 'none', fontWeight: l.label === 'Work' ? 800 : 500 }}>
+                <td style={{ padding: '6px 0' }}>
+                  {l.label}
+                  {add && (add.on.length > 0 || add.off.length > 0) && (
+                    <span className="plate-add" aria-label={`Each side: ${add.off.length ? `take off ${plateList(add.off)}, ` : ''}add ${plateList(add.on)}`}>
+                      {add.off.length > 0 && <span className="plate-off">off {plateList(add.off)},</span>}
+                      <span>{k === 0 || !prev?.side.length ? 'each side' : 'add'}</span>
+                      {add.on.map((p, i) => (
+                        <Plate key={i} p={p} />
+                      ))}
+                    </span>
+                  )}
+                </td>
+                <td style={{ padding: '6px 0', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  {l.sets > 1 ? `${l.sets} × ` : ''}
+                  {l.reps} @ {l.weight == null ? lightLabel : `${load && l.weight >= bar ? load.total : l.weight} lb`}
+                </td>
+              </tr>
             );
           })}
         </tbody>
       </table>
-      {anyPlates && open === null && <div className="plate-hint">Tap a set to see the plates</div>}
     </>
   );
 }
