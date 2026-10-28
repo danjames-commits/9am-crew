@@ -64,7 +64,7 @@ export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: s
             <Plate key={g.p} p={g.p} n={g.n} />
           ))}
           <button type="button" className="plate-bar-btn" onClick={nextBar} aria-label={`Bar is ${bar} lb. Tap to change.`}>
-            + {bar} lb bar ▾
+            {bar} lb bar ▾
           </button>
         </div>
       )}
