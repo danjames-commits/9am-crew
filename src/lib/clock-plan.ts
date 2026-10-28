@@ -63,6 +63,9 @@ const digits = (n: number) => String(n).split('');
 // so a zero field is skipped.
 export const CLEAR_COUNTDOWN = ['Exit', 'Down', '0', 'Right', '0', '0', 'Exit', 'Down'];
 
+/** Zeroes the rounds, work and rest, then leaves intervals (Dan, Oct 27). */
+export const CLEAR_INTERVALS = ['Exit', 'Select', '0', '0', 'Select', '0', '0', 'Right', '0', '0', 'Select', '0', '0', 'Right', '0', '0', 'Exit'];
+
 
 /** The remote presses that set up and start one step. */
 export function buttonsFor(step: ClockStep): string[] {
@@ -73,11 +76,14 @@ export function buttonsFor(step: ClockStep): string[] {
   }
   // Intervals (Dan's videos, Oct 27): Select shows the rounds, Select again for the work
   // time (H1), again for the rest (H2); each time starts on the minutes, Right for seconds.
-  // Each field is zeroed right before its new number goes in: 0, then the number (Dan:
-  // "clear, new, next, clear, new").
-  const field = (n: number) => ['0', ...(n ? digits(n) : [])];
-  const time = (sec: number) => [...field(Math.floor(sec / 60)), 'Right', ...field(sec % 60)];
-  return ['Exit', 'Select', ...field(step.rounds), 'Select', ...time(step.work), 'Select', ...time(step.rest), 'OK'];
+  // Like countdowns: zero every field and Exit (CLEAR_INTERVALS), then Select back in and
+  // type only what's needed. Zeros are already there, so a zero field is skipped.
+  const time = (sec: number) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return [...(m ? digits(m) : []), ...(s ? ['Right', ...digits(s)] : [])];
+  };
+  return [...CLEAR_INTERVALS, 'Select', ...digits(step.rounds), 'Select', ...time(step.work), 'Select', ...time(step.rest), 'OK'];
 }
 
 /** How long a step runs once started, not counting the lead-in. */

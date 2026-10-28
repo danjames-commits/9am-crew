@@ -9,12 +9,17 @@ describe('gym clock plan', () => {
     expect(buttonsFor({ type: 'countdown', label: '', seconds: 12 * 60 })).toEqual([...clear, '1', '2', 'OK']);
     expect(buttonsFor({ type: 'countdown', label: '', seconds: 3 * 60 + 30 })).toEqual([...clear, '3', 'Right', '3', '0', 'OK']);
   });
-  it('zeroes each interval field right before typing it', () => {
-    expect(buttonsFor({ type: 'intervals', label: '', rounds: 3, work: 20, rest: 10 })).toEqual(
-      ['Exit', 'Select', '0', '3', 'Select', '0', 'Right', '0', '2', '0', 'Select', '0', 'Right', '0', '1', '0', 'OK'],
+  it('clears the intervals first, then types only what is needed', () => {
+    const clear = ['Exit', 'Select', '0', '0', 'Select', '0', '0', 'Right', '0', '0', 'Select', '0', '0', 'Right', '0', '0', 'Exit'];
+    expect(buttonsFor({ type: 'intervals', label: '', rounds: 2, work: 20, rest: 10 })).toEqual(
+      [...clear, 'Select', '2', 'Select', 'Right', '2', '0', 'Select', 'Right', '1', '0', 'OK'],
     );
+    expect(buttonsFor({ type: 'intervals', label: '', rounds: 12, work: 90, rest: 75 })).toEqual(
+      [...clear, 'Select', '1', '2', 'Select', '1', 'Right', '3', '0', 'Select', '1', 'Right', '1', '5', 'OK'],
+    );
+    expect(buttonsFor({ type: 'intervals', label: '', rounds: 5, work: 60, rest: 0 })).toEqual([...clear, 'Select', '5', 'Select', '1', 'Select', 'OK']);
   });
-  it('only uses real buttons, and stays under the 24-press limit', () => {
+  it('only uses real buttons, and stays under the 40-press limit', () => {
     const b = buttonsFor({ type: 'intervals', label: '', rounds: 12, work: 99 * 60 + 59, rest: 59 * 60 });
     expect(b.length).toBeLessThanOrEqual(40);
     expect(b.every((x) => ALL_CLOCK_BUTTONS.includes(x))).toBe(true);
