@@ -13,7 +13,7 @@ export default async function ChatPage() {
     requireMember(),
     supabase
       .from('messages')
-      .select('id, user_id, body, kind, lift_log_id, created_at, lift_logs(movement_id, cheers(user_id))')
+      .select('id, user_id, body, kind, lift_log_id, created_at, lift_logs(movement_id, cheers(user_id)), message_reactions(user_id, emoji)')
       .order('id', { ascending: false })
       .limit(150),
     getPeople(supabase),
@@ -22,7 +22,8 @@ export default async function ChatPage() {
   ]);
   after(() => maybePostRecap(supabase));
   const rows = (recent ?? []).reverse();
-  const messages = rows.map(({ lift_logs, ...m }) => m) as ChatMessage[];
+  const messages = rows.map(({ lift_logs, message_reactions, ...m }) => m) as ChatMessage[];
+  const reactions = rows.flatMap((m) => ((m.message_reactions ?? []) as { user_id: string; emoji: string }[]).map((r) => ({ message_id: m.id as number, ...r })));
   const cheers = rows.flatMap((m) => (m.lift_log_id ? embeddedCheers(m.lift_logs).map((c) => ({ lift_log_id: m.lift_log_id as number, user_id: c.user_id })) : []));
   const count = Object.keys(names).length;
   // Personal-best drawings, by message.
@@ -40,7 +41,7 @@ export default async function ChatPage() {
         <h1>9AM Crew</h1>
         <p className="muted">{count} members</p>
       </header>
-      <ChatRoom initial={messages} initialCheers={cheers} initialNames={names} initialAnimals={animals} meId={me.id} lastRead={read?.read_at ?? null} art={art} isAdmin={me.is_admin} />
+      <ChatRoom initial={messages} initialCheers={cheers} initialReactions={reactions} initialNames={names} initialAnimals={animals} meId={me.id} lastRead={read?.read_at ?? null} art={art} isAdmin={me.is_admin} />
     </main>
   );
 }

@@ -21,10 +21,17 @@ interface Cheer {
   lift_log_id: number;
   user_id: string;
 }
+export interface Reaction {
+  message_id: number;
+  user_id: string;
+  emoji: string;
+}
+export const REACTIONS = ['👍', '❤️', '😂', '🔥', '💪', '🎉'] as const;
 
 export function ChatRoom({
   initial,
   initialCheers,
+  initialReactions = [],
   initialNames,
   initialAnimals,
   meId,
@@ -34,6 +41,7 @@ export function ChatRoom({
 }: {
   initial: ChatMessage[];
   initialCheers: Cheer[];
+  initialReactions?: Reaction[];
   initialNames: Record<string, string>;
   initialAnimals: Record<string, string | null>;
   meId: string;
@@ -46,6 +54,15 @@ export function ChatRoom({
   const supabase = useMemo(() => supabaseBrowser(), []);
   const [messages, setMessages] = useState(initial);
   const [cheers, setCheers] = useState(initialCheers);
+  const [reactions, setReactions] = useState(initialReactions);
+  // The message whose emoji picker is open (tap a message to react).
+  const [picking, setPicking] = useState<number | null>(null);
+  useEffect(() => {
+    if (picking == null) return;
+    const close = (e: PointerEvent) => !(e.target as HTMLElement).closest('.react-pick, .reactable') && setPicking(null);
+    document.addEventListener('pointerdown', close);
+    return () => document.removeEventListener('pointerdown', close);
+  }, [picking]);
   const [names, setNames] = useState(initialNames);
   const [animals, setAnimals] = useState(initialAnimals);
   const [text, setText] = useState('');
@@ -93,6 +110,14 @@ export function ChatRoom({
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'cheers' }, (p) => {
         const c = p.old as Cheer;
         setCheers((list) => list.filter((x) => !(x.lift_log_id === c.lift_log_id && x.user_id === c.user_id)));
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'message_reactions' }, (p) => {
+        const r = p.new as Reaction;
+        setReactions((list) => (list.some((x) => same(x, r)) ? list : [...list, r]));
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'message_reactions' }, (p) => {
+        const r = p.old as Reaction;
+        setReactions((list) => list.filter((x) => !same(x, r)));
       })
       .subscribe();
     return () => {
@@ -149,12 +174,61 @@ export function ChatRoom({
     }
   }
 
+  async function toggleReaction(messageId: number, emoji: string) {
+    setPicking(null);
+    const r = { message_id: messageId, user_id: meId, emoji };
+    if (reactions.some((x) => same(x, r))) {
+      setReactions((l) => l.filter((x) => !same(x, r)));
+      await supabase.from('message_reactions').delete().eq('message_id', messageId).eq('user_id', meId).eq('emoji', emoji);
+    } else {
+      setReactions((l) => [...l, r]);
+      const { error } = await supabase.from('message_reactions').insert({ message_id: messageId, emoji });
+      if (error) setReactions((l) => l.filter((x) => !same(x, r)));
+    }
+  }
+
+  /** The emoji chips under a message, and the picker when it's open. */
+  function reactionsFor(m: ChatMessage, align: 'left' | 'right') {
+    const these = reactions.filter((r) => r.message_id === m.id);
+    const counts = REACTIONS.map((e) => ({ e, who: these.filter((r) => r.emoji === e) })).filter((c) => c.who.length);
+    if (!counts.length && picking !== m.id) return null;
+    return (
+      <div className={`reactions ${align}`}>
+        {picking === m.id && (
+          <div className="react-pick" role="group" aria-label="React">
+            {REACTIONS.map((e) => (
+              <button key={e} type="button" aria-pressed={these.some((r) => r.emoji === e && r.user_id === meId)} onClick={() => toggleReaction(m.id, e)}>
+                {e}
+              </button>
+            ))}
+          </div>
+        )}
+        {counts.map(({ e, who }) => (
+          <button
+            key={e}
+            type="button"
+            className={`react-chip ${who.some((r) => r.user_id === meId) ? 'mine' : ''}`}
+            title={who.map((r) => (r.user_id === meId ? 'You' : firstName(names[r.user_id] ?? 'Member'))).join(', ')}
+            aria-label={`${e} ${who.length}, ${who.some((r) => r.user_id === meId) ? 'including you. Tap to remove yours.' : 'tap to add yours.'}`}
+            onClick={() => toggleReaction(m.id, e)}
+          >
+            {e} {who.length > 1 && <span>{who.length}</span>}
+          </button>
+        ))}
+      </div>
+    );
+  }
+  const openPicker = (id: number) => setPicking((p) => (p === id ? null : id));
+
   function row(m: ChatMessage, i: number) {
     if (m.kind === 'recap') {
       return (
-        <div key={m.id} className="card teal stack tight">
-          <div className="eyebrow teal">Friday recap</div>
-          <p className="pre">{m.body}</p>
+        <div key={m.id} className="stack tight">
+          <div className="card teal stack tight reactable" onClick={() => openPicker(m.id)}>
+            <div className="eyebrow teal">Friday recap</div>
+            <p className="pre">{m.body}</p>
+          </div>
+          {reactionsFor(m, 'left')}
         </div>
       );
     }
@@ -163,7 +237,8 @@ export function ChatRoom({
     if (m.kind === 'milestone') {
       const n = parseInt(m.body, 10) || 0;
       return (
-        <div key={m.id} className="milestone-card" title={timeAgo(m.created_at)}>
+        <div key={m.id} className="stack tight">
+        <div className="milestone-card reactable" title={timeAgo(m.created_at)} onClick={() => openPicker(m.id)}>
           {m.user_id && <PersonAvatar id={m.user_id} name={name} animal={animals[m.user_id]} />}
           <div className="grow">
             <div className="milestone-n">
@@ -173,6 +248,8 @@ export function ChatRoom({
               {mine ? 'You’ve' : `${firstName(name)} has`} shown up for {n} classes. {n >= 100 ? 'Legend.' : n >= 50 ? 'That’s a habit.' : 'Keep it rolling!'}
             </div>
           </div>
+        </div>
+        {reactionsFor(m, 'left')}
         </div>
       );
     }
@@ -202,9 +279,12 @@ export function ChatRoom({
             <Avatar id={m.user_id ?? ''} name={name} animal={animals[m.user_id ?? '']} size="sm" hidden />
           )
         )}
-        <div className={`bubble ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)}>
-          {showName && <div className="who">{firstName(name)}</div>}
-          {m.body}
+        <div className={`bubble-wrap ${mine ? 'mine' : ''}`}>
+          <div className={`bubble reactable ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)} onClick={() => openPicker(m.id)}>
+            {showName && <div className="who">{firstName(name)}</div>}
+            {m.body}
+          </div>
+          {reactionsFor(m, mine ? 'right' : 'left')}
         </div>
       </div>
     );
@@ -258,3 +338,5 @@ export function ChatRoom({
     </>
   );
 }
+
+const same = (a: Reaction, b: Reaction) => a.message_id === b.message_id && a.user_id === b.user_id && a.emoji === b.emoji;
