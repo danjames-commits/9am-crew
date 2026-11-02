@@ -146,7 +146,8 @@ export function planLoads(weights: (number | null)[], bar = 45): (Loading | null
         const from = prefix.map(() => 0);
         for (let k = 0; k < prefix.length; k++) {
           // Up to 5 lb per side either way doesn't matter on a warm-up.
-          const miss = Math.max(0, Math.abs(prefix[k] - t) - 5) * 4;
+          // (Still, closer is a little better, so ties go to the plan that hits the warm-ups.)
+          const miss = Math.max(0, Math.abs(prefix[k] - t) - 5) * 4 + Math.abs(prefix[k] - t) * 0.5;
           for (let j = 0; j <= k; j++) {
             // Each step ideally adds one plate; a warm-up meant to have weight shouldn't be the empty bar.
             const c = costs[j] + miss + (w > 0 && j === k ? 15 : 0) + 8 * Math.max(0, k - j - 1) + (k === 0 && t > 0 ? 15 : 0);
@@ -161,11 +162,12 @@ export function planLoads(weights: (number | null)[], bar = 45): (Loading | null
       });
       let end = 0;
       for (let k = 1; k < prefix.length; k++) if (costs[k] < costs[end]) end = k;
-      // Fewer plates is better, and the gym only has so many of each (45s are plentiful).
+      // Fewer plates is better. A third of one size is only a slight cost (45s are plentiful):
+      // never enough to swap one 15 for 10 + 5 (Dan, Nov 2).
       const count = new Map<number, number>();
       for (const p of stack) count.set(p, (count.get(p) ?? 0) + 1);
       let extra = 0;
-      for (const [p, n] of count) if (p !== 45 && n > 2) extra += (n - 2) * 25;
+      for (const [p, n] of count) if (p !== 45 && n > 2) extra += (n - 2) * 5;
       const cost = costs[end] + 10 * stack.length + extra;
       if (!best || cost < best.cost) {
         const cuts: number[] = [];
