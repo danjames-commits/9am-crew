@@ -614,6 +614,12 @@ body:has(.chat-input:focus) .screen { padding-bottom: 0; }
 .round-btn.plus { background: var(--gold); color: var(--ink); }
 .round-count { display: flex; flex-direction: column; align-items: center; line-height: 1; }
 .round-count span { font-family: var(--display); font-weight: 800; font-size: 52px; font-variant-numeric: tabular-nums; }
+.round-count.done span { color: var(--green, #1f7a4d); }
+.round-wrap { display: grid; gap: 8px; }
+.round-dots { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.round-dots span { width: 14px; height: 14px; border-radius: 50%; background: var(--line, #ddd6c8); transition: background 0.2s, transform 0.2s; }
+.round-dots span.on { background: var(--gold); transform: scale(1.15); }
+.round-cheer { margin: 0; text-align: center; font-weight: 800; color: var(--ink-2, #3d4a47); }
 .round-count small { font-size: 13px; font-weight: 800; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
 .partial-list { display: grid; gap: 6px; }
 .partial-row { display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 12px; background: var(--ground); }
