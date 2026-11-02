@@ -45,47 +45,48 @@ export function RoundCounter({ id, target = null }: { id: string; target?: numbe
       localStorage.setItem(key, String(next));
     } catch {}
   };
-  const counter = (
-    <div className="round-counter" role="group" aria-label="Round counter">
-      <button type="button" className="round-btn minus" aria-label="One round less" onClick={() => set(n - 1)} disabled={n === 0}>
-        −
-      </button>
-      {target ? (
-        <div className={`round-count${n >= target ? ' done' : ''}`} aria-live="polite">
-          <span>{n >= target ? '✓' : target - n}</span>
-          <small>{n >= target ? `${target} of ${target}` : 'to go'}</small>
-        </div>
-      ) : (
-        <div className="round-count" aria-live="polite">
-          <span>{n}</span>
-          <small>{n === 1 ? 'round' : 'rounds'}</small>
+  const finished = Boolean(target && n >= target);
+  return (
+    <div className="round-wrap" role="group" aria-label="Round counter">
+      <div className="round-counter">
+        {target ? (
+          <div className={`round-count${finished ? ' done' : ''}`} aria-live="polite">
+            <span>{finished ? '✓' : target - n}</span>
+            <small>{finished ? `${target} of ${target}` : 'to go'}</small>
+          </div>
+        ) : (
+          <div className="round-count" aria-live="polite">
+            <span>{n}</span>
+            <small>{n === 1 ? 'round' : 'rounds'}</small>
+          </div>
+        )}
+        <button
+          type="button"
+          className="round-done"
+          disabled={finished}
+          onClick={() => {
+            set(n + 1);
+            try {
+              navigator.vibrate?.(30);
+            } catch {}
+          }}
+        >
+          <span aria-hidden="true">✓</span> {finished ? 'All done' : 'Round done'}
+        </button>
+      </div>
+      {target && (
+        <div className="round-dots" aria-hidden="true">
+          {Array.from({ length: target }, (_, i) => (
+            <span key={i} className={i < n ? 'on' : ''} />
+          ))}
         </div>
       )}
-      <button
-        type="button"
-        className="round-btn plus"
-        aria-label="One more round"
-        onClick={() => {
-          set(n + 1);
-          try {
-            navigator.vibrate?.(30);
-          } catch {}
-        }}
-      >
-        +
-      </button>
-    </div>
-  );
-  if (!target) return counter;
-  return (
-    <div className="round-wrap">
-      {counter}
-      <div className="round-dots" aria-hidden="true">
-        {Array.from({ length: target }, (_, i) => (
-          <span key={i} className={i < n ? 'on' : ''} />
-        ))}
-      </div>
-      <p className="round-cheer">{cheer(target - n, target)}</p>
+      {target && <p className="round-cheer">{cheer(target - n, target)}</p>}
+      {n > 0 && (
+        <button type="button" className="round-undo" onClick={() => set(n - 1)}>
+          Undo last round
+        </button>
+      )}
     </div>
   );
 }
