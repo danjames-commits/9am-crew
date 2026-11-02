@@ -71,7 +71,8 @@ export function RoundCounter({ id, target = null }: { id: string; target?: numbe
             } catch {}
           }}
         >
-          <span aria-hidden="true">✓</span> {finished ? 'All done' : 'Round done'}
+          <span aria-hidden="true">✓</span> {finished ? 'All rounds done' : `Round ${n + 1} done`}
+          {target && !finished && <small>of {target}</small>}
         </button>
       </div>
       {target && (
