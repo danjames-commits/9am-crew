@@ -330,7 +330,16 @@ export function ChatRoom({
             }
           }}
         />
-        <button className="btn primary" aria-label="Send" disabled={sending || !text.trim()} style={{ width: 52, padding: 0, borderRadius: 26, flex: 'none' }}>
+        <button
+          className="btn primary"
+          aria-label="Send"
+          disabled={sending || !text.trim()}
+          style={{ width: 52, padding: 0, borderRadius: 26, flex: 'none' }}
+          // Keep the cursor in the box: otherwise the first tap closes the keyboard, the bar
+          // moves down, and the tap misses Send (Dan, Nov 3). The keyboard stays up, like Messages.
+          onPointerDown={(e) => e.preventDefault()}
+          onMouseDown={(e) => e.preventDefault()}
+        >
           <Icon name="send" />
         </button>
       </form>
