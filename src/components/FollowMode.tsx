@@ -1,15 +1,27 @@
-'use client';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { LEVELS, type Level, type Part } from '@/lib/types';
-import { notesByPart, splitCoachNotes, type CoachNoteSection } from '@/lib/coach-notes';
-import { PartBody, levelGroups, partWords } from './PartText';
-import { setOutKit, type KitChanges } from '@/lib/workout-kit';
-import { KitList } from './EquipmentStrip';
-import { YourNumbers } from './YourNumbers';
-import { QuickLog, type QuickLogContext } from './QuickLog';
-import { RoundCounter, countsRounds, roundsTarget } from './RoundCounter';
-import { ClockNowBar, ClockOverview, ClockPartPanel, RemoteSheet, useClockRunner, type ClockInfo, type ClockRunner } from './coach/GymClock';
-import type { ClockPlan } from '@/lib/clock-plan';
+"use client";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { LEVELS, type Level, type Part } from "@/lib/types";
+import {
+  notesByPart,
+  splitCoachNotes,
+  type CoachNoteSection,
+} from "@/lib/coach-notes";
+import { PartBody, levelGroups, partWords } from "./PartText";
+import { setOutKit, type KitChanges } from "@/lib/workout-kit";
+import { KitList } from "./EquipmentStrip";
+import { YourNumbers } from "./YourNumbers";
+import { QuickLog, type QuickLogContext } from "./QuickLog";
+import { RoundCounter, countsRounds, roundsTarget } from "./RoundCounter";
+import {
+  ClockNowBar,
+  ClockOverview,
+  ClockPartPanel,
+  RemoteSheet,
+  useClockRunner,
+  type ClockInfo,
+  type ClockRunner,
+} from "./coach/GymClock";
+import type { ClockPlan } from "@/lib/clock-plan";
 
 export interface CoachInfo {
   notes: string | null;
@@ -37,7 +49,7 @@ export function FollowMode({
   kitChanges,
   onClose,
 }: {
-  mode: 'member' | 'coach';
+  mode: "member" | "coach";
   title: string;
   parts: Part[];
   level: Level;
@@ -48,7 +60,7 @@ export function FollowMode({
   kitChanges?: KitChanges;
   onClose: () => void;
 }) {
-  const isCoach = mode === 'coach';
+  const isCoach = mode === "coach";
   const [level, setLevel] = useState<Level>(startLevel);
   const [outside, setOutside] = useState(startOutside);
   // What the coach sets out: everything any level uses, inside or outside as chosen, plus any coach changes.
@@ -56,26 +68,36 @@ export function FollowMode({
   const setOut = setOutKit(parts, outside, kitChanges);
   const [size, setSize] = useState(() => {
     try {
-      return Number(localStorage.getItem('follow-size') ?? 1) || 1;
+      return Number(localStorage.getItem("follow-size") ?? 1) || 1;
     } catch {
       return 1;
     }
   });
-  const sections = splitCoachNotes(coach?.notes ?? '');
+  const sections = splitCoachNotes(coach?.notes ?? "");
   const { perPart, general } = notesByPart(sections, parts);
   // Coaches get a "before class" screen first; everyone gets a wrap-up at the end.
-  const screens = [...(isCoach ? ['intro' as const] : []), ...parts.map((_, i) => i), 'done' as const];
+  const screens = [
+    ...(isCoach ? ["intro" as const] : []),
+    ...parts.map((_, i) => i),
+    "done" as const,
+  ];
   const [at, setAt] = useState(0);
   const screen = screens[at];
-  const go = useCallback((d: number) => setAt((a) => Math.max(0, Math.min(screens.length - 1, a + d))), [screens.length]);
+  const go = useCallback(
+    (d: number) =>
+      setAt((a) => Math.max(0, Math.min(screens.length - 1, a + d))),
+    [screens.length],
+  );
   const scroller = useRef<HTMLDivElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!settingsOpen) return;
-    const close = (e: PointerEvent) => !settingsRef.current?.contains(e.target as Node) && setSettingsOpen(false);
-    document.addEventListener('pointerdown', close);
-    return () => document.removeEventListener('pointerdown', close);
+    const close = (e: PointerEvent) =>
+      !settingsRef.current?.contains(e.target as Node) &&
+      setSettingsOpen(false);
+    document.addEventListener("pointerdown", close);
+    return () => document.removeEventListener("pointerdown", close);
   }, [settingsOpen]);
 
   useEffect(() => {
@@ -84,7 +106,7 @@ export function FollowMode({
 
   useEffect(() => {
     try {
-      localStorage.setItem('follow-size', String(size));
+      localStorage.setItem("follow-size", String(size));
     } catch {}
   }, [size]);
 
@@ -93,17 +115,26 @@ export function FollowMode({
     let lock: { release: () => Promise<void> } | null = null;
     const ask = async () => {
       try {
-        const wl = (navigator as Navigator & { wakeLock?: { request: (t: 'screen') => Promise<{ release: () => Promise<void> }> } }).wakeLock;
-        if (wl && document.visibilityState === 'visible') lock = await wl.request('screen');
+        const wl = (
+          navigator as Navigator & {
+            wakeLock?: {
+              request: (
+                t: "screen",
+              ) => Promise<{ release: () => Promise<void> }>;
+            };
+          }
+        ).wakeLock;
+        if (wl && document.visibilityState === "visible")
+          lock = await wl.request("screen");
       } catch {}
     };
     ask();
-    const again = () => document.visibilityState === 'visible' && ask();
-    document.addEventListener('visibilitychange', again);
+    const again = () => document.visibilityState === "visible" && ask();
+    document.addEventListener("visibilitychange", again);
     const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
-      document.removeEventListener('visibilitychange', again);
+      document.removeEventListener("visibilitychange", again);
       document.body.style.overflow = overflow;
       lock?.release().catch(() => {});
     };
@@ -112,19 +143,24 @@ export function FollowMode({
   // Arrow keys and Escape on a laptop or tablet keyboard.
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement)?.closest('input, textarea, select')) return;
-      if (e.key === 'ArrowRight') go(1);
-      if (e.key === 'ArrowLeft') go(-1);
-      if (e.key === 'Escape') onClose();
+      if ((e.target as HTMLElement)?.closest("input, textarea, select")) return;
+      if (e.key === "ArrowRight") go(1);
+      if (e.key === "ArrowLeft") go(-1);
+      if (e.key === "Escape") onClose();
     };
-    window.addEventListener('keydown', key);
-    return () => window.removeEventListener('keydown', key);
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
   }, [go, onClose]);
 
   // Swipe left and right between parts.
   const touch = useRef<{ x: number; y: number } | null>(null);
   const onTouchStart = (e: React.TouchEvent) => {
-    if ((e.target as HTMLElement).closest('input, textarea, select, button, .timer')) return;
+    if (
+      (e.target as HTMLElement).closest(
+        "input, textarea, select, button, .timer",
+      )
+    )
+      return;
     touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
   };
   const onTouchEnd = (e: React.TouchEvent) => {
@@ -133,41 +169,82 @@ export function FollowMode({
     if (!t) return;
     const dx = e.changedTouches[0].clientX - t.x;
     const dy = e.changedTouches[0].clientY - t.y;
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.5)
+      go(dx < 0 ? 1 : -1);
   };
 
-  const part = typeof screen === 'number' ? parts[screen] : null;
+  const part = typeof screen === "number" ? parts[screen] : null;
 
   // Gym clock (coaches): the timers for each part, and what's running now.
   const clockInfo = isCoach ? coach?.clock : undefined;
   const [plan, setPlan] = useState<ClockPlan>(clockInfo?.plan ?? []);
   const runner = useClockRunner(plan);
   const [remoteOpen, setRemoteOpen] = useState(false);
-  const clock = clockInfo ? { info: clockInfo, plan, setPlan, runner, onRemote: () => setRemoteOpen(true) } : null;
+  const clock = clockInfo
+    ? {
+        info: clockInfo,
+        plan,
+        setPlan,
+        runner,
+        onRemote: () => setRemoteOpen(true),
+      }
+    : null;
 
   return (
-    <div className={`follow ${isCoach ? 'coach' : ''}`} role="dialog" aria-modal="true" aria-label={isCoach ? 'Coach mode' : 'Workout mode'} style={{ ['--follow-size' as string]: `${SIZES[size]}px` }}>
+    <div
+      className={`follow ${isCoach ? "coach" : ""}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={isCoach ? "Coach mode" : "Workout mode"}
+      style={{ ["--follow-size" as string]: `${SIZES[size]}px` }}
+    >
       <header className="follow-top">
-        <button type="button" className="follow-x" onClick={onClose} aria-label="Leave">
+        <button
+          type="button"
+          className="follow-x"
+          onClick={onClose}
+          aria-label="Leave"
+        >
           ✕
         </button>
         <div className="grow" style={{ minWidth: 0 }}>
-          <div className="follow-mode">{isCoach ? 'Coach mode' : 'Workout mode'}</div>
+          <div className="follow-mode">
+            {isCoach ? "Coach mode" : "Workout mode"}
+          </div>
           <div className="follow-title">{title}</div>
         </div>
         <div className="follow-settings-wrap" ref={settingsRef}>
-          <button type="button" className="follow-chip" aria-expanded={settingsOpen} onClick={() => setSettingsOpen((o) => !o)}>
-            {[!isCoach ? LEVELS[level - 1].name : null, hasOutdoor ? (outside ? 'Outside' : 'Inside') : null].filter(Boolean).join(' · ') || 'Aa'}
+          <button
+            type="button"
+            className="follow-chip"
+            aria-expanded={settingsOpen}
+            onClick={() => setSettingsOpen((o) => !o)}
+          >
+            {[
+              !isCoach ? LEVELS[level - 1].name : null,
+              hasOutdoor ? (outside ? "Outside" : "Inside") : null,
+            ]
+              .filter(Boolean)
+              .join(" · ") || "Aa"}
             <span aria-hidden="true"> ▾</span>
           </button>
           {settingsOpen && (
-            <div className="follow-settings" role="dialog" aria-label="Settings">
+            <div
+              className="follow-settings"
+              role="dialog"
+              aria-label="Settings"
+            >
               {!isCoach && (
                 <div className="stack tight">
                   <div className="follow-eyebrow">Level</div>
                   <div className="segmented" role="group" aria-label="Level">
                     {LEVELS.map((l) => (
-                      <button key={l.n} type="button" aria-pressed={level === l.n} onClick={() => setLevel(l.n)}>
+                      <button
+                        key={l.n}
+                        type="button"
+                        aria-pressed={level === l.n}
+                        onClick={() => setLevel(l.n)}
+                      >
                         {l.name}
                       </button>
                     ))}
@@ -177,11 +254,24 @@ export function FollowMode({
               {hasOutdoor && (
                 <div className="stack tight">
                   <div className="follow-eyebrow">Where</div>
-                  <div className="segmented" role="group" aria-label="Inside or outside" style={{ gridTemplateColumns: '1fr 1fr' }}>
-                    <button type="button" aria-pressed={!outside} onClick={() => setOutside(false)}>
+                  <div
+                    className="segmented"
+                    role="group"
+                    aria-label="Inside or outside"
+                    style={{ gridTemplateColumns: "1fr 1fr" }}
+                  >
+                    <button
+                      type="button"
+                      aria-pressed={!outside}
+                      onClick={() => setOutside(false)}
+                    >
                       Inside
                     </button>
-                    <button type="button" aria-pressed={outside} onClick={() => setOutside(true)}>
+                    <button
+                      type="button"
+                      aria-pressed={outside}
+                      onClick={() => setOutside(true)}
+                    >
                       Outside
                     </button>
                   </div>
@@ -189,11 +279,27 @@ export function FollowMode({
               )}
               <div className="stack tight">
                 <div className="follow-eyebrow">Text size</div>
-                <div className="follow-size" role="group" aria-label="Text size">
-                  <button type="button" onClick={() => setSize((s) => Math.max(0, s - 1))} disabled={size === 0} aria-label="Smaller text">
+                <div
+                  className="follow-size"
+                  role="group"
+                  aria-label="Text size"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setSize((s) => Math.max(0, s - 1))}
+                    disabled={size === 0}
+                    aria-label="Smaller text"
+                  >
                     A−
                   </button>
-                  <button type="button" onClick={() => setSize((s) => Math.min(SIZES.length - 1, s + 1))} disabled={size === SIZES.length - 1} aria-label="Bigger text">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSize((s) => Math.min(SIZES.length - 1, s + 1))
+                    }
+                    disabled={size === SIZES.length - 1}
+                    aria-label="Bigger text"
+                  >
                     A+
                   </button>
                 </div>
@@ -208,30 +314,62 @@ export function FollowMode({
           <button
             key={i}
             type="button"
-            aria-current={i === at ? 'step' : undefined}
-            className={i < at ? 'done' : ''}
+            aria-current={i === at ? "step" : undefined}
+            className={i < at ? "done" : ""}
             onClick={() => setAt(i)}
-            aria-label={s === 'intro' ? 'Before class' : s === 'done' ? 'Wrap up' : parts[s].label || parts[s].title}
+            aria-label={
+              s === "intro"
+                ? "Before class"
+                : s === "done"
+                  ? "Wrap up"
+                  : parts[s].label || parts[s].title
+            }
           >
-            <span>{s === 'intro' ? 'Start' : s === 'done' ? 'End' : parts[s].label.split(' · ')[0] || parts[s].kind}</span>
+            <span>
+              {s === "intro"
+                ? "Start"
+                : s === "done"
+                  ? "End"
+                  : parts[s].label.split(" · ")[0] || parts[s].kind}
+            </span>
           </button>
         ))}
       </nav>
 
-      {clock && <ClockNowBar runner={runner} parts={parts} onGo={(p) => setAt(screens.indexOf(p))} />}
+      {clock && (
+        <ClockNowBar
+          runner={runner}
+          parts={parts}
+          onGo={(p) => setAt(screens.indexOf(p))}
+        />
+      )}
       {remoteOpen && <RemoteSheet onClose={() => setRemoteOpen(false)} />}
 
-      <div className="follow-body" ref={scroller} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-        {screen === 'intro' && (
+      <div
+        className="follow-body"
+        ref={scroller}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        {screen === "intro" && (
           <section className="stack loose">
             <h2 className="follow-h">Before class</h2>
             <div className="follow-card">
-              <div className="follow-eyebrow">Coming today · {coach?.going.length ?? 0}</div>
-              <p>{coach?.going.length ? coach.going.join(', ') : 'Nobody has tapped “I’m coming” yet.'}</p>
+              <div className="follow-eyebrow">
+                Coming today · {coach?.going.length ?? 0}
+              </div>
+              <p>
+                {coach?.going.length
+                  ? coach.going.join(", ")
+                  : "Nobody has tapped “I’m coming” yet."}
+              </p>
             </div>
             {setOut.length > 0 && (
               <div className="follow-card">
-                <div className="follow-eyebrow">Set out · every level{hasOutdoor ? (outside ? ', outside' : ', inside') : ''}</div>
+                <div className="follow-eyebrow">
+                  Set out · every level
+                  {hasOutdoor ? (outside ? ", outside" : ", inside") : ""}
+                </div>
                 <KitList kit={setOut} />
               </div>
             )}
@@ -241,14 +379,29 @@ export function FollowMode({
                 {parts.map((p, i) => (
                   <li key={i}>
                     <b>{p.label}</b>
-                    {p.title && p.title !== p.label ? ` · ${partWords(p, 2, outside).title}` : ''}
-                    {p.minutes ? <span className="follow-muted"> · {p.minutes} min</span> : null}
+                    {p.title && p.title !== p.label
+                      ? ` · ${partWords(p, 2, outside).title}`
+                      : ""}
+                    {p.minutes ? (
+                      <span className="follow-muted"> · {p.minutes} min</span>
+                    ) : null}
                   </li>
                 ))}
               </ol>
             </div>
-            {clock && <ClockOverview info={clock.info} parts={parts} plan={plan} setPlan={setPlan} onRemote={clock.onRemote} />}
-            <NoteList sections={general} heading="Coach notes for the whole class" />
+            {clock && (
+              <ClockOverview
+                info={clock.info}
+                parts={parts}
+                plan={plan}
+                setPlan={setPlan}
+                onRemote={clock.onRemote}
+              />
+            )}
+            <NoteList
+              sections={general}
+              heading="Coach notes for the whole class"
+            />
           </section>
         )}
 
@@ -266,18 +419,21 @@ export function FollowMode({
           />
         )}
 
-        {screen === 'done' && (
-          <section className="stack loose" style={{ textAlign: 'center', paddingTop: 24 }}>
+        {screen === "done" && (
+          <section
+            className="stack loose"
+            style={{ textAlign: "center", paddingTop: 24 }}
+          >
             <div style={{ fontSize: 54 }} aria-hidden="true">
               🎉
             </div>
-            <h2 className="follow-h">{isCoach ? 'Class done' : 'Nice work'}</h2>
+            <h2 className="follow-h">{isCoach ? "Class done" : "Nice work"}</h2>
             <p className="follow-muted">
               {isCoach
-                ? 'Remind everyone to log their lifts and any benchmark results.'
+                ? "Remind everyone to log their lifts and any benchmark results."
                 : ctx.classDate <= ctx.today
-                  ? 'Log your lifts and results on the parts that have a log button, or on My stats.'
-                  : 'See you at 9.'}
+                  ? "Log your lifts and results on the parts that have a log button, or on My stats."
+                  : "See you at 9."}
             </p>
             <button type="button" className="btn primary big" onClick={onClose}>
               Back to the workout
@@ -287,14 +443,23 @@ export function FollowMode({
       </div>
 
       <footer className="follow-nav">
-        <button type="button" className="btn ghost big" onClick={() => go(-1)} disabled={at === 0}>
+        <button
+          type="button"
+          className="btn ghost big"
+          onClick={() => go(-1)}
+          disabled={at === 0}
+        >
           ← Back
         </button>
         <span className="follow-count">
           {at + 1} / {screens.length}
         </span>
-        <button type="button" className="btn primary big" onClick={() => (at === screens.length - 1 ? onClose() : go(1))}>
-          {at === screens.length - 1 ? 'Finish' : 'Next →'}
+        <button
+          type="button"
+          className="btn primary big"
+          onClick={() => (at === screens.length - 1 ? onClose() : go(1))}
+        >
+          {at === screens.length - 1 ? "Finish" : "Next →"}
         </button>
       </footer>
     </div>
@@ -312,7 +477,13 @@ function PartScreen({
   notes,
   clock,
 }: {
-  clock?: { info: ClockInfo; plan: ClockPlan; setPlan: (p: ClockPlan) => void; runner: ClockRunner; onRemote: () => void } | null;
+  clock?: {
+    info: ClockInfo;
+    plan: ClockPlan;
+    setPlan: (p: ClockPlan) => void;
+    runner: ClockRunner;
+    onRemote: () => void;
+  } | null;
   part: Part;
   index: number;
   isCoach: boolean;
@@ -324,47 +495,108 @@ function PartScreen({
 }) {
   const shown = partWords(part, level - 1, outside);
   return (
-    <section className="stack loose" key={index}>
-      <div>
-        <div className="follow-eyebrow">
-          {part.label}
-          {shown.useOutdoor ? ' · outside' : ''}
-          {part.minutes ? ` · ${part.minutes} min` : ''}
+    <section className="stack loose follow-part" key={index}>
+      <div className="follow-main stack loose">
+        <div>
+          <div className="follow-eyebrow">
+            {part.label}
+            {shown.useOutdoor ? " · outside" : ""}
+            {part.minutes ? ` · ${part.minutes} min` : ""}
+          </div>
+          <h2 className="follow-h">
+            {isCoach
+              ? shown.title || part.label
+              : shown.headline || shown.title || part.label}
+          </h2>
         </div>
-        <h2 className="follow-h">{isCoach ? shown.title || part.label : shown.headline || shown.title || part.label}</h2>
-      </div>
 
-      {/* Timers are off for now; <Timer> below is kept so they can come back. */}
+        {/* Timers are off for now; <Timer> below is kept so they can come back. */}
 
-      {isCoach ? (
-        <>
-          {clock && <ClockPartPanel partIndex={index} part={part} info={clock.info} plan={clock.plan} setPlan={clock.setPlan} runner={clock.runner} onRemote={clock.onRemote} />}
-          <NoteList sections={notes} heading="Coach notes" />
+        {isCoach ? (
           <div className="follow-levels">
-            {levelGroups(part, outside, LEVELS.map((l) => l.name)).map((g) => (
-              <div key={g.label} className={`follow-level ${g.levels.length > 1 ? 'wide' : ''}`}>
+            {levelGroups(
+              part,
+              outside,
+              LEVELS.map((l) => l.name),
+            ).map((g) => (
+              <div
+                key={g.label}
+                className={`follow-level ${g.levels.length > 1 ? "wide" : ""}`}
+              >
                 <div className="follow-level-name">{g.label}</div>
                 <div>
-                  {g.headline && part.kind !== 'conditioning' && <p className="follow-strong">{g.headline}</p>}
+                  {g.headline && part.kind !== "conditioning" && (
+                    <p className="follow-strong">{g.headline}</p>
+                  )}
                   <PartBody body={g.body} className="part-body follow-text" />
                 </div>
               </div>
             ))}
           </div>
-        </>
-      ) : (
-        <>
+        ) : (
           <PartBody body={shown.body} className="part-body follow-text" />
-          {countsRounds(part) && <RoundCounter id={`${ctx.classDate}:${index}`} target={roundsTarget(`${shown.headline ?? ''}\n${shown.body}`)} />}
-          {part.lift && <YourNumbers part={shown.useOutdoor ? { ...part, versions: shown.versions } : part} level={level} maxes={maxes} />}
-          <QuickLog part={part} level={level} outside={outside} ctx={ctx} big counterId={countsRounds(part) ? `${ctx.classDate}:${index}` : undefined} />
-        </>
-      )}
+        )}
+      </div>
+      {/* On a wide screen (an iPad in the gym) this sits beside the workout. */}
+      <div className="follow-side stack loose">
+        {isCoach ? (
+          <>
+            {clock && (
+              <ClockPartPanel
+                partIndex={index}
+                part={part}
+                info={clock.info}
+                plan={clock.plan}
+                setPlan={clock.setPlan}
+                runner={clock.runner}
+                onRemote={clock.onRemote}
+              />
+            )}
+            <NoteList sections={notes} heading="Coach notes" />
+          </>
+        ) : (
+          <>
+            {countsRounds(part) && (
+              <RoundCounter
+                id={`${ctx.classDate}:${index}`}
+                target={roundsTarget(`${shown.headline ?? ""}\n${shown.body}`)}
+              />
+            )}
+            {part.lift && (
+              <YourNumbers
+                part={
+                  shown.useOutdoor
+                    ? { ...part, versions: shown.versions }
+                    : part
+                }
+                level={level}
+                maxes={maxes}
+              />
+            )}
+            <QuickLog
+              part={part}
+              level={level}
+              outside={outside}
+              ctx={ctx}
+              big
+              counterId={
+                countsRounds(part) ? `${ctx.classDate}:${index}` : undefined
+              }
+            />
+          </>
+        )}
+      </div>
     </section>
   );
 }
 
-function NoteList({ sections, heading }: { sections: CoachNoteSection[]; heading: string }) {
+function NoteList({
+  sections,
+  heading,
+}: {
+  sections: CoachNoteSection[];
+  heading: string;
+}) {
   if (!sections.length) return null;
   return (
     <div className="follow-card follow-notes">
@@ -391,7 +623,10 @@ export function Timer({ minutes }: { minutes: number }) {
   useEffect(() => {
     if (!running) return;
     const id = setInterval(() => {
-      const rest = Math.max(0, Math.round(((endAt.current ?? 0) - Date.now()) / 1000));
+      const rest = Math.max(
+        0,
+        Math.round(((endAt.current ?? 0) - Date.now()) / 1000),
+      );
       setLeft(rest);
       if (rest === 0) {
         setRunning(false);
@@ -410,9 +645,9 @@ export function Timer({ minutes }: { minutes: number }) {
   }, [running]);
 
   const mm = Math.floor(left / 60);
-  const ss = String(left % 60).padStart(2, '0');
+  const ss = String(left % 60).padStart(2, "0");
   return (
-    <div className={`timer ${left === 0 ? 'zero' : ''}`}>
+    <div className={`timer ${left === 0 ? "zero" : ""}`}>
       <div className="timer-digits" aria-live="off">
         {mm}:{ss}
       </div>
@@ -430,10 +665,20 @@ export function Timer({ minutes }: { minutes: number }) {
             }
           }}
         >
-          {running ? 'Pause' : left === total ? `Start ${minutes} min` : left === 0 ? 'Again' : 'Resume'}
+          {running
+            ? "Pause"
+            : left === total
+              ? `Start ${minutes} min`
+              : left === 0
+                ? "Again"
+                : "Resume"}
         </button>
         {left !== total && !running && (
-          <button type="button" className="btn ghost" onClick={() => setLeft(total)}>
+          <button
+            type="button"
+            className="btn ghost"
+            onClick={() => setLeft(total)}
+          >
             Reset
           </button>
         )}

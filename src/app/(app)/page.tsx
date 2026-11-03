@@ -74,7 +74,7 @@ export default async function TodayPage() {
   const visibleWorkout = workout && (workout.status === 'published' || me.is_admin) ? workout : null;
 
   return (
-    <main className="screen">
+    <main className="screen today">
       <header className="row between top" style={{ position: 'relative' }}>
         {isHalloween() && <Bats />}
         <div>
@@ -107,7 +107,7 @@ export default async function TodayPage() {
         </Link>
       )}
 
-      <section className="card dark stack loose" aria-labelledby="next-class">
+      <section className="card dark stack loose today-main" aria-labelledby="next-class">
         <div className="row between">
           <div className="eyebrow gold" id="next-class">
             {relativeDay(classDate)} · 9:00 AM
@@ -131,9 +131,11 @@ export default async function TodayPage() {
         <CheckIn classDate={classDate} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} />
       </section>
 
-      <Suspense fallback={null}>
-        <ComingUp days={upcomingP} meId={me.id} isAdmin={me.is_admin} />
-      </Suspense>
+      <div className="today-side">
+        <Suspense fallback={null}>
+          <ComingUp days={upcomingP} meId={me.id} isAdmin={me.is_admin} />
+        </Suspense>
+      </div>
     </main>
   );
 }

@@ -725,3 +725,44 @@ html.halloween body::before {
 
 .roster { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
 .roster li { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line, #e6e0d4); }
+
+/* ---------- iPad and other wide screens ---------- */
+/* The tabs become a rail down the left; pages get room to breathe. */
+@media (min-width: 768px) {
+  :root { --nav-h: 0px; --rail: 96px; }
+  .shell { max-width: 720px; }
+  body:has(.nav) .shell { max-width: none; padding-left: var(--rail); }
+  .screen { max-width: 960px; margin: 0 auto; padding: 36px 36px 56px; gap: 22px; }
+  .nav { top: 0; right: auto; width: var(--rail); border-top: 0; border-right: 1px solid var(--line); padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); }
+  .nav-inner { flex-direction: column; justify-content: flex-start; height: auto; gap: 6px; padding-top: 28px; max-width: none; }
+  .nav a { padding: 12px 4px; border-radius: 14px; margin: 0 8px; }
+  .nav a[aria-current='page'] { background: var(--ground); }
+  .chat-form { bottom: 0; margin-bottom: 0; }
+  .today-side { display: contents; }
+
+  /* Workout mode on an iPad: bigger type and buttons, readable from a step back. */
+  .follow { --follow-size: 24px; }
+  .follow-top { padding: 14px 28px; }
+  .follow-steps { padding: 0 28px 10px; }
+  .follow-steps button { font-size: 15px; padding: 9px 16px; }
+  .follow-body { padding: 12px 28px 32px; }
+  .follow-body > section { max-width: 1200px; }
+  .follow-nav { padding: 14px 28px calc(14px + env(safe-area-inset-bottom)); }
+  .follow-nav .btn { min-height: 64px; font-size: 20px; }
+  .round-done { height: 100px; font-size: 26px; }
+  .round-count span { font-size: 64px; }
+}
+
+/* Wide enough for two columns (an iPad held sideways). */
+@media (min-width: 1000px) {
+  .screen.today { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); grid-auto-flow: dense; align-items: start; }
+  .screen.today > * { grid-column: 1 / -1; }
+  .screen.today > .today-main { grid-column: 1; }
+  .screen.today > .today-side { display: block; grid-column: 2; }
+
+  .follow-part { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr); gap: 32px; align-items: start; }
+  .follow-main, .follow-side { min-width: 0; }
+  .follow-side { position: sticky; top: 0; }
+  .follow-part .follow-levels { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 1300px) { .follow-part .follow-levels { grid-template-columns: 1fr 1fr; } }
