@@ -722,3 +722,6 @@ html.halloween body::before {
 .survey-sheet { position: fixed; inset: 0; z-index: 150; background: rgba(0, 0, 0, 0.45); display: flex; align-items: flex-end; justify-content: center; }
 .survey-card { width: 100%; max-width: 560px; background: var(--ground); border-radius: 22px 22px 0 0; padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); max-height: 92vh; overflow-y: auto; }
 .survey-thanks { font-family: var(--display); font-weight: 800; font-size: 24px; text-align: center; padding: 24px 0; }
+
+.roster { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.roster li { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line, #e6e0d4); }

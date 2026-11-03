@@ -317,6 +317,18 @@ export async function setAttendance(classDate: string, going: boolean) {
   return { ok: true };
 }
 
+/** Coaches: add someone to a class who forgot to check in, or take one off that was a mistake. */
+export async function coachSetAttendance(classDate: string, userId: string, going: boolean) {
+  if (!isDate(classDate) || !/^[0-9a-f-]{36}$/i.test(userId)) return { error: 'Bad request' };
+  const { supabase } = await requireMember({ coach: true });
+  const { error } = await supabase.rpc('coach_set_attendance', { d: classDate, uid: userId, going });
+  if (error) return { error: 'Couldn’t save that. Try again.' };
+  revalidatePath('/');
+  revalidatePath(`/workouts/${classDate}`);
+  revalidatePath('/lifts/attendance');
+  return { ok: true };
+}
+
 // ---------------- Lifts ----------------
 
 export async function logLift(_: unknown, form: FormData) {

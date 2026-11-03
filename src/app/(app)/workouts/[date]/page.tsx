@@ -5,6 +5,7 @@ import { requireMember, signedIn } from '@/lib/supabase/server';
 import { getBenchmarks, getBests, getPeople } from '@/lib/data';
 import { longDate, todayLocal } from '@/lib/dates';
 import { WhosComing } from '@/components/WhosComing';
+import { ClassRoster } from '@/components/coach/ClassRoster';
 import type { Part } from '@/lib/types';
 import { WorkoutView } from '@/components/WorkoutView';
 import { classWeather } from '@/lib/weather';
@@ -78,6 +79,13 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
             : undefined
         }
       />
+      {(me.is_admin || me.is_coach) && w.status === 'published' && (
+        <ClassRoster
+          classDate={w.class_date}
+          people={Object.entries(names).map(([id, name]) => ({ id, name }))}
+          attending={(attendance ?? []).map((a) => a.user_id)}
+        />
+      )}
       {coachNote?.body && (
         <details className="card coach-notes" style={{ marginTop: 8 }}>
           <summary>
