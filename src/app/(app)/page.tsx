@@ -6,7 +6,7 @@ import { maybePostRecap } from '@/lib/recap';
 import { getPeople, getSchedule } from '@/lib/data';
 import { WeekDigest, type DigestDay } from '@/components/WeekDigest';
 import { nextCycle, positionOn } from '@/lib/programming/engine';
-import { addDays, classDays, daysBetween, lastClassDone, longDate, nextClassDate, nextWeekday, relativeDay, shortDate, todayLocal } from '@/lib/dates';
+import { addDays, classDays, daysBetween, lastClassDone, longDate, nextClassDate, nextWeekday, relativeDay, shortDate, todayLocal, SHOW_TODAY_UNTIL_HOUR } from '@/lib/dates';
 import { firstName } from '@/lib/ui';
 import { isHalloween } from '@/lib/season';
 import { Bats } from '@/components/Bats';
@@ -22,7 +22,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function TodayPage() {
   const { supabase } = await signedIn();
-  const classDate = nextClassDate();
+  const classDate = nextClassDate(new Date(), SHOW_TODAY_UNTIL_HOUR);
 
   // Started now, shown later: weather and personal bests stream in (Suspense), so they never hold up the page.
   const weatherP = classWeather(classDate);

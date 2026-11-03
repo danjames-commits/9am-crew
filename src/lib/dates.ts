@@ -52,10 +52,14 @@ export function nextWeekday(d: string) {
   return x;
 }
 
-/** Today if it's a weekday before class ends, otherwise the next weekday. */
-export function nextClassDate(now = new Date()) {
+/** The Today page and workouts list keep showing today's class until 2 PM, so a class
+ *  that runs long (or logging after) doesn't find it gone (Dan, Nov 3). */
+export const SHOW_TODAY_UNTIL_HOUR = 14;
+
+/** Today if it's a weekday before class ends (or before `untilHour`), otherwise the next weekday. */
+export function nextClassDate(now = new Date(), untilHour = CLASS_END_HOUR) {
   const { date, hour } = localParts(now);
-  if (isWeekday(date) && hour < CLASS_END_HOUR) return date;
+  if (isWeekday(date) && hour < untilHour) return date;
   return nextWeekday(date);
 }
 

@@ -1,5 +1,5 @@
 import { requireMember, signedIn } from '@/lib/supabase/server';
-import { addDays, classDays, nextClassDate, shortDate, todayLocal } from '@/lib/dates';
+import { addDays, classDays, nextClassDate, shortDate, todayLocal, SHOW_TODAY_UNTIL_HOUR } from '@/lib/dates';
 import { CycleStrip } from '@/components/CycleStrip';
 import { WeekDigest, type DigestDay } from '@/components/WeekDigest';
 import { getSchedule } from '@/lib/data';
@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function WorkoutsPage() {
   const { supabase } = await signedIn();
-  const first = nextClassDate();
+  const first = nextClassDate(new Date(), SHOW_TODAY_UNTIL_HOUR);
   // From this week's Monday, three weeks of class days, so the digest shows the whole week.
   const monday = addDays(first, -((new Date(first + 'T12:00:00Z').getUTCDay() + 6) % 7));
   const days = classDays(monday, 15);

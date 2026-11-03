@@ -101,6 +101,8 @@ describe('next class', () => {
     expect(nextClassDate(new Date('2026-10-15T11:30:00Z'))).toBe('2026-10-15'); // 8:30 local
     expect(nextClassDate(new Date('2026-10-15T14:00:00Z'))).toBe('2026-10-16'); // 11:00 local
     expect(nextClassDate(new Date('2026-10-16T22:00:00Z'))).toBe('2026-10-19'); // Fri evening → Mon
+    expect(nextClassDate(new Date('2026-10-15T14:00:00Z'), 14)).toBe('2026-10-15'); // 11:00 local, Today page
+    expect(nextClassDate(new Date('2026-10-15T17:30:00Z'), 14)).toBe('2026-10-16'); // 2:30 PM local
     expect(nextClassDate(new Date('2026-10-18T12:00:00Z'))).toBe('2026-10-19'); // Sunday
   });
 });
