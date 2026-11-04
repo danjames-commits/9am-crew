@@ -766,3 +766,4 @@ html.halloween body::before {
   .follow-part .follow-levels { grid-template-columns: minmax(0, 1fr); }
 }
 @media (min-width: 1300px) { .follow-part .follow-levels { grid-template-columns: 1fr 1fr; } }
+.block-score { display: block; font-size: 12px; font-weight: 700; opacity: 0.75; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

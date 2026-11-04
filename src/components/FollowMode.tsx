@@ -560,6 +560,7 @@ function PartScreen({
               <RoundCounter
                 id={`${ctx.classDate}:${index}`}
                 target={roundsTarget(`${shown.headline ?? ""}\n${shown.body}`)}
+                text={`${shown.headline ?? ""}\n${shown.body}`}
               />
             )}
             {part.lift && (
