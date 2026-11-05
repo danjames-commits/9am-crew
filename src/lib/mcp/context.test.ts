@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { McpCaller } from './auth';
 import type { Change } from './changes';
+import { todayLocal } from '../dates';
 import { loadContext } from './context';
 
 describe('loadContext', () => {
@@ -19,7 +20,7 @@ describe('loadContext', () => {
       q.then = (r: (v: unknown) => void) => r({ data: [], error: null });
       return q;
     };
-    const caller = { supabase: { from: query }, userId: 'u1' } as unknown as McpCaller;
+    const caller = { supabase: { from: query, rpc: async () => ({ data: false, error: null }) }, userId: 'u1' } as unknown as McpCaller;
     const changes = [
       { kind: 'delete_day', date: '2026-02-30' },
       { kind: 'delete_day', date: 'next monday' },
@@ -42,8 +43,32 @@ describe('loadContext', () => {
       q.then = (r: (v: unknown) => void) => r({ data: [], error: null });
       return q;
     };
-    const caller = { supabase: { from: query }, userId: 'u1' } as unknown as McpCaller;
+    const caller = { supabase: { from: query, rpc: async () => ({ data: false, error: null }) }, userId: 'u1' } as unknown as McpCaller;
     await loadContext(caller, [{ kind: 'delete_day', date: '2026-02-30' }] as Change[]);
     expect(asked).toEqual([]);
+  });
+
+  it('asks about member entries only when the batch touches today', async () => {
+    const asked: unknown[] = [];
+    const query = () => {
+      const q: Record<string, unknown> = {};
+      for (const m of ['select', 'order', 'in']) q[m] = () => q;
+      q.then = (r: (v: unknown) => void) => r({ data: [], error: null });
+      return q;
+    };
+    const rpc = async (name: string, args: unknown) => {
+      asked.push([name, args]);
+      return { data: true, error: null };
+    };
+    const caller = { supabase: { from: query, rpc }, userId: 'u1' } as unknown as McpCaller;
+    const today = todayLocal();
+
+    const later = await loadContext(caller, [{ kind: 'delete_day', date: '2099-01-05' }] as Change[]);
+    expect(later.todayHasEntries).toBe(false);
+    expect(asked).toEqual([]);
+
+    const now = await loadContext(caller, [{ kind: 'delete_day', date: today }] as Change[]);
+    expect(now.todayHasEntries).toBe(true);
+    expect(asked).toEqual([['mcp_day_has_entries', { d: today }]]);
   });
 });

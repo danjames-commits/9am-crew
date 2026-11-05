@@ -37,6 +37,7 @@ export interface ChangeContext {
   days: Record<string, (DayRow & { updated_at: string }) | undefined>;
   notes: Record<string, { body: string; updated_at: string } | undefined>;
   commentCounts: Record<string, number>;
+  todayHasEntries: boolean; // comments, surveys, lifts or benchmark results; sign-ups don't count
   cycles: Record<number, { start_date: string; updated_at: string; row: CycleRow } | undefined>;
 }
 
@@ -116,7 +117,11 @@ function checkDayChange(c: Record<string, unknown>, n: number, ctx: ChangeContex
   if (!isDate(date)) return { target: `change ${n}`, ops: [], problems: [`Change ${n}: the date must be a real date, YYYY-MM-DD.`], warnings: [], before: null, after: null };
   const item: ItemResult = { target: `day ${date}`, ops: [], problems: [], warnings: [], before: null, after: null };
   const problem = (msg: string) => item.problems.push(msg);
-  if (date <= ctx.today) problem(`${date} is not in the future. Only days after today (${ctx.today}) can be changed.`);
+  if (date < ctx.today) problem(`${date} is in the past. Only today (${ctx.today}) and later can be changed.`);
+  if (date === ctx.today) {
+    if (c.kind === 'delete_day') problem(`Today's workout can't be deleted. Change it instead.`);
+    else if (ctx.todayHasEntries) problem(`${date} can't be changed: members have already entered something for today.`);
+  }
   const existing = ctx.days[date];
   const oldNotes = ctx.notes[date]?.body ?? null;
   const existingRow: DayRow | null = existing ? { title: existing.title, focus: existing.focus, why: existing.why, parts: existing.parts, status: existing.status } : null;

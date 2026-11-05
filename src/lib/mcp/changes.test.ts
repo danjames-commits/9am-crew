@@ -30,6 +30,7 @@ function ctx(over: Partial<ChangeContext> = {}): ChangeContext {
     days: { '2026-11-05': day },
     notes: {},
     commentCounts: {},
+    todayHasEntries: false,
     cycles: {
       7: { start_date: '2026-10-05', updated_at: '2026-10-01T00:00:00Z', row: rowOf('2026-10-05') },
       8: { start_date: '2026-11-16', updated_at: '2026-10-02T00:00:00Z', row: rowOf('2026-11-16') },
@@ -50,11 +51,34 @@ describe('validateChanges: days', () => {
     expect(previewText(r.items)).toContain('no change');
   });
 
-  it('today and past are refused', () => {
-    const r = validateChanges([put('2026-10-26'), { kind: 'delete_day', date: '2026-10-20' }], ctx());
+  it('past days are refused', () => {
+    const r = validateChanges([put('2026-10-23'), { kind: 'delete_day', date: '2026-10-20' }], ctx());
     expect(r.ok).toBe(false);
-    expect(r.items[0].problems.join(' ')).toMatch(/future/);
-    expect(r.items[1].problems.join(' ')).toMatch(/future/);
+    expect(r.items[0].problems.join(' ')).toMatch(/past/);
+    expect(r.items[1].problems.join(' ')).toMatch(/past/);
+  });
+
+  it('today can change while no member has entered anything', () => {
+    const r = validateChanges([put(TODAY)], ctx());
+    expect(problems(r)).toEqual([]);
+    expect(r.ok).toBe(true);
+  });
+
+  it('today is refused once a member has entered something', () => {
+    const r = validateChanges([put(TODAY)], ctx({ todayHasEntries: true }));
+    expect(r.ok).toBe(false);
+    expect(r.items[0].problems.join(' ')).toMatch(/members have already/);
+  });
+
+  it('member entries today leave future days alone', () => {
+    const r = validateChanges([put('2026-11-05')], ctx({ todayHasEntries: true }));
+    expect(r.ok).toBe(true);
+  });
+
+  it('today can not be deleted', () => {
+    const r = validateChanges([{ kind: 'delete_day', date: TODAY }], ctx({ days: { [TODAY]: { ...day, updated_at: '2026-10-01T00:00:00Z' } } }));
+    expect(r.ok).toBe(false);
+    expect(r.items[0].problems.join(' ')).toMatch(/can't be deleted/);
   });
 
   it('weekend is refused', () => {

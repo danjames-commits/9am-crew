@@ -51,7 +51,7 @@ export function dayView(row: WorkoutRow | null, date: string, note: string | nul
     date,
     weekday: NAMES[weekday(date)],
     exists: !!row,
-    editable: date > today,
+    editable: date >= today,
     cycle: c ? { id: c.id, name: c.name } : null,
   };
   if (!row) return base;

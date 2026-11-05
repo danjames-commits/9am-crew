@@ -36,12 +36,21 @@ export async function loadContext({ supabase }: McpCaller, changes: Change[]): P
     }
   }
 
+  const today = todayLocal();
+  let todayHasEntries = false;
+  if (dates.includes(today)) {
+    const { data, error } = await supabase.rpc('mcp_day_has_entries', { d: today });
+    if (error) throw new Error(error.message);
+    todayHasEntries = data === true;
+  }
+
   const ctx: ChangeContext = {
-    today: todayLocal(),
+    today,
     lifts: ((m.data ?? []) as { name: string }[]).map((r) => r.name),
     days: {},
     notes: {},
     commentCounts,
+    todayHasEntries,
     cycles: {},
   };
   for (const r of workouts) ctx.days[r.class_date] = { title: r.title, focus: r.focus, why: r.why, parts: r.parts, status: r.status, updated_at: r.updated_at };

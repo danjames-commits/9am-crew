@@ -53,14 +53,15 @@ Read tools:
 
 Write tools (preview → push → undo):
 
-- `preview_changes`: checks a batch of changes to future days, coach notes or cycles and saves it as a preview. Nothing changes in the app.
+- `preview_changes`: checks a batch of changes to days from today on, coach notes or cycles and saves it as a preview. Nothing changes in the app.
 - `push_changes`: applies a preview, only after the coach says push. It applies all the changes or none.
 - `undo_push`: reverses the latest push, or one by id. It refuses if a changed day was edited since.
 - `list_pushes`: recent pushes and previews, newest first.
 
 Rules:
 
-- Only future days (after today, Halifax time) can change. Today and earlier are read-only.
+- Today and later days can change (Halifax time). Earlier days are read-only.
+- Today can change only until a member comments, answers the survey, logs a lift or logs a benchmark result. Sign-ups don't count. Today can't be deleted.
 - Started cycles can be edited, but not moved or deleted.
 - A preview expires after 24 hours.
-- Run `supabase/migration-024-mcp.sql` in the Supabase SQL editor before the write tools work.
+- Run `supabase/migration-024-mcp.sql` and `supabase/migration-034-mcp-today.sql` in the Supabase SQL editor before the write tools work.
