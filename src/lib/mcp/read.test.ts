@@ -15,6 +15,9 @@ describe('dayView', () => {
   it('marks past dates not editable', () => {
     expect(dayView(row, '2026-11-04', null, cycles, '2026-11-10').editable).toBe(false);
   });
+  it('marks today editable', () => {
+    expect(dayView(row, '2026-11-04', null, cycles, '2026-11-04').editable).toBe(true);
+  });
   it('marks future dates editable', () => {
     expect(dayView(row, '2026-11-04', null, cycles, '2026-11-03').editable).toBe(true);
   });

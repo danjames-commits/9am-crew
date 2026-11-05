@@ -36,7 +36,7 @@ const plan = z
 const change = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('put_day'),
-    date: z.string().describe('YYYY-MM-DD, a future weekday'),
+    date: z.string().describe('YYYY-MM-DD, a weekday, today or later'),
     title: z.string(),
     focus: z.string().optional(),
     why: z.string().optional(),
@@ -108,7 +108,7 @@ export function registerTools(server: McpServer): void {
     'get_days',
     {
       title: 'Get days',
-      description: `Get the workout for each class day (Mon-Fri) from..to inclusive, including empty days. At most ${MAX_RANGE_DAYS} days. "editable" is true only for dates after today.`,
+      description: `Get the workout for each class day (Mon-Fri) from..to inclusive, including empty days. At most ${MAX_RANGE_DAYS} days. "editable" is true for today and later. Today can only change until a member enters something for it, and can't be deleted.`,
       inputSchema: z.object({
         from: z.string().describe('Start date, YYYY-MM-DD'),
         to: z.string().describe('End date, YYYY-MM-DD'),
@@ -153,7 +153,7 @@ export function registerTools(server: McpServer): void {
     {
       title: 'Preview changes',
       description:
-        'Check a batch of changes to future workout days, coach notes or cycles and save it as a preview. Nothing changes in the app. Always show the returned preview text to the coach and wait for them to say push before calling push_changes. Send whole days and whole cycle plans: read them first with get_days or get_cycle, edit, and send back. Leave coach_notes out to keep a day\'s notes as they are.',
+        'Check a batch of changes to workout days from today on, coach notes or cycles and save it as a preview. Nothing changes in the app. Always show the returned preview text to the coach and wait for them to say push before calling push_changes. Send whole days and whole cycle plans: read them first with get_days or get_cycle, edit, and send back. Leave coach_notes out to keep a day\'s notes as they are.',
       inputSchema: z.object({ changes: z.array(change).max(MAX_CHANGES) }),
     },
     async ({ changes }, ctx) => {

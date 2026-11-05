@@ -41,6 +41,8 @@ await db.exec(readFileSync(new URL('../supabase/migration-019-equipment.sql', im
 await db.exec(readFileSync(new URL('../supabase/migration-020-clock-findings.sql', import.meta.url), 'utf8'));
 // 021-023 need pg_net and cron, which PGlite doesn't have.
 await db.exec(readFileSync(new URL('../supabase/migration-024-mcp.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-030-workout-surveys.sql', import.meta.url), 'utf8'));
+await db.exec(readFileSync(new URL('../supabase/migration-034-mcp-today.sql', import.meta.url), 'utf8'));
 
 const A = '00000000-0000-0000-0000-00000000000a';
 const B = '00000000-0000-0000-0000-00000000000b';
@@ -488,5 +490,69 @@ await failsWith(A, `select public.mcp_push(${set})`, /cycle \d+ must start after
 r = await db.query(`select name, start_date::text from public.cycles where id = ${later.id}`);
 assert.deepEqual([r.rows[0].name, r.rows[0].start_date], ['Later', '2099-12-07']);
 ok('mcp: push will not move an unstarted cycle to today or earlier');
+
+// Today can change until a member enters something for it.
+const today = (await db.query(`select ((now() at time zone 'America/Halifax')::date)::text as d`)).rows[0].d;
+// Earlier checks logged lifts and results dated today.
+await db.query(`delete from public.lift_logs where logged_on = '${today}'`);
+await db.query(`delete from public.benchmark_results where workout_date = '${today}'`);
+await as(A, `insert into public.workouts (class_date, title, status) values ('${today}', 'Planned', 'published')`);
+const seenToday = async () => ({ ...noSeen, days: { [today]: await stampOf('workouts', `class_date = '${today}'`) } });
+
+await as(B, `insert into public.attendance (class_date) values ('${today}')`);
+set = await mkSet([putDay(today, 'Swapped')], await seenToday());
+await as(A, `select public.mcp_push(${set})`);
+r = await db.query(`select title from public.workouts where class_date = '${today}'`);
+assert.equal(r.rows[0].title, 'Swapped');
+ok('mcp: push changes today when members have only signed up');
+
+await as(A, `select public.mcp_undo(${set})`);
+r = await db.query(`select title from public.workouts where class_date = '${today}'`);
+assert.equal(r.rows[0].title, 'Planned');
+ok('mcp: undo restores today while nothing is entered');
+
+set = await mkSet([{ op: 'delete_day', date: today }], await seenToday());
+await failsWith(A, `select public.mcp_push(${set})`, /today's workout can't be deleted/);
+ok('mcp: push will not delete today');
+
+set = await mkSet([putDay(today, 'Pushed first')], await seenToday());
+await as(A, `select public.mcp_push(${set})`);
+const todayId = (await db.query(`select id from public.workouts where class_date = '${today}'`)).rows[0].id;
+await as(B, `insert into public.comments (workout_id, body) values (${todayId}, 'Done!')`);
+await failsWith(A, `select public.mcp_undo(${set})`, /members have already entered/);
+ok('mcp: undo refuses today once a member has commented');
+
+const blocked = async (label) => {
+  const next = await mkSet([putDay(today, 'Too late')], await seenToday());
+  await failsWith(A, `select public.mcp_push(${next})`, /members have already entered/);
+  ok(`mcp: push refuses today after ${label}`);
+};
+await blocked('a comment');
+await db.query(`delete from public.comments where workout_id = ${todayId}`);
+
+await as(B, `insert into public.workout_surveys (class_date, hard) values ('${today}', 2)`);
+await blocked('a survey');
+await db.query(`delete from public.workout_surveys where class_date = '${today}'`);
+
+await as(B, `insert into public.lift_logs (movement_id, weight, logged_on) values (1, 100, '${today}')`);
+await blocked('a lift log');
+await db.query(`delete from public.lift_logs where logged_on = '${today}'`);
+
+await db.query(`insert into public.benchmark_results (benchmark_id, user_id, reps, workout_date)
+  values ((select min(id) from public.benchmarks), '${B}', 10, '${today}')`);
+await blocked('a benchmark result');
+await db.query(`delete from public.benchmark_results where workout_date = '${today}'`);
+
+await as(B, `insert into public.workout_surveys (class_date, skipped) values ('${today}', true)`);
+set = await mkSet([putDay(today, 'After a skip')], await seenToday());
+await as(A, `select public.mcp_push(${set})`);
+ok('mcp: a skipped survey does not lock today');
+
+await as(B, `insert into public.lift_logs (movement_id, weight, logged_on) values (1, 100, '${today}')`);
+r = await as(B, `select public.mcp_day_has_entries('${today}') as has`);
+assert.equal(r.rows[0].has, false);
+r = await as(A, `select public.mcp_day_has_entries('${today}') as has`);
+assert.equal(r.rows[0].has, true);
+ok('mcp: only admins get an answer about a day');
 
 console.log(`\nDatabase checks passed: ${passed}`);

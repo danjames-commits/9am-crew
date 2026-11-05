@@ -14,7 +14,7 @@ function dayOn(date: string) {
 }
 
 function ctxFor(dates: string[]): ChangeContext {
-  return { today: '2026-10-26', lifts: MOVES, days: Object.fromEntries(dates.map((d) => [d, dayOn(d)])), notes: {}, commentCounts: {}, cycles: {} };
+  return { today: '2026-10-26', lifts: MOVES, days: Object.fromEntries(dates.map((d) => [d, dayOn(d)])), notes: {}, todayHasEntries: false, commentCounts: {}, cycles: {} };
 }
 
 function strongChanged(date: string) {
@@ -55,6 +55,6 @@ describe('previewText', () => {
 
   it('lists problems', () => {
     const r = validateChanges([strongChanged('2026-10-20')], ctxFor([]));
-    expect(previewText(r.items)).toMatch(/✗ .*future/);
+    expect(previewText(r.items)).toMatch(/✗ .*past/);
   });
 });
