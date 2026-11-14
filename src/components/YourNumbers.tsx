@@ -4,7 +4,7 @@ import { aimRange, setPlan, weightFor } from '@/lib/programming/engine';
 import { PlateTable } from './PlateTable';
 
 /** Turns "5×5 @ 76%" into this person's own warm-ups and work sets. */
-export function YourNumbers({ part, level, maxes, bar = 45 }: { part: Part; level: number; maxes: Record<string, number>; bar?: number }) {
+export function YourNumbers({ part, level, maxes, bar = 45, setsId }: { part: Part; level: number; maxes: Record<string, number>; bar?: number; setsId?: string }) {
   const lift = part.lift;
   if (!lift) return null;
   const i = level - 1;
@@ -60,7 +60,7 @@ export function YourNumbers({ part, level, maxes, bar = 45 }: { part: Part; leve
   return (
     <div className="small" style={box}>
       <b>Your numbers</b> <span style={{ opacity: 0.8 }}>({pct}% of your {movement.toLowerCase()})</span>
-      <PlateTable lines={lines} lightLabel={i === 0 ? 'light' : 'empty bar'} />
+      <PlateTable lines={lines} lightLabel={i === 0 ? 'light' : 'empty bar'} setsId={setsId} />
     </div>
   );
 }

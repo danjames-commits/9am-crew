@@ -687,6 +687,11 @@ html.halloween body::before {
 .plate-bars button { min-height: 34px; border: 1.5px solid rgba(23, 66, 61, 0.3); background: rgba(255, 255, 255, 0.6); color: inherit; border-radius: 17px; padding: 2px 14px; font: inherit; font-size: 14px; font-weight: 800; cursor: pointer; }
 .plate-bars button[aria-pressed='true'] { background: var(--teal-ink); border-color: var(--teal-ink); color: #fff; }
 .plate-hint { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+.set-boxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(56px, 1fr)); gap: 6px; margin-top: 8px; }
+.set-boxes button { display: grid; gap: 2px; min-height: 56px; padding: 6px 4px; border: 1.5px solid rgba(23, 66, 61, 0.3); background: rgba(255, 255, 255, 0.6); color: inherit; border-radius: 10px; font: inherit; font-size: 13px; text-align: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.set-boxes button span { opacity: 0.75; }
+.set-boxes button b { font-weight: 800; font-size: 15px; }
+.set-boxes button[aria-pressed='true'] { background: var(--teal-ink); border-color: var(--teal-ink); color: #fff; }
 
 /* Class milestones */
 .milestone-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: linear-gradient(135deg, var(--gold-soft), #fff 70%); border: 2px solid var(--gold); }

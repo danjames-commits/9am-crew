@@ -572,6 +572,7 @@ function PartScreen({
                 }
                 level={level}
                 maxes={maxes}
+                setsId={`${ctx.classDate}:${index}:${level}`}
               />
             )}
             <QuickLog
