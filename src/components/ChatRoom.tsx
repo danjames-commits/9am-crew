@@ -1,4 +1,5 @@
 'use client';
+import { Linkify } from './Linkify';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { firstName } from '@/lib/ui';
@@ -282,7 +283,7 @@ export function ChatRoom({
         <div className={`bubble-wrap ${mine ? 'mine' : ''}`}>
           <div className={`bubble reactable ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)} onClick={() => openPicker(m.id)}>
             {showName && <div className="who">{firstName(name)}</div>}
-            {m.body}
+            <Linkify text={m.body} />
           </div>
           {reactionsFor(m, mine ? 'right' : 'left')}
         </div>
