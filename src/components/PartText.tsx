@@ -1,6 +1,11 @@
 import type { Part } from '@/lib/types';
 import { splitPartText } from '@/lib/part-text';
 
+/** "Back squat: 5 × 3 @ 80%" → "Back squat: 5 sets of 3 @ 80%", so nobody mixes up sets and reps. */
+export function spellSets(line: string) {
+  return line.replace(/\b(\d+)\s*[×x]\s*(\d+)\b(?!\s*(?:min|m\b|sec|s\b|"|'))/, (_, s, r) => `${s} ${s === '1' ? 'set' : 'sets'} of ${r}`);
+}
+
 /** The words for one part at one level: an optional headline, then text and short lists. */
 export function partWords(p: Part, i: number, outside: boolean) {
   const useOutdoor = Boolean(outside && p.outdoor);
@@ -11,7 +16,8 @@ export function partWords(p: Part, i: number, outside: boolean) {
   // A first line that is a "·" list stays in the body instead.
   const lines = text.split('\n');
   const firstIsHeadline = (p.kind === 'strength' || p.kind === 'skill') && !lines[0].includes(' · ');
-  const headline = firstIsHeadline ? lines[0] : p.kind === 'conditioning' ? title : '';
+  const first = p.kind === 'strength' ? spellSets(lines[0]) : lines[0];
+  const headline = firstIsHeadline ? first : p.kind === 'conditioning' ? title : '';
   const body = firstIsHeadline ? lines.slice(1).join('\n') : text;
   return { useOutdoor, versions, title, headline, body };
 }

@@ -35,7 +35,7 @@ function Plate({ p, n }: { p: number; n?: number }) {
  * The sets, each with what to put on the bar (per side) under it, and a "Grab" list of
  * every plate the lift needs. Plates only ever go on, so it's all "add this".
  */
-export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: string }) {
+export function PlateTable({ lines, lightLabel, setsId }: { lines: Line[]; lightLabel: string; setsId?: string }) {
   const [bar, setBar] = useState<number>(45);
   useEffect(() => {
     try {
@@ -95,14 +95,47 @@ export function PlateTable({ lines, lightLabel }: { lines: Line[]; lightLabel: s
                   )}
                 </td>
                 <td style={{ padding: '6px 0', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                  {l.sets > 1 ? `${l.sets} × ` : ''}
-                  {l.reps} @ {l.weight == null ? lightLabel : `${load && l.weight >= bar ? load.total : l.weight} lb`}
+                  {l.sets > 1 ? `${l.sets} sets × ` : ''}
+                  {l.reps} {l.reps === 1 ? 'rep' : 'reps'} @{l.weight == null ? lightLabel : `${load && l.weight >= bar ? load.total : l.weight} lb`}
                 </td>
               </tr>
             );
           })}
         </tbody>
       </table>
+      {setsId && <SetBoxes id={setsId} work={lines.find((l) => l.label === 'Work')} />}
     </>
+  );
+}
+
+/** Workout mode: one box per work set, tap to tick it off. */
+function SetBoxes({ id, work }: { id: string; work?: Line }) {
+  const key = `sets-done:${id}`;
+  const [done, setDone] = useState(0);
+  useEffect(() => {
+    try {
+      setDone(Number(localStorage.getItem(key)) || 0);
+    } catch {}
+  }, [key]);
+  if (!work || work.sets < 2) return null;
+  const tap = (n: number) => {
+    // Tapping the last ticked set unticks it; any other set ticks everything up to it.
+    const next = n === done ? n - 1 : n;
+    setDone(next);
+    try {
+      localStorage.setItem(key, String(next));
+    } catch {}
+  };
+  return (
+    <div className="set-boxes" role="group" aria-label={`${work.sets} sets of ${work.reps}, ${done} done`}>
+      {Array.from({ length: work.sets }, (_, k) => (
+        <button key={k} type="button" aria-pressed={k < done} onClick={() => tap(k + 1)}>
+          <span>Set {k + 1}</span>
+          <b>
+            {work.reps} {work.reps === 1 ? 'rep' : 'reps'}
+          </b>
+        </button>
+      ))}
+    </div>
   );
 }
