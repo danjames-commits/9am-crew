@@ -55,7 +55,8 @@ export function checkParts(parts: unknown): PartsCheck {
     if (p.lift && typeof p.lift.movement === 'string' && Array.isArray(p.lift.pct) && p.lift.pct.length === LEVELS.length) {
       part.lift = {
         movement: p.lift.movement.slice(0, 60),
-        pct: p.lift.pct.map((x) => (typeof x === 'number' && x > 0 && x <= 110 ? Math.round(x) : null)) as LevelPct,
+        // Percentages are always in steps of 5 (77.5 → 80, 83 → 85).
+        pct: p.lift.pct.map((x) => (typeof x === 'number' && x >= 2.5 && x <= 110 ? Math.round(x / 5) * 5 : null)) as LevelPct,
       };
       if (Number.isInteger(p.lift.sets) && p.lift.sets! > 0 && p.lift.sets! <= 12) part.lift.sets = p.lift.sets;
       if (Number.isInteger(p.lift.reps) && p.lift.reps! > 0 && p.lift.reps! <= 20) part.lift.reps = p.lift.reps;

@@ -21,6 +21,11 @@ describe('checkParts', () => {
     expect(r.parts).toEqual(input);
   });
 
+  it('rounds lift percentages to the nearest 5', () => {
+    const p = { ...strength(), lift: { movement: 'Strict press', pct: [77.5, 82.5, 83], sets: 3, reps: 3, mode: 'percent' } };
+    expect(checkParts([p]).parts?.[0].lift?.pct).toEqual([80, 85, 85]);
+  });
+
   it('names the bad part', () => {
     const bad = { kind: 'conditioning', label: 'WOD', title: 'Fran', versions: ['a', 'b', 'c', 'd'] };
     const r = checkParts([strength(), bad]);
