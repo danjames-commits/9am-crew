@@ -38,7 +38,7 @@ export default async function CyclePage({ params }: { params: Promise<{ id: stri
   return (
     <main className="screen">
       <div className="row">
-        <Link href="/admin/cycles" className="avatar" style={{ background: '#fff', color: 'var(--ink)' }} aria-label="Back to cycle planner">
+        <Link href="/admin/cycles" className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label="Back to cycle planner">
           <Icon name="back" />
         </Link>
         <div className="grow">

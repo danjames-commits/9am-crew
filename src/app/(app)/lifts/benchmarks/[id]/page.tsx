@@ -25,7 +25,7 @@ export default async function BenchmarkPage({ params }: { params: Promise<{ id: 
   return (
     <main className="screen">
       <div className="row">
-        <Link href="/lifts/benchmarks" className="avatar" style={{ background: '#fff', color: 'var(--ink)' }} aria-label="Back to benchmarks">
+        <Link href="/lifts/benchmarks" className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label="Back to benchmarks">
           <Icon name="back" />
         </Link>
         <h1 style={{ fontSize: 28 }}>{b.name}</h1>

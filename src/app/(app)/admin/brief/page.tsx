@@ -19,7 +19,7 @@ export default async function CoachBriefPage() {
   return (
     <main className="screen">
       <div className="row" style={{ gap: 10 }}>
-        <Link href="/admin" className="avatar" style={{ background: '#fff', color: 'var(--ink)' }} aria-label="Back to Program">
+        <Link href="/admin" className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label="Back to Program">
           <Icon name="back" />
         </Link>
         <h1 style={{ fontSize: 28 }}>Coach brief</h1>

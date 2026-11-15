@@ -43,7 +43,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
   return (
     <main className="screen">
       <div className="row">
-        <Link href="/workouts" className="avatar" style={{ background: '#fff', color: 'var(--ink)' }} aria-label="Back to workouts">
+        <Link href="/workouts" className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label="Back to workouts">
           <Icon name="back" />
         </Link>
         <div className="grow">

@@ -97,7 +97,7 @@ export function Avatar({
             fontWeight: 800,
             lineHeight: `${badge}px`,
             textAlign: "center",
-            boxShadow: "0 0 0 2px #fff",
+            boxShadow: "0 0 0 2px var(--card)",
             letterSpacing: "0.02em",
           }}
         >

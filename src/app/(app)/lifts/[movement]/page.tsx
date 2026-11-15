@@ -32,7 +32,7 @@ export default async function MovementPage({ params }: { params: Promise<{ movem
   return (
     <main className="screen">
       <div className="row">
-        <Link href="/lifts" className="avatar" style={{ background: '#fff', color: 'var(--ink)' }} aria-label="Back to my lifts">
+        <Link href="/lifts" className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label="Back to my lifts">
           <Icon name="back" />
         </Link>
         <h1 style={{ fontSize: 28 }}>{movement.name}</h1>

@@ -42,7 +42,7 @@ export default async function ClockPage() {
   return (
     <main className="screen">
       <div className="row" style={{ gap: 10 }}>
-        <Link href="/admin" className="avatar" style={{ background: '#fff', color: 'var(--ink)' }} aria-label="Back to Program">
+        <Link href="/admin" className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label="Back to Program">
           <Icon name="back" />
         </Link>
         <div className="grow">

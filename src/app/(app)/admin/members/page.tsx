@@ -15,7 +15,7 @@ export default async function MembersPage() {
   return (
     <main className="screen">
       <div className="row">
-        <Link href="/admin" className="avatar" style={{ background: '#fff', color: 'var(--ink)' }} aria-label="Back to program">
+        <Link href="/admin" className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label="Back to program">
           <Icon name="back" />
         </Link>
         <h1 style={{ fontSize: 28 }}>Members</h1>

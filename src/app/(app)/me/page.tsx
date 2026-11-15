@@ -3,6 +3,7 @@ import { MeForm } from '@/components/MeForm';
 import { svgVersion } from '@/lib/svg-clean';
 import { signOut } from '@/app/actions';
 import { NotificationSettings } from '@/components/NotificationSettings';
+import { ThemePicker } from '@/components/ThemePicker';
 
 export default async function MePage() {
   const { supabase, userId } = await signedIn();
@@ -17,6 +18,7 @@ export default async function MePage() {
         privacy={{ showInShowups: prefs?.show_in_showups ?? true, sharePrs: prefs?.share_prs ?? true }}
       />
       <NotificationSettings isAdmin={me.is_admin} />
+      <ThemePicker />
       <div className="card stack">
         <h2>Put it on your home screen</h2>
         <p className="muted">
