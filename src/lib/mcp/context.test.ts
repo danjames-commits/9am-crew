@@ -9,7 +9,7 @@ describe('loadContext', () => {
     const asked: { table: string; values: unknown[] }[] = [];
     const query = (table: string) => {
       const q: Record<string, unknown> = {};
-      for (const m of ['select', 'order']) q[m] = () => q;
+      for (const m of ['select', 'order', 'gte', 'lte']) q[m] = () => q;
       q.in = (_col: string, values: unknown[]) => {
         asked.push({ table, values });
         // Postgres refuses a date like 2026-02-30 outright, failing the whole query.
@@ -35,7 +35,7 @@ describe('loadContext', () => {
     const asked: string[] = [];
     const query = (table: string) => {
       const q: Record<string, unknown> = {};
-      for (const m of ['select', 'order']) q[m] = () => q;
+      for (const m of ['select', 'order', 'gte', 'lte']) q[m] = () => q;
       q.in = () => {
         asked.push(table);
         return q;
@@ -52,7 +52,7 @@ describe('loadContext', () => {
     const asked: unknown[] = [];
     const query = () => {
       const q: Record<string, unknown> = {};
-      for (const m of ['select', 'order', 'in']) q[m] = () => q;
+      for (const m of ['select', 'order', 'in', 'gte', 'lte']) q[m] = () => q;
       q.then = (r: (v: unknown) => void) => r({ data: [], error: null });
       return q;
     };

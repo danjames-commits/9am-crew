@@ -15,13 +15,21 @@ export async function loadContext({ supabase }: McpCaller, changes: Change[]): P
   const dates = [...new Set(changes.flatMap((c) => ('date' in c && typeof c.date === 'string' && isRealDate(c.date) ? [c.date] : [])))];
   const ids = [...new Set(changes.flatMap((c) => ('id' in c && typeof c.id === 'number' ? [c.id] : [])))];
 
-  const [w, n, m, cy] = await Promise.all([
+  // Days around the batch (a week each side covers 2 class days over a weekend), for the repeat check.
+  const sorted = [...dates].sort();
+  const shift = (d: string, n: number) => new Date(Date.parse(`${d}T12:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10);
+  const near = sorted.length
+    ? supabase.from('workouts').select('class_date, parts').gte('class_date', shift(sorted[0], -7)).lte('class_date', shift(sorted[sorted.length - 1], 7))
+    : empty;
+
+  const [w, n, m, cy, nb] = await Promise.all([
     dates.length ? supabase.from('workouts').select('class_date, id, title, focus, why, parts, status, updated_at').in('class_date', dates) : empty,
     dates.length ? supabase.from('workout_coach_notes').select('class_date, body, updated_at').in('class_date', dates) : empty,
     supabase.from('movements').select('name').order('sort'),
     ids.length ? supabase.from('cycles').select('id, start_date, updated_at, name, why, brief, goals, weeks, days, week_count').in('id', ids) : empty,
+    near,
   ]);
-  const failed = w.error ?? n.error ?? m.error ?? cy.error;
+  const failed = w.error ?? n.error ?? m.error ?? cy.error ?? nb.error;
   if (failed) throw new Error(failed.message);
   const workouts = (w.data ?? []) as WorkoutRow[];
 
@@ -52,6 +60,7 @@ export async function loadContext({ supabase }: McpCaller, changes: Change[]): P
     commentCounts,
     todayHasEntries,
     cycles: {},
+    nearby: Object.fromEntries(((nb.data ?? []) as { class_date: string; parts: DayRow['parts'] }[]).map((r) => [r.class_date, r.parts])),
   };
   for (const r of workouts) ctx.days[r.class_date] = { title: r.title, focus: r.focus, why: r.why, parts: r.parts, status: r.status, updated_at: r.updated_at };
   for (const r of (n.data ?? []) as NotesRow[]) ctx.notes[r.class_date] = { body: r.body, updated_at: r.updated_at };

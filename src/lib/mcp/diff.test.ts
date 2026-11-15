@@ -43,7 +43,8 @@ describe('previewText', () => {
     expect(r.ok).toBe(true);
     const text = previewText(r.items);
     expect(text.match(/L2 Strong/g)).toHaveLength(20);
-    expect(text.length).toBeLessThan(8000);
+    // Rule warnings (marked !) are extra lines; the change lines themselves stay short.
+    expect(text.split('\n').filter((l) => !l.startsWith('  ! ')).join('\n').length).toBeLessThan(8000);
   });
 
   it('describes a new day', () => {

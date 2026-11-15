@@ -79,7 +79,7 @@ describe('write tools', () => {
     const rpcs: { fn: string; args: unknown }[] = [];
     const query = (t: string) => {
       const q: Record<string, unknown> = {};
-      for (const m of ['select', 'in', 'eq', 'order', 'limit']) q[m] = () => q;
+      for (const m of ['select', 'in', 'eq', 'order', 'limit', 'gte', 'lte']) q[m] = () => q;
       q.insert = (row: Record<string, unknown>) => {
         inserts.push({ table: t, row });
         return q;

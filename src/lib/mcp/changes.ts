@@ -4,6 +4,7 @@ import { cleanCoachNotes, COACH_NOTES_MAX } from '../coach-notes';
 import { isWeekday } from '../dates';
 import { STYLES } from '../programming/engine';
 import { cleanPlan, WEEKDAYS, type PlanDraft } from '../programming/plan';
+import { checkDayRules, checkRepeats } from '../programming/rules';
 import type { Part } from '../types';
 import { checkParts, cleanWorkoutFields } from '../workout-clean';
 import { isRealDate } from './read';
@@ -39,6 +40,8 @@ export interface ChangeContext {
   commentCounts: Record<string, number>;
   todayHasEntries: boolean; // comments, surveys, lifts or benchmark results; sign-ups don't count
   cycles: Record<number, { start_date: string; updated_at: string; row: CycleRow } | undefined>;
+  /** Parts of the days around the batch, for the "same movement within 2 class days" check. */
+  nearby?: Record<string, Part[]>;
 }
 
 /** before/after are only for the preview: a day (with notes when they're part of the change), a cycle row, or null. */
@@ -82,6 +85,20 @@ export function validateChanges(changes: unknown, ctx: ChangeContext): { items: 
     if (targets.has(item.target)) item.problems.push(`${item.target} is changed more than once in this batch. Put it all in one change.`);
     targets.add(item.target);
     items.push(item);
+  }
+
+  // Same movement within 2 class days of a changed day: the batch's new days over what's already there.
+  const allDays: Record<string, Part[]> = { ...ctx.nearby };
+  for (const [d, row] of Object.entries(ctx.days)) if (row) allDays[d] = row.parts;
+  const changedDays: string[] = [];
+  for (const item of items) {
+    for (const op of item.ops) {
+      if (op.op === 'put_day') { allDays[op.date] = op.row.parts; changedDays.push(op.date); }
+      if (op.op === 'delete_day') delete allDays[op.date];
+    }
+  }
+  for (const w of checkRepeats(changedDays, allDays)) {
+    items.find((i) => i.target === `day ${w.slice(0, 10)}`)?.warnings.push(w);
   }
 
   for (const item of items) {
@@ -171,7 +188,15 @@ function checkDayChange(c: Record<string, unknown>, n: number, ctx: ChangeContex
   }
   item.before = before;
   item.after = after;
-  if (!before || !same(before, after)) item.ops.push(op);
+  if (!before || !same(before, after)) {
+    item.ops.push(op);
+    // Programming rules, only for days that actually change.
+    if (checked.parts) {
+      const rules = checkDayRules(date, { title: fields.title, focus: fields.focus, why: fields.why, parts });
+      item.problems.push(...rules.problems);
+      item.warnings.push(...rules.warnings);
+    }
+  }
   return item;
 }
 
