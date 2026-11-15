@@ -17,9 +17,9 @@ If an app rule below would change any of this, keep the methodology and say in c
 AUDIENCE
 About 8–16 adults, mixed ages and abilities, about a third aged 40+. Everyone works on their own. No partner or team work, ever.
 
-LEVELS: write 4, not 3, same stimulus
-The app has four levels, in this order: Gentle, Steady, Strong, Full.
-- Gentle = Foundations, Steady = Intermediate, Strong = Rx.
+LEVELS: write 3, same stimulus
+The app has three levels, in this order: Steady, Strong, Full.
+- Steady = Intermediate, Strong = Rx. Leave out the Foundations version.
 - Full = Rx by default. Only make Full harder where there's a natural next rung on the scaling ladder (Appendix B) that keeps the same stimulus, cap and target. Don't add volume or change what limits the athlete (gas / cardio / muscle).
 - Each level's text must work on its own. Never write "as written" or "same as Rx": copy the full workout into each level, then apply that level's loads and changes.
 
@@ -27,21 +27,20 @@ STRENGTH BLOCKS
 - One lift per block. If a day has two (clean complex + strict press), make two blocks, in the same order as now.
 - If a lift has more than one scheme that day (e.g. Week 6 "1 × 3 @ 80%, 3 × 3 @ 85%", Week 7 "2 × 3 @ 75%, 1 × 2 @ 85%"), make one block per scheme, in order, labelled e.g. "Strength · ramp" and "Strength · top sets". Keep every set and %.
 - Movement names must match this list exactly: Back squat, Front squat, Deadlift, Bench press, Strict press, Push press, Power clean, Snatch, Squat clean & jerk. Hang power clean work counts as Power clean.
-- Percent days: use the % from the progression table for every level that uses the barbell, the same number for Steady, Strong and Full: "pct": [null, p, p, p]. Gentle is null (Gentle does the Foundations alternative by RPE).
+- Percent days: use the % from the progression table, the same number for Steady, Strong and Full: "pct": [p, p, p].
 - Test and retest days: mode "build", reps 3 (squat, deadlift) or 5 (press), "pct" all null. Keep the full ladder, attempt rules and "last clean set = your 3RM" wording in each level's text.
 - RPE-based technique work (clean EMOMs, the Week 9 optional technique work): mode "build", "pct" all null, with the protocol written out in full.
-- Gentle's movement: the Foundations alternative already in the program. In "gentleMovement", use the closest of: Goblet squat, Kettlebell deadlift, Dumbbell press, Kettlebell swing, Dumbbell snatch, Dumbbell clean & press. Name the exact one (box squat, trap-bar deadlift) in Gentle's text.
 - Ramp sets, rest, the RPE 8 cap and the adjustment rules go in the lift's "note", as one or two short sentences.
 - Non-lift tests (1 km run, toes-to-bar max, Cindy, Helen, Mini-Rox): keep them as written. End each level's text with a line saying exactly what to record, e.g. "Record: time, level, and whether you ran or rowed."
 
 CONDITIONING
-- Write an INSIDE version (rower / air bike, no running) and an OUTSIDE version (with the runs), each at all 4 levels. The app picks one based on the weather. Use the program's own swap (400 m run = 500 m row = 20/16 cal air bike; 1 km test = 1,000 m row) to write the inside version. This replaces the "icy day" notes.
+- Write an INSIDE version (rower / air bike, no running) and an OUTSIDE version (with the runs), each at all 3 levels. The app picks one based on the weather. Use the program's own swap (400 m run = 500 m row = 20/16 cal air bike; 1 km test = 1,000 m row) to write the inside version. This replaces the "icy day" notes.
 - Put the score on the last line of each level's text, specific to that level: cap, target, feel and pace, e.g. "Cap 12:00 · Aim: every minute done in 35–45 s · Feel: cardio · Pace: sustain".
 
 OTHER BLOCKS
 - Skill work (toes-to-bar progressions, baselines, retests) is a "skill" block.
 - Accessory work is its own block, kind "skill", labelled "Accessory".
-- Warm-up and cool-down can be the same text for all 4 levels.
+- Warm-up and cool-down can be the same text for all 3 levels.
 - Give every block its minutes, from your time budget.
 
 WRITING RULES
@@ -67,7 +66,7 @@ JSON SHAPE (one file, valid JSON, every weekday from Mon Oct 19 to Fri Dec 18)
     ],
     "days": {
       "1": { "focus": "...", "style": "amrap" | "intervals" | "long" | "easy" | "short",
-             "lift": "<movement or null>", "gentle": "<Gentle movement or null>",
+             "lift": "<movement or null>",
              "skill": null, "notes": "max 200 chars" },
       "2": {...}, "3": {...}, "4": {...}, "5": {...}
     }
@@ -81,29 +80,29 @@ JSON SHAPE (one file, valid JSON, every weekday from Mon Oct 19 to Fri Dec 18)
       "coach_notes": "...",
       "parts": [
         { "kind": "warmup", "label": "Warm-up", "title": "Warm-up", "minutes": 12,
-          "versions": ["Gentle", "Steady", "Strong", "Full"] },
+          "versions": ["Steady", "Strong", "Full"] },
         { "kind": "strength", "label": "Strength", "title": "Back squat 5×5", "minutes": 20,
-          "lift": { "movement": "Back squat", "gentleMovement": "Goblet squat",
+          "lift": { "movement": "Back squat",
                     "mode": "percent" | "build", "sets": 5, "reps": 5,
-                    "pct": [null, 75, 75, 75], "note": "..." },
-          "versions": ["Gentle", "Steady", "Strong", "Full"] },
+                    "pct": [75, 75, 75], "note": "..." },
+          "versions": ["Steady", "Strong", "Full"] },
         { "kind": "conditioning", "label": "Conditioning", "title": "Row/Press Intervals", "minutes": 12,
-          "versions": ["inside, Gentle", "...", "...", "..."],
-          "outdoor": { "title": "Run/Press Intervals", "versions": ["outside, Gentle", "...", "...", "..."] } },
+          "versions": ["inside, Steady", "...", "..."],
+          "outdoor": { "title": "Run/Press Intervals", "versions": ["outside, Steady", "...", "..."] } },
         { "kind": "skill", "label": "Accessory", "title": "Accessory superset", "minutes": 5,
-          "versions": ["...", "...", "...", "..."] },
+          "versions": ["...", "...", "..."] },
         { "kind": "cooldown", "label": "Cool-down", "title": "Cool-down", "minutes": 5,
-          "versions": ["...", "...", "...", "..."] }
+          "versions": ["...", "...", "..."] }
       ]
     }
   ]
 }
 
 Notes on the JSON:
-- "versions" is always exactly 4 strings: Gentle, Steady, Strong, Full. Use "\n" between lines. Each string is 1500 characters or fewer.
-- "pct" is [null, p, p, p] on percent days (same % for Steady, Strong and Full, from the progression table) and [null, null, null, null] on build days.
+- "versions" is always exactly 3 strings: Steady, Strong, Full. Use "\n" between lines. Each string is 1500 characters or fewer.
+- "pct" is [p, p, p] on percent days (same % for Steady, Strong and Full, from the progression table) and [null, null, null] on build days.
 - "kind" is one of: warmup, strength, skill, conditioning, cooldown. At most 12 parts per day.
 - Leave out "outdoor" only when an outside version makes no sense (e.g. pure barbell work).
 - Keep "skill": null in cycle.days. Toes-to-bar lives in the workouts' skill blocks.
 
-Before finishing, check: 45 workouts; every "versions" array has 4 items; every movement name is from the lists above; no kg; no partner work; every load is written lighter/heavier; every test and retest from the original is still there, on the same day; every percent and sets × reps matches the progression table.
+Before finishing, check: 45 workouts; every "versions" array has 3 items; every movement name is from the lists above; no kg; no partner work; every load is written lighter/heavier; every test and retest from the original is still there, on the same day; every percent and sets × reps matches the progression table.

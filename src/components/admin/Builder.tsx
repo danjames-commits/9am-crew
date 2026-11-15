@@ -15,10 +15,10 @@ interface Saved extends WorkoutDraft {
 }
 
 const BLANK: Part[] = [
-  { kind: 'warmup', label: 'Warm-up', title: 'Warm-up', minutes: 10, versions: ['', '', '', ''] },
-  { kind: 'strength', label: 'Strength', ...liftPart({ movement: 'Back squat', gentleMovement: 'Goblet squat', mode: 'percent', sets: 5, reps: 5, pct: liftPct(75) }) },
-  { kind: 'conditioning', label: 'Conditioning', title: '', minutes: 15, versions: ['', '', '', ''] },
-  { kind: 'cooldown', label: 'Cool-down', title: 'Cool-down', minutes: 5, versions: ['', '', '', ''] },
+  { kind: 'warmup', label: 'Warm-up', title: 'Warm-up', minutes: 10, versions: ['', '', ''] },
+  { kind: 'strength', label: 'Strength', ...liftPart({ movement: 'Back squat', mode: 'percent', sets: 5, reps: 5, pct: liftPct(75) }) },
+  { kind: 'conditioning', label: 'Conditioning', title: '', minutes: 15, versions: ['', '', ''] },
+  { kind: 'cooldown', label: 'Cool-down', title: 'Cool-down', minutes: 5, versions: ['', '', ''] },
 ];
 
 export function Builder({
@@ -46,7 +46,7 @@ export function Builder({
   const [swap, setSwap] = useState(0);
   const [draft, setDraft] = useState<WorkoutDraft>(() => saved ?? suggest(0, 0));
   const [status, setStatus] = useState<'new' | 'draft' | 'published'>(saved?.status ?? 'new');
-  const [preview, setPreview] = useState<Level>(3);
+  const [preview, setPreview] = useState<Level>(2);
   const [previewOutside, setPreviewOutside] = useState(Boolean(weather?.outside));
   const [editing, setEditing] = useState<number | null>(null);
   const [msg, setMsg] = useState<{ ok?: string; error?: string } | null>(null);
@@ -215,13 +215,13 @@ export function Builder({
           {p.kind === 'conditioning' && shownTitle && <h3>{shownTitle}</h3>}
           <p className="pre">{shownText || <span className="muted">Nothing written for {LEVELS[idx].name} yet.</span>}</p>
 
-          {p.kind === 'strength' && p.lift && p.lift.mode !== 'build' && p.lift.pct[2] != null && (
+          {p.kind === 'strength' && p.lift && p.lift.mode !== 'build' && p.lift.pct[1] != null && (
             <div className="row">
               <button type="button" className="btn ghost" onClick={() => doAdjust(i, -5)} aria-label="Lighter" style={{ width: 48, padding: 0, fontSize: 22 }}>
                 −
               </button>
               <span className="grow center small">
-                Strong at {p.lift.pct[2]}%{p.lift.pct[1] != null ? ` · Steady ${p.lift.pct[1]}%` : ''}{p.lift.pct[3] != null ? ` · Full ${p.lift.pct[3]}%` : ''}
+                Strong at {p.lift.pct[1]}%{p.lift.pct[0] != null ? ` · Steady ${p.lift.pct[0]}%` : ''}{p.lift.pct[2] != null ? ` · Full ${p.lift.pct[2]}%` : ''}
               </span>
               <button type="button" className="btn ghost" onClick={() => doAdjust(i, 5)} aria-label="Heavier" style={{ width: 48, padding: 0, fontSize: 22 }}>
                 +
@@ -413,13 +413,13 @@ function PartEditor({ part, movements, benchmarks, onChange, onRemove }: { part:
           type="button"
           className="btn small"
           style={{ alignSelf: 'flex-start' }}
-          onClick={() => onChange({ ...part, ...liftPart({ movement: 'Back squat', gentleMovement: 'Goblet squat', mode: 'percent', sets: 5, reps: 5, pct: liftPct(75) }) })}
+          onClick={() => onChange({ ...part, ...liftPart({ movement: 'Back squat', mode: 'percent', sets: 5, reps: 5, pct: liftPct(75) }) })}
         >
           Set this up as a tracked lift
         </button>
       )}
       <div className="row wrap">
-        <button type="button" className="btn small ghost" onClick={() => onChange({ ...part, versions: [part.versions[2], part.versions[2], part.versions[2], part.versions[2]] })}>
+        <button type="button" className="btn small ghost" onClick={() => onChange({ ...part, versions: [part.versions[1], part.versions[1], part.versions[1]] })}>
           Copy Strong to all levels
         </button>
         <button type="button" className="btn small danger" onClick={onRemove}>

@@ -2,7 +2,7 @@
 // Pure: the caller loads the context, and the SQL functions apply the ops.
 import { cleanCoachNotes, COACH_NOTES_MAX } from '../coach-notes';
 import { isWeekday } from '../dates';
-import { gentleChoices, STYLES } from '../programming/engine';
+import { STYLES } from '../programming/engine';
 import { cleanPlan, WEEKDAYS, type PlanDraft } from '../programming/plan';
 import type { Part } from '../types';
 import { checkParts, cleanWorkoutFields } from '../workout-clean';
@@ -154,12 +154,8 @@ function checkDayChange(c: Record<string, unknown>, n: number, ctx: ChangeContex
   item.warnings.push(...fields.warnings, ...checked.warnings);
   if (c.status !== undefined && c.status !== 'draft' && c.status !== 'published') problem(`${date}: status must be "draft" or "published".`);
   const parts = checked.parts ?? [];
-  const gentle = gentleChoices(ctx.lifts);
   parts.forEach((p, i) => {
-    if (!p.lift) return;
-    if (!ctx.lifts.includes(p.lift.movement)) problem(`${date} part ${i + 1}: "${p.lift.movement}" is not on the lift list (${ctx.lifts.join(', ')}).`);
-    if (p.lift.gentleMovement !== undefined && !gentle.includes(p.lift.gentleMovement))
-      problem(`${date} part ${i + 1}: Gentle movement "${p.lift.gentleMovement}" is not one of: ${gentle.join(', ')}.`);
+    if (p.lift && !ctx.lifts.includes(p.lift.movement)) problem(`${date} part ${i + 1}: "${p.lift.movement}" is not on the lift list (${ctx.lifts.join(', ')}).`);
   });
   const status: Status = c.status === 'draft' || c.status === 'published' ? c.status : existing?.status ?? 'published';
   const row: DayRow = { title: fields.title, focus: fields.focus, why: fields.why, parts, status };
@@ -235,7 +231,6 @@ function checkCycleChange(c: Record<string, unknown>, n: number, ctx: ChangeCont
 /** Checks the day lifts (cleanPlan would quietly drop unknown ones), then cleans the plan. */
 function checkPlan(plan: Record<string, unknown>, ctx: ChangeContext, item: ItemResult, where: string): CycleRow | null {
   const days = asObj(plan.days);
-  const gentle = gentleChoices(ctx.lifts);
   for (const { n, long } of WEEKDAYS) {
     if (!days[n] || typeof days[n] !== 'object') {
       item.problems.push(`${where}: ${long} is missing from the plan's days.`);
@@ -245,7 +240,6 @@ function checkPlan(plan: Record<string, unknown>, ctx: ChangeContext, item: Item
     if (!STYLES.includes(d.style as never)) item.problems.push(`${where}, ${long}: unknown style "${String(d.style)}" (use ${STYLES.join(', ')}).`);
     if (d.skill != null && d.skill !== 'pullup') item.problems.push(`${where}, ${long}: unknown skill "${String(d.skill)}" (use "pullup" or null).`);
     if (d.lift != null && !ctx.lifts.includes(String(d.lift))) item.problems.push(`${where}, ${long}: "${String(d.lift)}" is not on the lift list (${ctx.lifts.join(', ')}).`);
-    if (d.gentle != null && !gentle.includes(String(d.gentle))) item.problems.push(`${where}, ${long}: Gentle movement "${String(d.gentle)}" is not one of: ${gentle.join(', ')}.`);
   }
   const { plan: clean, error } = cleanPlan(plan as unknown as PlanDraft, ctx.lifts);
   if (error || !clean) {

@@ -3,7 +3,6 @@ import type { McpServer, ServerContext } from '@modelcontextprotocol/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { todayLocal } from '../dates';
-import { gentleChoices } from '../programming/engine';
 import type { McpCaller } from './auth';
 import { MAX_CHANGES, validateChanges, type Change } from './changes';
 import { loadContext } from './context';
@@ -136,7 +135,7 @@ export function registerTools(server: McpServer): void {
     'list_movements',
     {
       title: 'List movements',
-      description: 'The lifts the gym tracks, and the gentle alternatives (lifts plus easier options) allowed for easier versions.',
+      description: 'The lifts the gym tracks.',
       inputSchema: z.object({}),
     },
     async (_args, ctx) => {
@@ -144,7 +143,7 @@ export function registerTools(server: McpServer): void {
       const { data, error } = await supabase.from('movements').select('name').order('sort');
       if (error) throw new Error(error.message);
       const lifts = (data ?? []).map((m: { name: string }) => m.name);
-      return text({ lifts, gentle: gentleChoices(lifts) });
+      return text({ lifts });
     },
   );
 

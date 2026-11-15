@@ -1,7 +1,7 @@
 // A cycle plan as it's edited in the planner and saved to the database.
 // Pure functions, shared by the planner screen and the server.
 import { isWeekday, weekday } from '../dates';
-import { builtInDays, cyclePlan, GENTLE_FOR, gentleChoices, STYLES, type CycleDay, type CycleWeek, type WeekKind, type WeekPlan } from './engine';
+import { builtInDays, cyclePlan, STYLES, type CycleDay, type CycleWeek, type WeekKind, type WeekPlan } from './engine';
 
 export interface PlanDraft {
   start_date: string;
@@ -57,12 +57,10 @@ export function cleanWeek(w: Partial<CycleWeek>): CycleWeek {
 export function cleanDay(d: Partial<CycleDay> | undefined, movements: string[], fallback: CycleDay): CycleDay {
   if (!d) return fallback;
   const lift = d.lift && movements.includes(d.lift) ? d.lift : null;
-  const gentle = lift ? (d.gentle && gentleChoices(movements).includes(d.gentle) ? d.gentle : GENTLE_FOR[lift] ?? lift) : null;
   return {
     focus: text(d.focus, 60) || fallback.focus,
     style: STYLES.includes(d.style as never) ? (d.style as CycleDay['style']) : fallback.style,
     lift,
-    gentle,
     skill: d.skill === 'pullup' ? 'pullup' : null,
     notes: text(d.notes, 200),
   };

@@ -52,11 +52,11 @@ describe('notesByPart', () => {
   const s = (label: string) => ({ label, text: 'x' });
   it('puts each section on the part it is about', () => {
     const { perPart, general } = notesByPart(
-      [s('Scaling'), s('Warm-up for Gentle'), s('Loads'), s('Test'), s('Cindy targets'), s('Conditioning targets'), s('Flush'), s('No machine (warm-up/cool-down)'), s('Masters or injury')],
+      [s('Scaling'), s('Warm-up for Steady'), s('Loads'), s('Test'), s('Cindy targets'), s('Conditioning targets'), s('Flush'), s('No machine (warm-up/cool-down)'), s('Masters or injury')],
       parts,
     );
     expect(general.map((x) => x.label)).toEqual(['Scaling', 'Masters or injury']);
-    expect(perPart[0].map((x) => x.label)).toEqual(['Warm-up for Gentle', 'No machine (warm-up/cool-down)']);
+    expect(perPart[0].map((x) => x.label)).toEqual(['Warm-up for Steady', 'No machine (warm-up/cool-down)']);
     expect(perPart[1].map((x) => x.label)).toEqual(['Loads', 'Test']);
     expect(perPart[2].map((x) => x.label)).toEqual(['Cindy targets', 'Conditioning targets']);
     expect(perPart[3].map((x) => x.label)).toEqual(['Flush', 'No machine (warm-up/cool-down)']);

@@ -9,18 +9,18 @@ import { CONDITIONING, type Style } from './library';
 export interface DayPlan {
   focus: string;
   style: Style;
-  lift?: { name: string; gentle: string; short: string };
+  lift?: { name: string; short: string };
   skill?: 'pullup';
   /** Extra guidance for whoever writes the workout (a planned cycle's notes). */
   notes?: string;
 }
 
 export const DAY_PLAN: Record<number, DayPlan> = {
-  1: { focus: 'Press · steady conditioning', style: 'amrap', lift: { name: 'Strict press', gentle: 'Dumbbell press', short: 'Press' } },
-  2: { focus: 'Deadlift · intervals', style: 'intervals', lift: { name: 'Deadlift', gentle: 'Kettlebell deadlift', short: 'Deadlift' } },
+  1: { focus: 'Press · steady conditioning', style: 'amrap', lift: { name: 'Strict press', short: 'Press' } },
+  2: { focus: 'Deadlift · intervals', style: 'intervals', lift: { name: 'Deadlift', short: 'Deadlift' } },
   3: { focus: 'Pull-up skills · longer cardio', style: 'long', skill: 'pullup' },
   4: { focus: 'Easy day · mobility + steady pace', style: 'easy' },
-  5: { focus: 'Squat · short and spicy', style: 'short', lift: { name: 'Back squat', gentle: 'Goblet squat', short: 'Squat' } },
+  5: { focus: 'Squat · short and spicy', style: 'short', lift: { name: 'Back squat', short: 'Squat' } },
 };
 
 // ---------------------------------------------------------------
@@ -92,8 +92,6 @@ export interface CycleDay {
   style: Style;
   /** Main lift for the day, or null for none. */
   lift: string | null;
-  /** What Gentle does instead; defaults to the usual easier version. */
-  gentle?: string | null;
   skill: 'pullup' | null;
   notes?: string;
 }
@@ -142,7 +140,7 @@ export function builtInSchedule(cycleStart: string, cycleWeeks: number, goals: s
 
 export function dayPlanFrom(d: CycleDay): DayPlan {
   const plan: DayPlan = { focus: d.focus, style: STYLES.includes(d.style) ? d.style : 'amrap' };
-  if (d.lift) plan.lift = { name: d.lift, gentle: d.gentle || GENTLE_FOR[d.lift] || d.lift, short: d.lift };
+  if (d.lift) plan.lift = { name: d.lift, short: d.lift };
   if (d.skill === 'pullup') plan.skill = 'pullup';
   if (d.notes?.trim()) plan.notes = d.notes.trim();
   return plan;
@@ -153,7 +151,7 @@ export function builtInDays(): Record<string, CycleDay> {
   const out: Record<string, CycleDay> = {};
   for (const n of [1, 2, 3, 4, 5]) {
     const p = DAY_PLAN[n];
-    out[n] = { focus: p.focus, style: p.style, lift: p.lift?.name ?? null, gentle: p.lift?.gentle ?? null, skill: p.skill ?? null, notes: '' };
+    out[n] = { focus: p.focus, style: p.style, lift: p.lift?.name ?? null, skill: p.skill ?? null, notes: '' };
   }
   return out;
 }
@@ -232,7 +230,7 @@ export function nextCycle(date: string, schedule: Schedule): ResolvedCycle {
 // ---------------------------------------------------------------
 // Building one day's workout.
 // ---------------------------------------------------------------
-const same = (s: string): LevelText => [s, s, s, s];
+const same = (s: string): LevelText => [s, s, s];
 const clampPct = (p: number) => Math.max(40, Math.min(95, p));
 
 function strengthPart(plan: DayPlan, week: WeekPlan, adjust: number): Part {
@@ -242,9 +240,8 @@ function strengthPart(plan: DayPlan, week: WeekPlan, adjust: number): Part {
       kind: 'strength',
       label: 'Strength · test day',
       title: `${lift.name}: find a new best`,
-      lift: { movement: lift.name, pct: [null, null, null, null], reps: 3, gentleMovement: lift.gentle, mode: 'build' },
+      lift: { movement: lift.name, pct: [null, null, null], reps: 3, mode: 'build' },
       versions: [
-        `${lift.gentle}: build to a heavy set of 10 you can do with good form. Log it.`,
         `${lift.name}: build over 5–6 sets to a heavy set of 5. Log it.`,
         `${lift.name}: build over 6–7 sets to a heavy set of 3. Log it.`,
         `${lift.name}: build over 6–8 sets to a heavy single (or 3). Log it.`,
@@ -254,11 +251,10 @@ function strengthPart(plan: DayPlan, week: WeekPlan, adjust: number): Part {
   const base = clampPct(week.pct + adjust);
   const spec: LiftSpec = {
     movement: lift.name,
-    gentleMovement: lift.gentle,
     mode: 'percent',
     sets: week.sets,
     reps: week.reps,
-    pct: [null, clampPct(base - 10), base, clampPct(base + 5)],
+    pct: [clampPct(base - 10), base, clampPct(base + 5)],
   };
   return { kind: 'strength', label: week.kind === 'deload' ? 'Strength · easy week' : 'Strength', ...liftPart(spec) };
 }
@@ -269,7 +265,7 @@ function strengthPart(plan: DayPlan, week: WeekPlan, adjust: number): Part {
 // ---------------------------------------------------------------
 export function liftPct(strong: number): LevelPct {
   const s = clampPct(strong);
-  return [null, clampPct(s - 10), s, clampPct(s + 5)];
+  return [clampPct(s - 10), s, clampPct(s + 5)];
 }
 
 export function liftTitle(spec: LiftSpec) {
@@ -280,50 +276,25 @@ export function liftTitle(spec: LiftSpec) {
 export function liftText(spec: LiftSpec): LevelText {
   const sets = spec.sets ?? 3;
   const reps = spec.reps ?? 5;
-  const gentle = spec.gentleMovement || spec.movement;
   const note = spec.note?.trim() ? `\n${spec.note.trim()}` : '';
   if (spec.mode === 'build') {
     return [
-      `${gentle}: 4 × 10, building to a weight you could lift about 12 times\nLog your heaviest set.${note}`,
       `${spec.movement}: build over 5 sets to a solid set of ${reps}\nStop where you could still do 1 or 2 more. Log it.${note}`,
       `${spec.movement}: build over 5–6 sets to a solid set of ${reps}\nStop where you could still do 1 or 2 more. Log it.${note}`,
       `${spec.movement}: build over 6 sets to a heavy set of ${reps}\nPerfect reps only. Log it.${note}`,
     ];
   }
-  const gentleReps = Math.max(8, reps + 3);
-  const at = (i: 1 | 2 | 3) => (spec.pct[i] != null ? ` @ ${spec.pct[i]}%` : '');
+  const at = (i: 0 | 1 | 2) => (spec.pct[i] != null ? ` @ ${spec.pct[i]}%` : '');
   return [
-    `${gentle} ${sets}×${gentleReps}, a weight you could lift about 12 times${note}`,
+    `${spec.movement} ${sets}×${reps}${at(0)}${note}`,
     `${spec.movement} ${sets}×${reps}${at(1)}${note}`,
     `${spec.movement} ${sets}×${reps}${at(2)}${note}`,
-    `${spec.movement} ${sets}×${reps}${at(3)}${note}`,
   ];
 }
 
 /** Title, text and settings for a lifting part, all from one set of settings. */
 export function liftPart(spec: LiftSpec): Pick<Part, 'title' | 'versions' | 'lift'> {
   return { title: liftTitle(spec), versions: liftText(spec), lift: spec };
-}
-
-/** What Gentle does instead of each main lift. */
-export const GENTLE_FOR: Record<string, string> = {
-  'Back squat': 'Goblet squat',
-  'Front squat': 'Goblet squat',
-  Deadlift: 'Kettlebell deadlift',
-  'Strict press': 'Dumbbell press',
-  'Push press': 'Dumbbell press',
-  'Bench press': 'Dumbbell press',
-  'Power clean': 'Kettlebell swing',
-  Snatch: 'Dumbbell snatch',
-  'Squat clean & jerk': 'Dumbbell clean & press',
-};
-
-/** Easier movements Gentle does instead. Nobody logs weights for these. */
-export const GENTLE_OPTIONS = ['Goblet squat', 'Kettlebell deadlift', 'Dumbbell press', 'Kettlebell swing', 'Dumbbell snatch', 'Dumbbell clean & press'];
-
-/** Choices for "Gentle does this instead": the easier movements first, then any tracked lift. */
-export function gentleChoices(movements: string[]) {
-  return [...new Set([...GENTLE_OPTIONS, ...movements])];
 }
 
 function pullupSkill(week: WeekPlan): Part {
@@ -333,7 +304,6 @@ function pullupSkill(week: WeekPlan): Part {
       label: 'Skill · test day',
       title: 'Pull-up check-in',
       versions: [
-        'Max ring rows in 1 min (feet far back). Note your number.',
         'Max ring rows in 1 min with feet close in. Then try a 10 s hold at the top of a band pull-up.',
         'Max band pull-ups in one go with your lightest band. Note your band and reps.',
         'Max strict pull-ups in one go. Note your number.',
@@ -347,7 +317,6 @@ function pullupSkill(week: WeekPlan): Part {
     label: week.kind === 'deload' ? 'Skill · easy week' : 'Skill',
     title: 'Pull-up progression',
     versions: [
-      `${sets}×${6 + step} ring rows (feet far back)\n3 × ${15 + step * 5} s dead hang`,
       `${sets}×${8 + step} ring rows (feet close in)\n3×${3 + step} band pull-ups (heavy band)`,
       `${sets}×${4 + step} band pull-ups\n3×${2 + Math.min(step, 2)} slow lowering pull-ups (5 s down)`,
       `${sets}×${3 + step} strict pull-ups\n3×${3 + step} slow lowering pull-ups (5 s down)`,

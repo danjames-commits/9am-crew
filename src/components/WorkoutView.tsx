@@ -44,7 +44,7 @@ export function WorkoutView({
   /** Admins: the class date, to save equipment changes. */
   kitEditDate?: string;
 }) {
-  const [level, setLevel] = useState<Level>(Math.min(4, Math.max(1, myLevel)) as Level);
+  const [level, setLevel] = useState<Level>(Math.min(3, Math.max(1, myLevel)) as Level);
   // Your saved level; you can make the level you're looking at your own from here.
   const [mine, setMine] = useState(myLevel);
   const [savingLevel, startSaving] = useTransition();

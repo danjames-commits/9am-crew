@@ -39,8 +39,7 @@ export function QuickLog({ part, level, outside, ctx, big = false, counterId }: 
     return <QuickBenchmark bench={bench} level={level} ctx={ctx} big={big} roundText={(outside && part.outdoor ? part.outdoor.versions : part.versions)[level - 1] ?? ''} counterId={counterId} />;
   }
   const lift = part.lift;
-  // Gentle does an easier movement that isn't tracked.
-  if (!lift || (level === 1 && lift.gentleMovement && lift.gentleMovement !== lift.movement)) return null;
+  if (!lift) return null;
   const movement = ctx.movements.find((m) => m.name === lift.movement);
   if (!movement) return null;
   return <QuickLift part={part} level={level} movement={movement} ctx={ctx} big={big} />;

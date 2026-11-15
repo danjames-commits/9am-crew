@@ -1,4 +1,4 @@
-import type { LevelPct, Part, PartKind } from './types';
+import { LEVELS, type LevelPct, type Part, type PartKind } from './types';
 
 export const WORKOUT_LIMITS = { title: 80, focus: 80, why: 600, partText: 1500, parts: 12 };
 
@@ -32,8 +32,8 @@ export function checkParts(parts: unknown): PartsCheck {
       problems.push(`Part ${n}: unknown kind "${String(p.kind)}" (use ${KINDS.join(', ')})`);
       return;
     }
-    if (!Array.isArray(p.versions) || p.versions.length !== 4) {
-      problems.push(`Part ${n} (${p.kind}): needs exactly 4 level versions`);
+    if (!Array.isArray(p.versions) || p.versions.length !== LEVELS.length) {
+      problems.push(`Part ${n} (${p.kind}): needs exactly ${LEVELS.length} level versions (${LEVELS.map((l) => l.name).join(', ')})`);
       return;
     }
     const versions = p.versions.map((v, j) => cut(v, `Part ${n} level ${j + 1}`)) as Part['versions'];
@@ -44,7 +44,7 @@ export function checkParts(parts: unknown): PartsCheck {
       versions,
     };
     if (typeof p.minutes === 'number' && p.minutes > 0 && p.minutes < 120) part.minutes = Math.round(p.minutes);
-    if (p.outdoor && Array.isArray(p.outdoor.versions) && p.outdoor.versions.length === 4) {
+    if (p.outdoor && Array.isArray(p.outdoor.versions) && p.outdoor.versions.length === LEVELS.length) {
       part.outdoor = {
         title: String(p.outdoor.title ?? '').slice(0, 80),
         versions: p.outdoor.versions.map((v, j) => cut(v, `Part ${n} outdoor level ${j + 1}`)) as Part['versions'],
@@ -52,14 +52,13 @@ export function checkParts(parts: unknown): PartsCheck {
       if (typeof p.outdoor.benchmark === 'string' && p.outdoor.benchmark.trim()) part.outdoor.benchmark = p.outdoor.benchmark.trim().slice(0, 60);
     }
     if (typeof p.benchmark === 'string' && p.benchmark.trim()) part.benchmark = p.benchmark.trim().slice(0, 60);
-    if (p.lift && typeof p.lift.movement === 'string' && Array.isArray(p.lift.pct) && p.lift.pct.length === 4) {
+    if (p.lift && typeof p.lift.movement === 'string' && Array.isArray(p.lift.pct) && p.lift.pct.length === LEVELS.length) {
       part.lift = {
         movement: p.lift.movement.slice(0, 60),
         pct: p.lift.pct.map((x) => (typeof x === 'number' && x > 0 && x <= 110 ? Math.round(x) : null)) as LevelPct,
       };
       if (Number.isInteger(p.lift.sets) && p.lift.sets! > 0 && p.lift.sets! <= 12) part.lift.sets = p.lift.sets;
       if (Number.isInteger(p.lift.reps) && p.lift.reps! > 0 && p.lift.reps! <= 20) part.lift.reps = p.lift.reps;
-      if (typeof p.lift.gentleMovement === 'string') part.lift.gentleMovement = p.lift.gentleMovement.slice(0, 60);
       if (p.lift.mode === 'percent' || p.lift.mode === 'build') part.lift.mode = p.lift.mode;
       if (typeof p.lift.note === 'string' && p.lift.note.trim()) part.lift.note = p.lift.note.trim().slice(0, 200);
     }

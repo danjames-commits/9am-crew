@@ -45,7 +45,7 @@ export async function updateMe(input: {
   const { supabase, me } = await requireMember();
   const display_name = input.display_name.trim().slice(0, 40);
   const level = Math.round(input.level);
-  if (!display_name || level < 1 || level > 4) return { error: 'Please add a name and pick a level.' };
+  if (!display_name || level < 1 || level > 3) return { error: 'Please add a name and pick a level.' };
   let animal: string | null = input.animal && isAnimal(input.animal) ? input.animal : null;
   if (input.animal === 'custom') {
     if (input.drawing) {
@@ -80,7 +80,7 @@ export async function updateMe(input: {
 export async function setLevel(level: number) {
   const { supabase, me } = await requireMember();
   const n = Math.round(level);
-  if (!(n >= 1 && n <= 4)) return { error: 'Pick a level from 1 to 4.' };
+  if (!(n >= 1 && n <= 3)) return { error: 'Pick a level from 1 to 3.' };
   const { error } = await supabase.from('profiles').update({ level: n }).eq('id', me.id);
   if (error) return { error: 'Couldn’t save that. Try again.' };
   revalidatePath('/', 'layout');
@@ -370,7 +370,7 @@ export async function logBenchmark(input: {
 }) {
   const { supabase, me } = await requireMember();
   if (input.done_on !== null && (!isDate(input.done_on) || input.done_on > todayLocal())) return { error: 'Pick a date (not in the future), or tick “I don’t remember when”.' };
-  const level = input.level != null && input.level >= 1 && input.level <= 4 ? Math.round(input.level) : null;
+  const level = input.level != null && input.level >= 1 && input.level <= 3 ? Math.round(input.level) : null;
   const { data: b } = await supabase.from('benchmarks').select('id, name, score, better, description, sort').eq('id', input.benchmark_id).maybeSingle<Benchmark>();
   if (!b) return { error: 'That benchmark isn’t on the list any more.' };
   const score = readScore(b, input);

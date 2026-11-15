@@ -8,7 +8,7 @@ describe('cycle plans', () => {
   it('a hand-made plan starts from the usual pattern', () => {
     const p = builtInPlan('2026-11-30', ['Row 2 km']);
     expect(p.weeks.map((w) => w.kind)).toEqual(['build', 'build', 'build', 'deload', 'build', 'test']);
-    expect(p.days['1']).toMatchObject({ lift: 'Strict press', gentle: 'Dumbbell press', style: 'amrap' });
+    expect(p.days['1']).toMatchObject({ lift: 'Strict press', style: 'amrap' });
     expect(cleanPlan(p, MOVES).plan).toBeTruthy();
   });
 
@@ -36,28 +36,19 @@ describe('cycle plans', () => {
       { kind: 'deload', label: 'Holidays', pct: 50, sets: 3, reps: 5 },
       { kind: 'test', label: 'Test', pct: 0, sets: 0, reps: 1 },
     ]);
-    expect(plan!.days['2']).toMatchObject({ lift: null, gentle: null, style: 'intervals' });
+    expect(plan!.days['2']).toMatchObject({ lift: null, style: 'intervals' });
     expect(plan!.days['5']).toMatchObject({ lift: 'Back squat', style: 'short' });
     expect(plan!.goals).toEqual(['First pull-up', 'x'.repeat(60)]);
   });
 
   it('a saved plan drives the chart and the suggestions', () => {
-    const { plan } = cleanPlan({ ...builtInPlan('2026-11-30'), name: 'Front squat focus', days: { ...builtInPlan('2026-11-30').days, '5': { focus: 'Front squat', style: 'short', lift: 'Front squat', gentle: null, skill: null } } }, MOVES);
+    const { plan } = cleanPlan({ ...builtInPlan('2026-11-30'), name: 'Front squat focus', days: { ...builtInPlan('2026-11-30').days, '5': { focus: 'Front squat', style: 'short', lift: 'Front squat', skill: null } } }, MOVES);
     const saved: SavedCycle = { id: 9, ...plan! };
     const schedule = { cycleStart: '2026-10-19', cycleWeeks: 6, goals: [], cycles: [saved] };
     expect(asWeekPlans(saved.weeks)).toHaveLength(6);
     const fri = suggestWorkout({ date: '2026-12-04', schedule }).parts.find((p) => p.kind === 'strength')!;
-    expect(fri.lift).toMatchObject({ movement: 'Front squat', gentleMovement: 'Goblet squat' });
+    expect(fri.lift).toMatchObject({ movement: 'Front squat' });
     expect(positionOn('2026-12-04', schedule).resolved.name).toBe('Front squat focus');
-  });
-});
-
-describe('Gentle movements are not tracked lifts', () => {
-  it('Gentle can still do an easier movement that isn’t on the lift list', () => {
-    const p = builtInPlan('2026-11-30');
-    const { plan } = cleanPlan({ ...p, days: { ...p.days, '3': { focus: 'Snatch', style: 'short', lift: 'Snatch', gentle: null, skill: null } } }, MOVES);
-    expect(plan!.days['1'].gentle).toBe('Dumbbell press');
-    expect(plan!.days['3']).toMatchObject({ lift: 'Snatch', gentle: 'Dumbbell snatch' });
   });
 });
 
