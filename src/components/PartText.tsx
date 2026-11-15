@@ -24,7 +24,7 @@ export function partWords(p: Part, i: number, outside: boolean) {
 
 /**
  * The levels of a part, with identical ones merged: "All levels" when every
- * level does the same thing, otherwise e.g. "Starter & Steady".
+ * level does the same thing, otherwise e.g. "Strong & Full".
  */
 export function levelGroups(p: Part, outside: boolean, names: string[]) {
   const groups: { label: string; levels: number[]; headline: string; body: string }[] = [];
