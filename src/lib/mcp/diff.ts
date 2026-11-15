@@ -99,7 +99,7 @@ function partLines(n: number, a: Part | undefined, b: Part | undefined): string[
 
 const weekText = (w: CycleRow['weeks'][number] | undefined) => (w ? (w.kind === 'test' ? `${w.label} (test, ${w.reps} reps)` : `${w.label} ${w.pct}% ${w.sets}×${w.reps}`) : '(none)');
 const dayText = (d: CycleRow['days'][string] | undefined) =>
-  d ? [d.focus, d.style, d.lift ? `lift ${d.lift}${d.gentle && d.gentle !== d.lift ? ` (Gentle: ${d.gentle})` : ''}` : 'no lift', d.skill ? 'pull-up skill' : '', d.notes ?? ''].filter(Boolean).join(', ') : '(none)';
+  d ? [d.focus, d.style, d.lift ? `lift ${d.lift}` : 'no lift', d.skill ? 'pull-up skill' : '', d.notes ?? ''].filter(Boolean).join(', ') : '(none)';
 
 function cycleDays(row: CycleRow): string[] {
   return WEEKDAYS.map(({ n, short }) => `  ${short}: ${dayText(row.days[n])}`);

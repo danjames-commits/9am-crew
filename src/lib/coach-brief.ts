@@ -15,8 +15,7 @@ Barbells and plates, kettlebells, dumbbells, wall balls, a few rowers, air bikes
 HOUSE RULES
 - Never partner or team work: no pairs, relays, "you go, I go", or anything that needs another person. Everyone works on their own.
 - Mid-energy: we show up and work, but nobody needs to be a beast. Challenging, never punishing.
-- Safe and sensible for older adults: no high-skill Olympic lifting for Gentle or Steady, no max-effort jumping, and plenty of warm-up before the main lift.
-- Gentle is genuinely gentle: low impact, lighter tools, step-ups not box jumps, wall or incline push-ups, walking not running.
+- Safe and sensible for older adults: no high-skill Olympic lifting for Steady, no max-effort jumping, and plenty of warm-up before the main lift.
 
 HOW WE PROGRAM
 - Keep Thursday an easy, low-intensity day.

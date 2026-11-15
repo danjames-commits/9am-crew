@@ -11,10 +11,10 @@ const squat: Part = {
   kind: 'strength',
   label: 'Strength',
   title: 'Back squat 5×5',
-  versions: ['Goblet squat 5×5', 'Back squat 5×5 @ 60%', 'Back squat 5×5 @ 70%', 'Back squat 5×5 @ 75%'],
-  lift: { movement: 'Back squat', pct: [null, 60, 70, 75], sets: 5, reps: 5, gentleMovement: 'Goblet squat' },
+  versions: ['Back squat 5×5 @ 60%', 'Back squat 5×5 @ 70%', 'Back squat 5×5 @ 75%'],
+  lift: { movement: 'Back squat', pct: [60, 70, 75], sets: 5, reps: 5 },
 };
-const warmup: Part = { kind: 'warmup', label: 'Warm-up', title: 'Row and move', versions: ['Row 3 min', 'Row 4 min', 'Row 5 min', 'Row 5 min'] };
+const warmup: Part = { kind: 'warmup', label: 'Warm-up', title: 'Row and move', versions: ['Row 4 min', 'Row 5 min', 'Row 5 min'] };
 
 const day = { status: 'published' as const, updated_at: '2026-10-20T12:00:00Z', title: 'Squat day', focus: 'Legs', why: 'Build strength', parts: [warmup, squat] };
 
@@ -90,12 +90,6 @@ describe('validateChanges: days', () => {
     const parts = [warmup, { ...squat, lift: { ...squat.lift!, movement: 'Zercher squat' } }];
     const r = validateChanges([put('2026-11-05', { parts })], ctx());
     expect(r.items[0].problems.join(' ')).toMatch(/Zercher squat/);
-  });
-
-  it('unknown gentle lift', () => {
-    const parts = [warmup, { ...squat, lift: { ...squat.lift!, gentleMovement: 'Pogo stick' } }];
-    const r = validateChanges([put('2026-11-05', { parts })], ctx());
-    expect(r.items[0].problems.join(' ')).toMatch(/Pogo stick/);
   });
 
   it('duplicate targets', () => {

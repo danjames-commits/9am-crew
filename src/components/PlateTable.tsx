@@ -35,7 +35,7 @@ function Plate({ p, n }: { p: number; n?: number }) {
  * The sets, each with what to put on the bar (per side) under it, and a "Grab" list of
  * every plate the lift needs. Plates only ever go on, so it's all "add this".
  */
-export function PlateTable({ lines, lightLabel, setsId }: { lines: Line[]; lightLabel: string; setsId?: string }) {
+export function PlateTable({ lines, setsId }: { lines: Line[]; setsId?: string }) {
   const [bar, setBar] = useState<number>(45);
   useEffect(() => {
     try {
@@ -96,7 +96,7 @@ export function PlateTable({ lines, lightLabel, setsId }: { lines: Line[]; light
                 </td>
                 <td style={{ padding: '6px 0', textAlign: 'right', whiteSpace: 'nowrap' }}>
                   {l.sets > 1 ? `${l.sets} sets × ` : ''}
-                  {l.reps} {l.reps === 1 ? 'rep' : 'reps'} @{l.weight == null ? lightLabel : `${load && l.weight >= bar ? load.total : l.weight} lb`}
+                  {l.reps} {l.reps === 1 ? 'rep' : 'reps'} @{l.weight == null ? 'empty bar' : `${load && l.weight >= bar ? load.total : l.weight} lb`}
                 </td>
               </tr>
             );

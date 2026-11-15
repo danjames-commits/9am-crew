@@ -30,12 +30,12 @@ describe('cycle', () => {
 describe('suggested workouts', () => {
   const base = { cycleStart: '2026-10-05', cycleWeeks: 6 };
 
-  it('builds every weekday for a whole cycle with four levels each', () => {
+  it('builds every weekday for a whole cycle with three levels each', () => {
     for (const d of classDays('2026-10-05', 30)) {
       const w = suggestWorkout({ ...base, date: d });
       expect(w.parts.length).toBeGreaterThanOrEqual(3);
       for (const p of w.parts) {
-        expect(p.versions).toHaveLength(4);
+        expect(p.versions).toHaveLength(3);
         p.versions.forEach((v) => expect(v.trim().length).toBeGreaterThan(5));
       }
     }
@@ -45,8 +45,8 @@ describe('suggested workouts', () => {
     const w = suggestWorkout({ ...base, date: '2026-10-23' });
     const s = w.parts.find((p) => p.kind === 'strength')!;
     expect(s.title).toBe('Back squat 5×5');
-    expect(s.lift!.pct).toEqual([null, 66, 76, 81]);
-    expect(s.versions[0]).toMatch(/Goblet squat/);
+    expect(s.lift!.pct).toEqual([66, 76, 81]);
+    expect(s.versions[0]).toBe('Back squat 5×5 @ 66%');
     expect(w.why).toMatch(/4×6 @ 71%/);
   });
 
@@ -72,7 +72,7 @@ describe('suggested workouts', () => {
 
   it('adjusting changes every level', () => {
     const w = suggestWorkout({ ...base, date: '2026-10-23', adjust: 5 });
-    expect(w.parts.find((p) => p.kind === 'strength')!.lift!.pct).toEqual([null, 71, 81, 86]);
+    expect(w.parts.find((p) => p.kind === 'strength')!.lift!.pct).toEqual([71, 81, 86]);
   });
 
   it('test week asks for a new best', () => {
@@ -126,9 +126,9 @@ describe('your numbers', () => {
   it('find-your-5 days suggest a sensible range', () => {
     expect(aimRange(205, 5)).toEqual({ low: 155, high: 170 });
   });
-  it('suggested workouts carry sets, reps and the Gentle movement', () => {
+  it('suggested workouts carry sets and reps', () => {
     const s = suggestWorkout({ cycleStart: '2026-10-19', cycleWeeks: 6, date: '2026-10-30' }).parts.find((p) => p.kind === 'strength')!;
-    expect(s.lift).toMatchObject({ movement: 'Back squat', sets: 4, reps: 6, gentleMovement: 'Goblet squat' });
+    expect(s.lift).toMatchObject({ movement: 'Back squat', sets: 4, reps: 6 });
   });
 });
 
@@ -136,21 +136,22 @@ import { liftPart, liftPct } from './engine';
 
 describe('lift settings write the words', () => {
   it('percent lifts: text, title and numbers come from one place', () => {
-    const p = liftPart({ movement: 'Deadlift', gentleMovement: 'Kettlebell deadlift', mode: 'percent', sets: 3, reps: 5, pct: liftPct(80), note: 'Brace before every rep' });
+    const p = liftPart({ movement: 'Deadlift', mode: 'percent', sets: 3, reps: 5, pct: liftPct(80), note: 'Brace before every rep' });
     expect(p.title).toBe('Deadlift 3×5');
-    expect(p.lift!.pct).toEqual([null, 70, 80, 85]);
-    expect(p.versions[0]).toBe('Kettlebell deadlift 3×8, a weight you could lift about 12 times\nBrace before every rep');
-    expect(p.versions[2]).toBe('Deadlift 3×5 @ 80%\nBrace before every rep');
+    expect(p.lift!.pct).toEqual([70, 80, 85]);
+    expect(p.versions[0]).toBe('Deadlift 3×5 @ 70%\nBrace before every rep');
+    expect(p.versions[1]).toBe('Deadlift 3×5 @ 80%\nBrace before every rep');
+    expect(p.versions[2]).toBe('Deadlift 3×5 @ 85%\nBrace before every rep');
   });
   it('build-to-a-set lifts', () => {
-    const p = liftPart({ movement: 'Front squat', gentleMovement: 'Goblet squat', mode: 'build', reps: 3, pct: [null, null, null, null] });
+    const p = liftPart({ movement: 'Front squat', mode: 'build', reps: 3, pct: [null, null, null] });
     expect(p.title).toBe('Front squat: find your 3');
-    expect(p.versions[1]).toMatch(/^Front squat: build over 5 sets to a solid set of 3/);
-    expect(p.versions[0]).toMatch(/^Goblet squat: 4 × 10/);
+    expect(p.versions[0]).toMatch(/^Front squat: build over 5 sets to a solid set of 3/);
+    expect(p.versions[2]).toMatch(/^Front squat: build over 6 sets to a heavy set of 3/);
   });
   it('the planned strength part still reads the same', () => {
     const s = suggestWorkout({ cycleStart: '2026-10-05', cycleWeeks: 6, date: '2026-10-23' }).parts.find((p) => p.kind === 'strength')!;
-    expect(s.versions[2]).toBe('Back squat 5×5 @ 76%');
+    expect(s.versions[1]).toBe('Back squat 5×5 @ 76%');
     expect(s.lift!.mode).toBe('percent');
   });
 });
@@ -171,7 +172,7 @@ describe('planned cycles', () => {
       { kind: 'build', label: 'Heavy', pct: 80, sets: 5, reps: 3 },
       { kind: 'test', label: 'Test', pct: 0, sets: 0, reps: 3 },
     ],
-    days: { ...builtInDays(), 1: { focus: 'Front squat · steady', style: 'amrap', lift: 'Front squat', gentle: null, skill: 'pullup', notes: 'Add a carry' } },
+    days: { ...builtInDays(), 1: { focus: 'Front squat · steady', style: 'amrap', lift: 'Front squat', skill: 'pullup', notes: 'Add a carry' } },
   };
   const schedule: Schedule = { cycleStart: '2026-10-19', cycleWeeks: 6, goals: ['Row 2 km'], cycles: [planned] };
 
@@ -206,7 +207,7 @@ describe('planned cycles', () => {
   it('suggestions follow the planned cycle', () => {
     const mon = suggestWorkout({ date: '2026-12-07', schedule });
     const s = mon.parts.find((p) => p.kind === 'strength')!;
-    expect(s.lift).toMatchObject({ movement: 'Front squat', gentleMovement: 'Goblet squat', sets: 5, reps: 5, pct: [null, 64, 74, 79] });
+    expect(s.lift).toMatchObject({ movement: 'Front squat', sets: 5, reps: 5, pct: [64, 74, 79] });
     expect(mon.parts.some((p) => p.kind === 'skill')).toBe(true);
     expect(mon.parts[0].versions[0]).toMatch(/goblet squats/);
     expect(mon.focus).toBe('Front squat · steady');

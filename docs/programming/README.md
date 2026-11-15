@@ -32,7 +32,7 @@ To regenerate after editing the JSON:
 python3 supabase/cycle1.py
 ```
 
-The script checks the program first (4 versions per part, allowed part and week kinds, lifts in the movements list, 45 weekdays inside the 9 weeks) and writes nothing if a check fails. The movements list is the seeded one; if admins have added movements in the app, add them to `MOVEMENTS` in the script.
+The script checks the program first (3 versions per part, allowed part and week kinds, lifts in the movements list, 45 weekdays inside the 9 weeks) and writes nothing if a check fails. The movements list is the seeded one; if admins have added movements in the app, add them to `MOVEMENTS` in the script.
 
 ## Grok connector
 
@@ -49,7 +49,7 @@ Read tools:
 - `list_cycles`: all cycles with goals and a one-line summary per week.
 - `get_cycle`: one cycle in full, including its per-weekday plan.
 - `get_days`: the workout for each class day in a date range (up to a set maximum), with an `editable` flag.
-- `list_movements`: the lifts the gym tracks, and the gentle alternatives allowed for easier versions.
+- `list_movements`: the lifts the gym tracks.
 
 Write tools (preview → push → undo):
 

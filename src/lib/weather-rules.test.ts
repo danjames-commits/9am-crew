@@ -36,11 +36,11 @@ describe('workout library', () => {
     const all = JSON.stringify(CONDITIONING).toLowerCase();
     expect(all).not.toMatch(/partner|\bpair\b|take turns/);
   });
-  it('every outside version has all four levels', () => {
+  it('every version has all three levels', () => {
     for (const list of Object.values(CONDITIONING))
       for (const c of list) {
-        expect(c.versions).toHaveLength(4);
-        if (c.outdoor) expect(c.outdoor.versions).toHaveLength(4);
+        expect(c.versions).toHaveLength(3);
+        if (c.outdoor) expect(c.outdoor.versions).toHaveLength(3);
       }
   });
 });

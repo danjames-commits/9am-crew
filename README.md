@@ -3,11 +3,11 @@
 A phone-friendly web app for a small group that trains together every weekday at 9.
 
 - **Today**: tap "I'm coming" for the next class and see who else is going.
-- **Workouts**: the next three weeks, each at four levels (Gentle, Steady, Strong, Full), with your own weights worked out from your lifts, and inside and outside versions depending on the weather.
+- **Workouts**: the next three weeks, each at three levels (Steady, Strong, Full), with your own weights worked out from your lifts, and inside and outside versions depending on the weather.
 - **My stats**: log lifts; new personal bests are spotted automatically, posted to the chat and shown on Today for cheering.
 - **Benchmarks** (a tab on My stats): log timed tests and named workouts (1 km run, Cindy, Helen...). Bests are kept per level. Admins add benchmarks and mark a workout part as a benchmark in the builder.
 - **On each workout**: every part folds away, and lift and benchmark parts have a "Log" button, so results go in without leaving the workout.
-- **Workout mode** (everyone) and **Coach mode** (admins): full screen, one part at a time, big text, a timer for each part, and the screen stays awake. Coach mode shows all four levels side by side, who's coming, and the coach notes sorted onto the part they're about.
+- **Workout mode** (everyone) and **Coach mode** (admins): full screen, one part at a time, big text, a timer for each part, and the screen stays awake. Coach mode shows all three levels side by side, who's coming, and the coach notes sorted onto the part they're about.
 - **Chat**: one live group chat.
 - **Spirit animals**: pick a (mid-energy) animal avatar, or describe one and Claude draws it.
 - **Admin** (for members you choose): the program planner (cycle length, start date, goals) and the workout builder, which suggests each day's workout from the plan so you can tweak, swap or replace it before posting.
@@ -18,7 +18,7 @@ People sign up with their email and a password, and stay signed in. New people w
 
 - **Weekly split**: Mon press + steady rounds · Tue deadlift + intervals · Wed pull-up skills + longer cardio · Thu easy day · Fri squat + short, hard workout.
 - **Cycles** (6 weeks by default): weights climb for three weeks, ease off in week 4, go heavy in week 5, and week 6 is test week where everyone tries for a new best. Then the next cycle starts automatically.
-- **Levels**: Strong gets the planned percentage, Steady 10% less, Full 5% more, and Gentle uses lighter tools (goblet squat instead of back squat, and so on).
+- **Levels**: Strong gets the planned percentage, Steady 10% less, Full 5% more.
 - **Your weight**: the app estimates each person's one-rep best from what they've logged and shows "Your weight: 155 lb" on the workout.
 - **Conditioning** rotates through a library week to week; "Swap" in the builder steps to the next option.
 

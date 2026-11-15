@@ -41,7 +41,7 @@ export function equipmentIn(texts: string[], opts: { barbellLift?: boolean } = {
   return KIT.map((k) => k.name).filter((n) => found.has(n));
 }
 
-/** The tracked lifts that use a barbell (Gentle's swaps, like goblet squats, don't). */
+/** The tracked lifts that use a barbell. */
 export const BARBELL_LIFTS = new Set(['Back squat', 'Front squat', 'Deadlift', 'Strict press', 'Push press', 'Bench press', 'Power clean', 'Snatch', 'Squat clean & jerk']);
 
 /** Every piece of kit the app knows, in pick-up order. */

@@ -3,7 +3,7 @@ import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { aiPlanCycle, deleteCycle, saveCycle } from '@/app/actions';
 import { addDays, shortDate, weekday } from '@/lib/dates';
-import { GENTLE_FOR, gentleChoices, STYLES, STYLE_NAMES, type CycleDay, type CycleWeek } from '@/lib/programming/engine';
+import { STYLES, STYLE_NAMES, type CycleDay, type CycleWeek } from '@/lib/programming/engine';
 import { asWeekPlans, cleanWeek, KIND_NAMES, WEEKDAYS, type PlanDraft } from '@/lib/programming/plan';
 import { CycleChart } from '../CycleChart';
 
@@ -274,33 +274,15 @@ export function CyclePlanner({
                     Focus
                     <input type="text" maxLength={60} value={d.focus} onChange={(e) => setDay(n, { focus: e.target.value })} />
                   </label>
-                  <div className="row fields">
-                    <label className="field grow">
-                      Main lift
-                      <select
-                        value={d.lift ?? ''}
-                        onChange={(e) => {
-                          const lift = e.target.value || null;
-                          setDay(n, { lift, gentle: lift ? GENTLE_FOR[lift] ?? lift : null });
-                        }}
-                      >
-                        <option value="">None</option>
-                        {movements.map((m) => (
-                          <option key={m}>{m}</option>
-                        ))}
-                      </select>
-                    </label>
-                    {d.lift && (
-                      <label className="field grow">
-                        Gentle does
-                        <select value={d.gentle ?? d.lift} onChange={(e) => setDay(n, { gentle: e.target.value })}>
-                          {gentleChoices(movements).map((m) => (
-                            <option key={m}>{m}</option>
-                          ))}
-                        </select>
-                      </label>
-                    )}
-                  </div>
+                  <label className="field">
+                    Main lift
+                    <select value={d.lift ?? ''} onChange={(e) => setDay(n, { lift: e.target.value || null })}>
+                      <option value="">None</option>
+                      {movements.map((m) => (
+                        <option key={m}>{m}</option>
+                      ))}
+                    </select>
+                  </label>
                   <div className="row fields">
                     <label className="field grow">
                       Conditioning

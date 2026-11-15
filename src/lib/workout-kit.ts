@@ -1,5 +1,5 @@
 import { partWords } from '@/components/PartText';
-import type { Part } from './types';
+import { LEVELS, type Part } from './types';
 import { adjustKit, BARBELL_LIFTS, equipmentIn } from './equipment';
 
 export interface KitChanges {
@@ -7,7 +7,7 @@ export interface KitChanges {
   remove: string[];
 }
 
-/** What the app reads from the workout for these levels (0 = Gentle … 3 = Full). */
+/** What the app reads from the workout for these levels (0 = Steady … 2 = Full). */
 export function foundKit(parts: Part[], levels: number[], outside: boolean) {
   return equipmentIn(
     levels.flatMap((i) =>
@@ -16,8 +16,7 @@ export function foundKit(parts: Part[], levels: number[], outside: boolean) {
         return [p.kind === 'strength' ? '' : w.title, w.headline, w.body];
       }),
     ),
-    // The main lift: Gentle often swaps to a dumbbell or kettlebell version.
-    { barbellLift: parts.some((p) => p.lift && levels.some((i) => BARBELL_LIFTS.has(i === 0 ? (p.lift!.gentleMovement ?? p.lift!.movement) : p.lift!.movement))) },
+    { barbellLift: parts.some((p) => p.lift && BARBELL_LIFTS.has(p.lift.movement)) },
   );
 }
 
@@ -28,5 +27,5 @@ export function workoutKit(parts: Part[], level: number, outside: boolean, chang
 
 /** Everything any level needs (what the coach sets out), with the coach's changes. */
 export function setOutKit(parts: Part[], outside: boolean, changes?: KitChanges) {
-  return adjustKit(foundKit(parts, [0, 1, 2, 3], outside), changes?.add, changes?.remove);
+  return adjustKit(foundKit(parts, LEVELS.map((_, i) => i), outside), changes?.add, changes?.remove);
 }

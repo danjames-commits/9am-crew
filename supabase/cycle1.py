@@ -25,6 +25,7 @@ STATUS = "published"
 WEEK_COUNT = 9
 PART_KINDS = {"warmup", "strength", "skill", "conditioning", "cooldown"}
 WEEK_KINDS = {"build", "deload", "test"}
+LEVELS = 3  # Steady, Strong, Full
 # Seeded in schema.sql / migration-005. Check `select name from public.movements` if admins added more.
 MOVEMENTS = {
     "Back squat", "Front squat", "Deadlift", "Bench press", "Strict press",
@@ -66,6 +67,8 @@ def check(program):
     for key, d in cycle["days"].items():
         if d.get("lift") and d["lift"] not in MOVEMENTS:
             errors.append(f"day {key}: lift {d['lift']!r} not in movements")
+        if "gentle" in d:
+            errors.append(f"day {key}: has a gentle movement (there is no Gentle level)")
 
     if len(workouts) != WEEK_COUNT * 5:
         errors.append(f"{len(workouts)} workouts, expected {WEEK_COUNT * 5}")
@@ -84,16 +87,18 @@ def check(program):
             where = f"{d} {p.get('title')!r}"
             if p.get("kind") not in PART_KINDS:
                 errors.append(f"{where}: kind {p.get('kind')!r} not in {sorted(PART_KINDS)}")
-            if len(p.get("versions", [])) != 4:
-                errors.append(f"{where}: {len(p.get('versions', []))} versions, expected 4")
-            if "outdoor" in p and len(p["outdoor"].get("versions", [])) != 4:
-                errors.append(f"{where}: outdoor has {len(p['outdoor'].get('versions', []))} versions, expected 4")
+            if len(p.get("versions", [])) != LEVELS:
+                errors.append(f"{where}: {len(p.get('versions', []))} versions, expected {LEVELS}")
+            if "outdoor" in p and len(p["outdoor"].get("versions", [])) != LEVELS:
+                errors.append(f"{where}: outdoor has {len(p['outdoor'].get('versions', []))} versions, expected {LEVELS}")
             lift = p.get("lift")
             if lift:
                 if lift.get("movement") not in MOVEMENTS:
                     errors.append(f"{where}: lift {lift.get('movement')!r} not in movements")
-                if len(lift.get("pct", [])) != 4:
-                    errors.append(f"{where}: lift pct needs 4 values")
+                if len(lift.get("pct", [])) != LEVELS:
+                    errors.append(f"{where}: lift pct needs {LEVELS} values")
+                if "gentleMovement" in lift:
+                    errors.append(f"{where}: lift has gentleMovement (there is no Gentle level)")
     return errors
 
 

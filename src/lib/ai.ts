@@ -1,7 +1,7 @@
 import 'server-only';
 import Anthropic from '@anthropic-ai/sdk';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { GENTLE_FOR, gentleChoices, liftPart, liftPct, positionOn, suggestWorkout, weightFor, STYLES, STYLE_NAMES, type Schedule } from './programming/engine';
+import { liftPart, liftPct, positionOn, suggestWorkout, weightFor, STYLES, STYLE_NAMES, type Schedule } from './programming/engine';
 import { cleanPlan, KIND_NAMES, WEEKDAYS, type PlanDraft } from './programming/plan';
 import { LEVELS, type LevelText, type LiftSpec, type Part, type WorkoutDraft } from './types';
 import { addDays, longDate, shortDate, todayLocal, weekday } from './dates';
@@ -47,7 +47,7 @@ export async function takeAllowance(supabase: SupabaseClient, userId: string, ki
 const BUILD_RULES = `You write one day's workout for a small weekday 9 AM fitness group, in the exact shape the app needs.
 
 Format rules:
-- Every part is written four times, one per level:
+- Every part is written three times, one per level:
   ${LEVELS.map((l) => `${l.name}: ${l.blurb}`).join('\n  ')}
 - Every conditioning part needs an "outdoor" version that swaps rowing or biking for walking or running outside (or does the whole thing outside), for days the weather is good. Only leave outdoor null if an outside version makes no sense.
 - Strength parts use the "lift" settings, not free text. Pick the lift from the allowed list. "percent" means sets × reps at a percentage of each person's best (give the Strong-level percentage; the app works out the others). "build" means building up to a solid set of N (for finding numbers or test days). The app writes the strength text itself from these settings; put any coaching cue in "note".
@@ -58,12 +58,11 @@ Format rules:
 const levelText = {
   type: 'object',
   properties: {
-    gentle: { type: 'string' },
     steady: { type: 'string' },
     strong: { type: 'string' },
     full: { type: 'string' },
   },
-  required: ['gentle', 'steady', 'strong', 'full'],
+  required: ['steady', 'strong', 'full'],
   additionalProperties: false,
 };
 
@@ -103,14 +102,13 @@ function workoutSchema(movements: string[]) {
                   type: 'object',
                   properties: {
                     movement: { type: 'string', enum: movements },
-                    gentle_movement: { type: 'string', enum: gentleChoices(movements) },
                     mode: { type: 'string', enum: ['percent', 'build'] },
                     sets: { type: 'integer' },
                     reps: { type: 'integer' },
                     strong_pct: { type: 'integer', description: 'Strong-level percent of best, 50–90. Use 0 for "build".' },
                     note: { type: 'string', description: 'Optional coaching cue, or empty.' },
                   },
-                  required: ['movement', 'gentle_movement', 'mode', 'sets', 'reps', 'strong_pct', 'note'],
+                  required: ['movement', 'mode', 'sets', 'reps', 'strong_pct', 'note'],
                   additionalProperties: false,
                 },
               ],
@@ -127,7 +125,6 @@ function workoutSchema(movements: string[]) {
 }
 
 interface AiText {
-  gentle: string;
   steady: string;
   strong: string;
   full: string;
@@ -139,7 +136,7 @@ interface AiPart {
   minutes: number;
   text: AiText;
   outdoor: { title: string; text: AiText } | null;
-  lift: { movement: string; gentle_movement: string; mode: 'percent' | 'build'; sets: number; reps: number; strong_pct: number; note: string } | null;
+  lift: { movement: string; mode: 'percent' | 'build'; sets: number; reps: number; strong_pct: number; note: string } | null;
 }
 interface AiWorkout {
   title: string;
@@ -149,7 +146,7 @@ interface AiWorkout {
 }
 
 const clampInt = (n: number, lo: number, hi: number, d: number) => (Number.isFinite(n) ? Math.min(hi, Math.max(lo, Math.round(n))) : d);
-const levels = (t: AiText): LevelText => [t.gentle, t.steady, t.strong, t.full].map((s) => String(s ?? '').trim()) as LevelText;
+const levels = (t: AiText): LevelText => [t.steady, t.strong, t.full].map((s) => String(s ?? '').trim()) as LevelText;
 const PARTNER = /\bpartner|\bpairs?\b|take turns|you go,? i go|relay|team of/i;
 
 function toDraft(date: string, w: AiWorkout, movements: string[]): WorkoutDraft {
@@ -160,11 +157,10 @@ function toDraft(date: string, w: AiWorkout, movements: string[]): WorkoutDraft 
       const mode = p.lift.mode === 'build' ? 'build' : 'percent';
       const spec: LiftSpec = {
         movement: p.lift.movement,
-        gentleMovement: gentleChoices(movements).includes(p.lift.gentle_movement) ? p.lift.gentle_movement : GENTLE_FOR[p.lift.movement] ?? p.lift.movement,
         mode,
         sets: clampInt(p.lift.sets, 1, 10, 5),
         reps: clampInt(p.lift.reps, 1, 15, 5),
-        pct: mode === 'percent' ? liftPct(clampInt(p.lift.strong_pct, 50, 90, 70)) : [null, null, null, null],
+        pct: mode === 'percent' ? liftPct(clampInt(p.lift.strong_pct, 50, 90, 70)) : [null, null, null],
         note: p.lift.note?.trim() || undefined,
       };
       Object.assign(part, liftPart(spec));
@@ -178,8 +174,8 @@ function toDraft(date: string, w: AiWorkout, movements: string[]): WorkoutDraft 
 function describeDraft(d: WorkoutDraft) {
   return d.parts
     .map((p) => {
-      const lift = p.lift ? ` [lift: ${p.lift.movement}, ${p.lift.mode ?? 'percent'}, ${p.lift.sets ?? '?'}×${p.lift.reps ?? '?'}, Strong ${p.lift.pct[2] ?? '-'}%]` : '';
-      return `- ${p.label}: ${p.title}${lift}\n  Strong version: ${p.versions[2].replace(/\n/g, ' / ')}${p.outdoor ? `\n  Outside (${p.outdoor.title}): ${p.outdoor.versions[2].replace(/\n/g, ' / ')}` : ''}`;
+      const lift = p.lift ? ` [lift: ${p.lift.movement}, ${p.lift.mode ?? 'percent'}, ${p.lift.sets ?? '?'}×${p.lift.reps ?? '?'}, Strong ${p.lift.pct[1] ?? '-'}%]` : '';
+      return `- ${p.label}: ${p.title}${lift}\n  Strong version: ${p.versions[1].replace(/\n/g, ' / ')}${p.outdoor ? `\n  Outside (${p.outdoor.title}): ${p.outdoor.versions[1].replace(/\n/g, ' / ')}` : ''}`;
     })
     .join('\n');
 }
@@ -216,7 +212,7 @@ export async function draftWorkout(opts: {
   });
 
   const context = `Workout for ${longDate(date)}.
-Day focus: ${plan.focus}. Main lift: ${plan.lift ? `${plan.lift.name} (Gentle does ${plan.lift.gentle})` : 'none today'}.${plan.skill === 'pullup' ? ' Include pull-up skill practice.' : ''} Conditioning style: ${STYLE_NAMES[plan.style]}.${plan.notes ? `\nThe cycle plan's note for this day: ${plan.notes}` : ''}
+Day focus: ${plan.focus}. Main lift: ${plan.lift ? plan.lift.name : 'none today'}.${plan.skill === 'pullup' ? ' Include pull-up skill practice.' : ''} Conditioning style: ${STYLE_NAMES[plan.style]}.${plan.notes ? `\nThe cycle plan's note for this day: ${plan.notes}` : ''}
 Cycle ${pos.cycle}${cycle.name ? ` ("${cycle.name}")` : ''}, week ${pos.week.index + 1} of ${pos.totalWeeks}: ${pos.week.label}${pos.week.kind === 'build' ? ` (main lift ${pos.week.sets}×${pos.week.reps} at ${pos.week.pct}% for Strong)` : pos.week.kind === 'deload' ? ` (ease-off week, about ${pos.week.pct || 60}%, lighter conditioning)` : ' (test week: build to a new best)'}${pos.started ? '' : ' — the cycle has not started yet'}.${cycle.why ? `\nWhy this cycle is planned this way: ${cycle.why}` : ''}
 Crew goals this cycle: ${cycle.goals.length ? cycle.goals.join('; ') : 'none set'}.
 Lifts the app tracks (use only these for lift settings): ${movements.join(', ')}.
@@ -269,7 +265,7 @@ export async function scaleAdvice(opts: {
   maxes: Record<string, number>;
   message: string;
 }) {
-  const i = Math.min(4, Math.max(1, opts.level)) - 1;
+  const i = Math.min(3, Math.max(1, opts.level)) - 1;
   const lines = opts.workout.parts.map((p) => {
     const v = opts.outside && p.outdoor ? p.outdoor.versions[i] : p.versions[i];
     const t = opts.outside && p.outdoor ? p.outdoor.title : p.title;
@@ -317,7 +313,7 @@ export async function writeRecap(facts: string, brief: string) {
 // ---------------------------------------------------------------
 // Planning a whole cycle
 // ---------------------------------------------------------------
-const PLANNER = `You plan training cycles for a small weekday 9 AM fitness group, in the exact shape the app needs. Each member picks a level (Gentle, Steady, Strong, Full); percentages you set are for Strong, and the app makes Steady 10% lighter and Full 5% heavier. Gentle uses lighter tools.
+const PLANNER = `You plan training cycles for a small weekday 9 AM fitness group, in the exact shape the app needs. Each member picks a level (Steady, Strong, Full); percentages you set are for Strong, and the app makes Steady 10% lighter and Full 5% heavier.
 
 A cycle is a run of weeks (usually 4–8) with a weekly split. You decide:
 - The weeks: each is "build" (sets × reps at a percentage of each person's best), "deload" (an easier week so bodies recover), or "test" (everyone builds to a new best). Strong percentages should climb gradually, roughly 60–85%, with a deload every 3–4 weeks and usually a test week at the end. Sets and reps should fit the percentage (lighter = more reps, e.g. 3×8 at 65%, 5×5 at ~75%, 5×3 at ~82%). Give each week a short label like "Base", "Build", "Heavy", "Ease off", "Holidays", "Test".
@@ -332,7 +328,6 @@ ${STYLES.map((s) => `- ${s}: ${STYLE_NAMES[s]}`).join('\n')}`;
 interface AiPlanDay {
   focus: string;
   lift: string;
-  gentle: string;
   skill: 'none' | 'pullup';
   conditioning: string;
   notes: string;
@@ -352,12 +347,11 @@ function planSchema(movements: string[]) {
     properties: {
       focus: { type: 'string', description: 'Short focus line, e.g. "Deadlift · intervals"' },
       lift: { type: 'string', enum: lifts, description: 'Main lift for the day, or "none"' },
-      gentle: { type: 'string', enum: [...gentleChoices(movements), 'none'], description: 'What Gentle does instead (an easier movement), or "none" if no lift' },
       skill: { type: 'string', enum: ['none', 'pullup'] },
       conditioning: { type: 'string', enum: STYLES },
       notes: { type: 'string', description: 'Optional guidance for the workout writer, or empty' },
     },
-    required: ['focus', 'lift', 'gentle', 'skill', 'conditioning', 'notes'],
+    required: ['focus', 'lift', 'skill', 'conditioning', 'notes'],
     additionalProperties: false,
   };
   return {
@@ -402,7 +396,7 @@ function describePlan(p: PlanDraft) {
     .join('\n');
   const days = WEEKDAYS.map(({ n, short }) => {
     const d = p.days[n];
-    return `  ${short}: ${d.focus} | lift: ${d.lift ?? 'none'}${d.lift ? ` (Gentle: ${d.gentle ?? d.lift})` : ''} | pull-ups: ${d.skill ? 'yes' : 'no'} | conditioning: ${d.style}${d.notes ? ` | note: ${d.notes}` : ''}`;
+    return `  ${short}: ${d.focus} | lift: ${d.lift ?? 'none'} | pull-ups: ${d.skill ? 'yes' : 'no'} | conditioning: ${d.style}${d.notes ? ` | note: ${d.notes}` : ''}`;
   }).join('\n');
   return `Name: ${p.name || '(none)'}\nGoals: ${p.goals.join('; ') || 'none'}\nWhy: ${p.why || '(none)'}\nWeeks:\n${weeks}\nWeekday split:\n${days}`;
 }
@@ -446,7 +440,7 @@ export async function planCycle(opts: {
     days: Object.fromEntries(
       WEEKDAYS.map(({ n }) => {
         const d = prev.days[Number(n)];
-        return [n, { focus: d.focus, style: d.style, lift: d.lift?.name ?? null, gentle: d.lift?.gentle ?? null, skill: d.skill ?? null, notes: d.notes ?? '' }];
+        return [n, { focus: d.focus, style: d.style, lift: d.lift?.name ?? null, skill: d.skill ?? null, notes: d.notes ?? '' }];
       }),
     ),
   };
@@ -497,7 +491,6 @@ The admin's brief for this cycle: "${brief.trim() || 'No special requests. Plan 
             {
               focus: d.focus,
               lift: d.lift === 'none' ? null : d.lift,
-              gentle: d.gentle === 'none' ? null : d.gentle,
               skill: d.skill === 'pullup' ? 'pullup' : null,
               style: d.conditioning as PlanDraft['days'][string]['style'],
               notes: d.notes,
@@ -639,7 +632,7 @@ Rules:
 /** Claude reads the workout and suggests the clock timers for each part. */
 export async function draftClockPlan(opts: { parts: Part[]; brief: string }): Promise<ClockPlan> {
   const lines = opts.parts.map((p, i) => {
-    const v = p.versions[2] || p.versions[3] || p.versions[1] || p.versions[0];
+    const v = p.versions[1] || p.versions[2] || p.versions[0];
     return `Part ${i} — ${p.label}: ${p.title}${p.minutes ? ` (${p.minutes} min)` : ''}\n${v}`;
   });
   const schema = {

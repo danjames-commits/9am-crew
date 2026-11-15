@@ -1,15 +1,14 @@
-export type Level = 1 | 2 | 3 | 4;
-export type LevelText = [string, string, string, string];
-export type LevelPct = [number | null, number | null, number | null, number | null];
+export type Level = 1 | 2 | 3;
+export type LevelText = [string, string, string];
+export type LevelPct = [number | null, number | null, number | null];
 
 export const LEVELS: { n: Level; name: string; blurb: string }[] = [
-  { n: 1, name: 'Gentle', blurb: 'New, coming back, or working around an injury. Lighter tools and simpler moves.' },
-  { n: 2, name: 'Steady', blurb: 'Comfortable with the basics. Moderate weights, a pace you can hold.' },
-  { n: 3, name: 'Strong', blurb: 'Lifting regularly and ready to push. The standard workout.' },
-  { n: 4, name: 'Full', blurb: 'Experienced. Heavier weights and the hardest version of each move.' },
+  { n: 1, name: 'Steady', blurb: 'New, coming back, or comfortable with the basics. Moderate weights, a pace you can hold.' },
+  { n: 2, name: 'Strong', blurb: 'Lifting regularly and ready to push. The standard workout.' },
+  { n: 3, name: 'Full', blurb: 'Experienced. Heavier weights and the hardest version of each move.' },
 ];
 
-export const levelName = (n: number) => LEVELS[Math.min(4, Math.max(1, n)) - 1].name;
+export const levelName = (n: number) => LEVELS[Math.min(3, Math.max(1, n)) - 1].name;
 
 export type PartKind = 'warmup' | 'strength' | 'skill' | 'conditioning' | 'cooldown';
 
@@ -21,8 +20,6 @@ export interface LiftSpec {
   /** Work sets and reps, so the app can lay out each person's sets. */
   sets?: number;
   reps?: number;
-  /** The easier movement Gentle uses instead (e.g. Goblet squat). */
-  gentleMovement?: string;
   /** 'percent' = sets × reps at a % of your best; 'build' = build up to a solid set of N (finding your numbers, test days). */
   mode?: 'percent' | 'build';
   /** Extra coaching line shown to every level, e.g. "Pause 1 s at the bottom". */
