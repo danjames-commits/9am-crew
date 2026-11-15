@@ -80,7 +80,7 @@ export function MeForm({
     <form onSubmit={save} className="stack loose">
       <div className="row between">
         <div className="row">
-          <Link href="/" className="avatar" style={{ background: '#fff', color: 'var(--ink)' }} aria-label="Back">
+          <Link href="/" className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label="Back">
             <Icon name="back" />
           </Link>
           <h1 style={{ fontSize: 28 }}>Me</h1>

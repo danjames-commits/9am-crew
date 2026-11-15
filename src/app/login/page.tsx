@@ -74,7 +74,7 @@ export default function LoginPage() {
       </div>
 
       {mode !== 'forgot' && (
-        <div className="segmented" role="group" aria-label="Sign in or create account" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', background: '#e8e7e0' }}>
+        <div className="segmented" role="group" aria-label="Sign in or create account" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', background: 'var(--soft)' }}>
           <button type="button" aria-pressed={mode === 'signin'} onClick={() => switchTo('signin')}>
             Sign in
           </button>
