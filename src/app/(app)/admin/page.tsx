@@ -10,7 +10,6 @@ import { ProgramForm } from '@/components/admin/ProgramForm';
 import { CycleCard } from '@/components/CycleCard';
 import { Icon } from '@/components/Icon';
 
-export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 export default async function AdminPage() {

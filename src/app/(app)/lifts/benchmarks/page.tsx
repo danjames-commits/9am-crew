@@ -9,8 +9,6 @@ import { LogBenchmarkCard } from '@/components/LogBenchmarkCard';
 import { AddBenchmark } from '@/components/admin/AddBenchmark';
 import { Icon } from '@/components/Icon';
 
-export const dynamic = 'force-dynamic';
-
 const day = (d: string) => shortDate(d).split(' · ')[1];
 
 export default async function BenchmarksPage() {

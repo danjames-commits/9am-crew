@@ -9,7 +9,6 @@ import { classWeather } from '@/lib/weather';
 import { aiEnabled } from '@/lib/ai';
 import type { Part } from '@/lib/types';
 
-export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 export default async function BuildPage({ params }: { params: Promise<{ date: string }> }) {

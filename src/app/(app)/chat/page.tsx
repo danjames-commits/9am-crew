@@ -5,8 +5,6 @@ import { embeddedCheers, embeddedMovement, getPeople } from '@/lib/data';
 import { prArtUrls } from '@/lib/pr-art';
 import { ChatRoom, type ChatMessage } from '@/components/ChatRoom';
 
-export const dynamic = 'force-dynamic';
-
 export default async function ChatPage() {
   const { supabase } = await signedIn();
   const [{ me }, { data: recent }, { names, animals }, { data: read }] = await Promise.all([

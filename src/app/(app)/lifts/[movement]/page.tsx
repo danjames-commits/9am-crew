@@ -8,8 +8,6 @@ import { deleteLift } from '@/app/actions';
 import { LogLiftForm } from '@/components/LogLiftForm';
 import { Icon } from '@/components/Icon';
 
-export const dynamic = 'force-dynamic';
-
 export default async function MovementPage({ params }: { params: Promise<{ movement: string }> }) {
   const id = Number((await params).movement);
   if (!Number.isInteger(id)) notFound();

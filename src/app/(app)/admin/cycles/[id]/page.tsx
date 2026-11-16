@@ -10,7 +10,6 @@ import { Icon } from '@/components/Icon';
 import { CyclePlanner } from '@/components/admin/CyclePlanner';
 import { DraftCycle } from '@/components/admin/DraftRun';
 
-export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 export default async function CyclePage({ params }: { params: Promise<{ id: string }> }) {

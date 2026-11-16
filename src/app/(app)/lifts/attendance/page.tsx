@@ -4,8 +4,6 @@ import { lastClassDone } from '@/lib/dates';
 import type { AttendanceRow } from '@/lib/attendance';
 import { AttendanceView } from '@/components/AttendanceView';
 
-export const dynamic = 'force-dynamic';
-
 export default async function AttendancePage() {
   const { supabase, userId } = await signedIn();
   // Only classes that are over count: today's from 10 AM.
