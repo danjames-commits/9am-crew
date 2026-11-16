@@ -3,8 +3,6 @@ import { requireMember } from '@/lib/supabase/server';
 import { MemberRow } from '@/components/admin/MemberRow';
 import { Icon } from '@/components/Icon';
 
-export const dynamic = 'force-dynamic';
-
 export default async function MembersPage() {
   const { supabase, me } = await requireMember({ admin: true });
   const { data } = await supabase.from('profiles').select('id, display_name, level, is_admin, is_coach, approved, animal').order('display_name');

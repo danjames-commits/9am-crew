@@ -7,8 +7,6 @@ import { LogLiftForm } from '@/components/LogLiftForm';
 import { LiftsTabs } from '@/components/LiftsTabs';
 import { Icon } from '@/components/Icon';
 
-export const dynamic = 'force-dynamic';
-
 export default async function LiftsPage() {
   const { supabase, userId } = await signedIn();
   // requireMember keeps out people still waiting for approval.

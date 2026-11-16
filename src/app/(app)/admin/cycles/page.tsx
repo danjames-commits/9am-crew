@@ -7,8 +7,6 @@ import { aiEnabled } from '@/lib/ai';
 import { Icon } from '@/components/Icon';
 import { CycleChart } from '@/components/CycleChart';
 
-export const dynamic = 'force-dynamic';
-
 const monthDay = (d: string) => shortDate(d).split(' · ')[1];
 
 export default async function CyclesPage() {

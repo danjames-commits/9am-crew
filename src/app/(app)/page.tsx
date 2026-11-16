@@ -18,8 +18,6 @@ import { classWeather } from '@/lib/weather';
 import { SurveyPopup } from '@/components/SurveyPopup';
 import type { Part } from '@/lib/types';
 
-export const dynamic = 'force-dynamic';
-
 export default async function TodayPage() {
   const { supabase } = await signedIn();
   const classDate = nextClassDate(new Date(), SHOW_TODAY_UNTIL_HOUR);

@@ -6,8 +6,6 @@ import { shortDate } from '@/lib/dates';
 import { CoachBriefForm } from '@/components/admin/CoachBriefForm';
 import { Icon } from '@/components/Icon';
 
-export const dynamic = 'force-dynamic';
-
 export default async function CoachBriefPage() {
   const { supabase } = await requireMember({ admin: true });
   const [brief, { names }] = await Promise.all([getCoachBrief(supabase), getPeople(supabase)]);

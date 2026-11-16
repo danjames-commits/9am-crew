@@ -9,7 +9,6 @@ import { aiEnabled } from '@/lib/ai';
 import { Icon } from '@/components/Icon';
 import { CyclePlanner } from '@/components/admin/CyclePlanner';
 
-export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 export default async function NewCyclePage({ searchParams }: { searchParams: Promise<{ start?: string }> }) {

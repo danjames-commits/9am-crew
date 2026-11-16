@@ -9,8 +9,6 @@ import { deleteBenchmarkResult } from '@/app/actions';
 import { LogBenchmarkCard } from '@/components/LogBenchmarkCard';
 import { Icon } from '@/components/Icon';
 
-export const dynamic = 'force-dynamic';
-
 export default async function BenchmarkPage({ params }: { params: Promise<{ id: string }> }) {
   const id = Number((await params).id);
   if (!Number.isInteger(id)) notFound();

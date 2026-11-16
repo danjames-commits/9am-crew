@@ -7,8 +7,6 @@ import { positionOn } from '@/lib/programming/engine';
 import { Icon } from '@/components/Icon';
 import type { Part } from '@/lib/types';
 
-export const dynamic = 'force-dynamic';
-
 export default async function WorkoutsPage() {
   const { supabase } = await signedIn();
   const first = nextClassDate(new Date(), SHOW_TODAY_UNTIL_HOUR);
