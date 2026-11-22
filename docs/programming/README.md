@@ -1,5 +1,15 @@
 Programming documents (non-data files)
 
+## What's here
+
+- [RULES.md](RULES.md): the standing programming rules, and which ones the app checks.
+- [ROADMAP.md](ROADMAP.md): the six-cycle year plan. Printable copy: `court6-program-roadmap.pdf`.
+- [PROGRAM_GOALS.md](PROGRAM_GOALS.md): design intent, Cycle 1 as it runs, and planning notes for Cycle 2 and later.
+- [CONNECTOR.md](CONNECTOR.md): connector tools, data shape and the preview/push workflow.
+- [AUDIT.md](AUDIT.md): the latest audit of the remaining Cycle 1 days.
+- `court6-cycle1-app.json`: Cycle 1 as loaded in the app, refreshed from live data on Nov 22, 2026. Printable coaches' copy: `court6-cycle1-program.pdf`.
+- `court6-cycle1-9wk-weekdays.pdf` and `program-rewrite-prompt.md`: the original Oct 16 design and its rewrite brief, kept for history. Both are out of date.
+
 ## Coach notes
 
 A program's `coach_notes` (from each workout in the program JSON) go into `public.workout_coach_notes`, which is admin-only.
