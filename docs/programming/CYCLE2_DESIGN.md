@@ -23,11 +23,12 @@ Every day must also pass [RULES.md](RULES.md) and the app's preview checks. Wher
 ## Exercise science it follows
 
 - **Intensity spread:**
-  - Most of the week is easy to moderate.
+  - Most of the week is steady to moderate: work you have to push through, but can repeat tomorrow.
   - One threshold session (Tue) and two short, hard sessions (Mon, Fri) a week.
-  - Wednesday is "sustain" (~7/10). Thursday is easy.
+  - Wednesday is "sustain" (~7/10). Thursday is **steady (~5–6/10)**: the lighter day of the week, but still a real workout.
+  - Why not truly easy: in a 60-minute class with only five sessions a week, conversational-pace work gives too small a stimulus. Recreational athletes with limited training time get more from the upper end of aerobic work (steady, ~5–6/10) than from very easy pace. Cycle 1's first Thursdays were too easy, which is why the day was rebuilt.
   - Hard days are never back to back.
-- **Paces come from tests:** the Week 1 5 km gives each member's threshold and easy paces, because a 20–35 min effort sits right in the threshold window.
+- **Paces come from tests:** the Week 1 5 km gives each member's threshold and steady paces, because a 20–35 min effort sits right in the threshold window.
 - **Running volume** rises no more than about 10% a week, drops on the deload, and returns to the pre-deload level after it.
 - **Strength:** one moderate exposure per lift a week holds Cycle 1 strength.
   - Power work (the cleans) comes first in its class, because conditioning in the same session blunts power more than strength.
@@ -42,7 +43,7 @@ Every day must also pass [RULES.md](RULES.md) and the app's preview checks. Wher
 | **Mon** | Front squat | Short hard intervals: bike or row inside, 200–400 m repeats outside | Hard |
 | **Tue** | Double-unders skill block | The week's **threshold** piece, paced off each member's 5 km time. Test days live here. | Moderate (threshold) |
 | **Wed** | Hang clean / power clean | Stations + **compromised running**: run or row legs into wall balls, lunges, carries, burpees | Sustain (~7/10) |
-| **Thu** | No lift | **Longer easy aerobic piece** (25–35 min) with a clock and a structure that changes every week, then accessories | Easy |
+| **Thu** | No lift | **Longer steady piece** (25–35 min, ~5–6/10) with a clock and a structure that changes every week, then accessories | Steady (lighter, still challenging) |
 | **Fri** | Push press (odd weeks) / bench press (even weeks) | Short, sharp station-style piece, 8–12 min | Hard |
 
 Plus:
@@ -51,17 +52,19 @@ Plus:
 
 ## The 9 weeks
 
-| Wk | Dates | Phase | Lifts | Engine | Skill / tests |
+| Wk | Dates | Phase | Lifts | Engine / tests | Double-unders (Tue block + Mon/Wed/Fri warm-ups) |
 |---|---|---|---|---|---|
-| 1 | Jan 4–8 | Test | Learn the lifts; build to a moderate 5 (RPE 7) to set starting loads | **5 km test** (Tue). Other running stays low this week. | Double-under practice |
-| 2 | Jan 11–15 | Base | 4 × 6 @ 70% | Threshold 3 × 8 min | **Double-under baseline** (Tue) |
-| 3 | Jan 18–22 | Base | 4 × 5 @ 75% | Threshold 4 × 8 min | |
-| 4 | Jan 25–29 | Base | 5 × 5 @ 75% | Threshold 3 × 10 min | **Karen** (Fri) |
-| 5 | Feb 1–5 | Build | 5 × 3 @ 80% | Threshold 2 × 15 min; compromised-running legs grow | |
-| 6 | Feb 8–12 | Build | 4 × 3 @ 85% (RPE 8 cap) | Threshold 20 min continuous; hardest week | |
-| 7 | Feb 15–19 | Primer | 2 × 3 @ 75%, then 1 × 2 @ 85% | Running volume about −40% | |
-| 8 | Feb 22–26 | Retest | Light technique only | **5 km retest** (Tue) · **1 km retest** (Fri) | |
-| 9 | Mar 1–5 | Flex | Optional technique | **Court6 Challenge, half** (Fri) | **Double-under retest** (Tue) |
+| 1 | Jan 4–8 | Test | Learn the lifts; build to a moderate 5 (RPE 7) to set starting loads | **5 km test** (Tue). Other running stays low this week. | Rope rhythm: single-unders, line hops, first single-single-double attempts |
+| 2 | Jan 11–15 | Base | 4 × 6 @ 70% | Threshold 3 × 8 min | **Baseline** (Tue): max unbroken. Then 1 single + 1 double |
+| 3 | Jan 18–22 | Base | 4 × 5 @ 75% | Threshold 4 × 8 min | Single doubles off singles, building to 2–3 in a row |
+| 4 | Jan 25–29 | Base | 5 × 5 @ 75% | Threshold 3 × 10 min · **Karen** (Fri) | Small sets (3–5 in a row), EMOM practice |
+| 5 | Feb 1–5 | Build | 5 × 3 @ 80% | Threshold 2 × 15 min; compromised-running legs grow | Bigger sets (5–15), fewer misses; scaled levels on attempts |
+| 6 | Feb 8–12 | Build | 4 × 3 @ 85% (RPE 8 cap) | Threshold 20 min continuous; hardest week | Double-unders under fatigue: sets inside a conditioning piece |
+| 7 | Feb 15–19 | Primer | 2 × 3 @ 75%, then 1 × 2 @ 85% | Running volume about −40% | Light practice: short, fresh sets |
+| 8 | Feb 22–26 | Retest | Light technique only | **5 km retest** (Tue) · **1 km retest** (Fri) | Short warm-up practice only (test week) |
+| 9 | Mar 1–5 | Flex | Optional technique | **Court6 Challenge, half** (Fri) | **Retest** (Tue): max unbroken, same rules as the baseline |
+
+Double-unders run every week; the column shows each week's focus. Steady and Strong progress along the same ladder (single-unders → single-single-double → doubles) at their own rung.
 
 The percentages are for front squat, push press and bench. The cleans follow their own progression, below.
 
@@ -94,8 +97,8 @@ All four lifts are on `list_movements`: Front squat, Power clean (hang work coun
 
 - **Paces from the Week 1 5 km test** (coach notes, not member text):
   - Threshold run ≈ 5 km pace + 0:10–0:20 per km.
-  - Easy run ≈ 5 km pace + 1:30–2:00 per km.
-  - Rowing: threshold ≈ 5,000 m split + 3–5 s per 500 m; easy ≈ + 15–20 s per 500 m.
+  - Steady run (Thursday) ≈ 5 km pace + 0:45–1:00 per km.
+  - Rowing: threshold ≈ 5,000 m split + 3–5 s per 500 m; steady ≈ + 8–12 s per 500 m.
 - **The 5 km test and retest:**
   - Outside it's a 5 km run; inside, or on icy days, a 5,000 m row.
   - Each member uses the same option both times so the results compare.
@@ -118,7 +121,7 @@ All four lifts are on `list_movements`: Front squat, Power clean (hang work coun
 - **Mon:** short hard intervals, 1–3 min work with equal or longer rest, e.g. bike sprints, row 250s, 200–400 m repeats outside. A second movement can join the machine (thrusters, swings) as in Cycle 1.
 - **Tue:** steady threshold intervals at the paced effort. Few or no extra movements; the run or row is the work.
 - **Wed:** stations and compromised running. Write it as a plain list when it's done once through.
-- **Thu:** 25–35 min of easy aerobic work with a clock. Change the format every week (ladders, EMOMs, pyramids, mixed-machine blocks with light movements) and don't reuse Cycle 1's Thursday formats.
+- **Thu:** 25–35 min of steady work (~5–6/10) with a clock. It should leave members breathing hard and sweaty, just not wrecked: continuous work with little or no rest, machines plus moderate movements (light barbell, dumbbells, bodyweight). Change the format every week (ladders, EMOMs, pyramids, mixed-machine blocks) and don't reuse Cycle 1's Thursday formats. If a draft looks like a cool-down, it's too easy.
 - **Fri:** 8–12 min station-style and hard: wall balls, burpees, carries, lunges, row/bike.
   - Week 4 is **Karen**: 150 wall balls for time, 14/20 lb at Full, matching the official workout. Steady and Strong scale the reps or the ball.
   - Keep wall balls off Wed and Thu of Week 4 (2-day repeat rule).
@@ -167,12 +170,12 @@ Keep these compare lines in the coach notes when writing those days.
 | Day | lift | style | focus | notes |
 |---|---|---|---|---|
 | 1 | Front squat | intervals | Front squat · intervals · hard | Front squat, then short hard bike/row intervals (run outside). |
-| 2 | null | long | Double-unders · threshold · moderate | Double-under skill, then the week's threshold piece paced off the 5 km. 5 km test Wk 1 and 8. |
+| 2 | null | intervals | Double-unders · threshold · moderate | Double-under skill, then the week's threshold piece paced off the 5 km. 5 km test Wk 1 and 8. |
 | 3 | Power clean | amrap | Hang clean · stations · sustain | Hang/power clean technique, then stations and compromised running at about 7/10. |
-| 4 | null | easy | Long aerobic · accessories · easy | Longer easy aerobic piece with a clock and a new format each week, then accessories. |
+| 4 | null | long | Long steady piece · accessories · lighter | Longer steady piece (~5–6/10) with a clock and a new format each week, then accessories. Lighter than Mon/Fri, but a real workout. |
 | 5 | Push press | short | Push press / bench · short workout · hard | Push press (odd weeks) or bench (even weeks), then a short hard station piece. Karen Wk 4, Court6 Challenge (half) Wk 9. |
 
-`skill` is null on every day (the app only knows `pullup`). The cycle plan's `focus` and `notes` are admin-only: they show on the admin page and feed the AI as context. So "easy" is fine there; the day's own title, focus and why are still member-facing.
+`skill` is null on every day (the app only knows `pullup`). The cycle plan's `focus` and `notes` are admin-only: they show on the admin page and feed the AI as context. "easy" is kept out of them anyway, because the AI reads them and Cycle 1 showed that "easy" produces workouts that are too easy. The plan's `style` uses `intervals` for Tuesday's threshold work and `long` for Thursday; the app's `easy` style isn't used.
 
 - **why** (draft, under 1,500 characters):
   > Nine weeks, Monday to Friday, to build a bigger engine and faster running. Week 1 tests a 5 km run (or 5,000 m row); that time sets your paces for the cycle. Tuesdays are the main threshold run or row, Wednesdays put running and stations together, Thursdays are a longer steady piece, and Mondays and Fridays are short and hard. The skill is double-unders: baseline in Week 2, retest in Week 9. New lifts keep you strong while the engine is the focus: front squat on Mondays, hang clean on Wednesdays, and push press or bench on Fridays. Week 8 retests the 5 km and your 1 km from Cycle 1, and Week 9 ends with the half Court6 Challenge.
