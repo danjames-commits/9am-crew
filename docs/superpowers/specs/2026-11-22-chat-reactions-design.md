@@ -49,12 +49,25 @@ For the menu layout:
 
 A hook, `useMessagePress({ onHold(id), onDoubleTap(id) })`, returns one set of props to spread on every message element (each tagged `data-id`). The timing logic lives in a pure state machine, `pressMachine`, so tests can drive it with fake timers and no DOM.
 
-- **Hold:** `pointerdown` starts a 450 ms timer. If the pointer moves more than 10 px from where it started, or `pointerup`, `pointercancel` or `pointerleave` fires first, the timer is cancelled (so scrolling never opens the menu). When the timer fires, it calls `onHold` and `navigator.vibrate?.(10)`. The `click` that follows a successful hold is swallowed.
+- **Hold:** `pointerdown` starts a 450 ms timer. If the pointer moves more than 10 px from where it started, or `pointerup`, `pointercancel` or `pointerleave` fires first, the timer is cancelled (so scrolling never opens the menu). When the timer fires, it calls `onHold` and gives a haptic tap (see Haptics below). The `click` that follows a successful hold is swallowed.
 - **Double-tap:** a `pointerup` within 300 ms and 30 px of the previous `pointerup` (neither one a hold) calls `onDoubleTap`.
 - **Single tap:** nothing happens. Links inside the bubble still open, because `Linkify` already stops click propagation. A double-tap on a link opens the link. There is no fix for that, because the first tap already navigates.
 - **Mouse:** `contextmenu` (right-click) calls `onHold` and prevents the browser menu. Holding the mouse button also works, through the same pointer path.
 - **Keyboard:** the bubble gets `tabIndex={0}`, `role="button"`, `aria-haspopup="dialog"` and a label like "Message from Dan. Press Enter for reactions." Enter or Space calls `onHold`.
 - **CSS:** `.reactable` gets `-webkit-touch-callout: none; user-select: none; touch-action: manipulation;`. This blocks the iOS copy popup and the double-tap zoom, and vertical scrolling still works. Text selection inside chat bubbles is lost. That is acceptable for this chat, and it is also how Instagram behaves.
+
+### Haptics: `src/lib/haptics.ts`
+
+The app's existing haptics (`CheerPop`, `RoundCounter`) call `navigator.vibrate`, but iPhone Safari doesn't have the Vibration API, so iPhone users feel nothing. A new shared helper, `haptic(ms = 10)`:
+
+- calls `navigator.vibrate(ms)` where it exists (Android Chrome and most other browsers), and
+- otherwise, on iPhone (Safari 18+), clicks a hidden `<label>` wrapping an `<input type="checkbox" switch>`. Toggling a native switch plays the system haptic. This is a known workaround, not a documented API, so it may stop working in a future iOS release. It does nothing where neither works.
+
+It fires on: the hold opening the menu, a double-tap ❤️, and every reaction added or removed (in the menu or by double-tap).
+
+**Unverified:** the hold haptic fires from a timer, not directly from a touch. WebKit may only play the switch haptic during a user gesture, so on iPhone the hold haptic might not fire while the double-tap and toggle haptics (which run inside tap handlers) do. This has to be checked on a real iPhone. If it doesn't fire, the fallback is to play the haptic on the `pointerup` that ends the hold.
+
+Moving `CheerPop` and `RoundCounter` onto `haptic()` is out of scope here.
 
 ### 2. Hold menu: `src/components/ReactionMenu.tsx`
 
@@ -64,7 +77,7 @@ The menu is a fixed overlay (`.react-menu`, z-index 120) with a dimmed, blurred 
 
 1. **Emoji bar.** The six emoji in a pill. The ones you've used are highlighted (`aria-pressed`). Tapping one toggles it and closes the menu.
 2. **The message.** A non-interactive copy of the bubble, recap or milestone, so you can see what you're reacting to.
-3. **Reactions list** (only when there are reactions). A "Reactions" heading, then one row per person: `PersonAvatar`, first name ("You" for yourself) and their emoji. You come first; everyone else is in order of their first reaction. On your own row each emoji is a button that removes it. Other people's rows aren't interactive. Past about 5 rows the list scrolls (`max-height: 40vh`).
+3. **Reactions list** (only when there are reactions). A "Reactions" heading, then one row per person: `Avatar` (not `PersonAvatar`, whose own tap-to-enlarge sheet would open underneath this menu), first name ("You" for yourself) and their emoji. You come first; everyone else is in order of their first reaction. On your own row each emoji is a button that removes it. Other people's rows aren't interactive. Past about 5 rows the list scrolls (`max-height: 40vh`).
 
 The menu closes on a backdrop tap, Escape, or any emoji toggle. It is `role="dialog"`, `aria-modal="true"`, labelled "Reactions". Focus moves to the emoji bar when it opens and goes back to the bubble when it closes. Under `prefers-reduced-motion` the scale-in animation is turned off.
 
@@ -127,12 +140,13 @@ These are pure functions with no React or Supabase, so they can be unit tested:
 - Hold to open the menu; toggling adds and removes and closes the menu.
 - The who-reacted list shows real names, including someone who has reacted but never posted.
 - Double-tap adds ❤️.
+- Haptics: on an Android phone and a real iPhone, hold, double-tap and toggle each give a tap.
 - Scrolling doesn't open the menu, and links still open.
 - Right-click and Enter open the menu; Escape closes it.
 - A reaction from a second browser shows up live with the pop.
 
 ## Files
 
-- New: `src/lib/reactions.ts`, `src/lib/reactions.test.ts`, `src/lib/useMessagePress.ts`, `src/lib/useMessagePress.test.ts`, `src/components/ReactionMenu.tsx`
+- New: `src/lib/haptics.ts`, `src/lib/haptics.test.ts`, `src/lib/reactions.ts`, `src/lib/reactions.test.ts`, `src/lib/useMessagePress.ts`, `src/lib/useMessagePress.test.ts`, `src/components/ReactionMenu.tsx`
 - Changed: `src/components/ChatRoom.tsx`, `src/app/globals.css`
 - Unchanged: `src/app/(app)/chat/page.tsx` (it already loads reactions), the database
