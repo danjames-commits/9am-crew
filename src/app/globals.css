@@ -814,3 +814,4 @@ html.halloween body::before {
 :root[data-dark] .who-x, :root[data-dark] .person-sheet { background: rgba(0, 0, 0, 0.6); }
 :root[data-dark] .cycle .bar.now { outline-color: var(--gold-ink); }
 :root[data-dark] .goal-line { border-top-color: rgba(255, 255, 255, 0.1); }
+:root[data-dark] .digest-in { color: #1c2321; }
