@@ -31,6 +31,7 @@ export function WeekDigest({
   heading,
   sub,
   rsvp,
+  attended,
 }: {
   days: DigestDay[];
   today: string;
@@ -39,6 +40,8 @@ export function WeekDigest({
   sub?: string;
   /** Show an "I'm in" chip on each day: which days you're in, and how many others are. */
   rsvp?: { mine: string[]; others: Record<string, number> };
+  /** Past days you were in, marked with a ✓. */
+  attended?: string[];
 }) {
   const tests = days.filter((d) => d.workout?.parts.some((p) => p.benchmark || p.lift?.mode === 'build')).length;
   return (
@@ -80,6 +83,11 @@ export function WeekDigest({
                 )}
               </div>
               {rsvp && <RsvpChip date={date} going={rsvp.mine.includes(date)} others={rsvp.others[date] ?? 0} />}
+              {attended?.includes(date) && (
+                <span className="digest-in">
+                  <span aria-hidden="true">✓</span><span className="sr-only"> you were in</span>
+                </span>
+              )}
             </>
           );
           const href = posted ? `/workouts/${date}` : isAdmin ? `/admin/build/${date}` : null;

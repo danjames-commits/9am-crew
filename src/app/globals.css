@@ -388,6 +388,7 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .digest-day.today b { color: var(--teal); }
 .digest-title { font-family: var(--display); font-weight: 800; font-size: 17px; line-height: 1.2; }
 .digest-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.digest-in { flex: none; align-self: center; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--ink); font-weight: 800; font-size: 14px; }
 .tag { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: var(--ground); color: var(--ink-2); }
 .tag.lift { background: #fff1c7; color: var(--gold-ink); }
 .tag.test { background: var(--gold); color: var(--ink); }
@@ -399,6 +400,10 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .week-fold > summary .muted { flex: 1; text-align: right; }
 .week-fold .chev { display: flex; color: var(--ink-3); transform: rotate(90deg); transition: transform 0.15s; }
 .week-fold[open] .chev { transform: rotate(-90deg); }
+.past-link { align-self: center; padding: 12px; color: var(--ink-3); font-weight: 700; font-size: 14px; text-decoration: none; }
+.past-link:hover { color: var(--ink); }
+.your-day { display: flex; flex-direction: column; gap: 4px; }
+.your-day-in { font-weight: 800; color: var(--ink); }
 
 .link-btn { align-self: flex-start; background: none; border: 0; padding: 0; min-height: 0; color: var(--teal); font: inherit; font-size: 14px; font-weight: 700; text-decoration: underline; cursor: pointer; }
 .level-switch { margin-top: -10px; color: var(--ink-3); }
@@ -489,6 +494,7 @@ label.row.check input { width: 22px; height: 22px; min-height: 0; accent-color: 
 .att-dot.in { background: var(--gold); border: 0; }
 .att-dot.missed { background: var(--soft); border: 0; }
 .att-dot.ahead { border-color: transparent; }
+a.att-dot:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 .att-key { display: flex; gap: 16px; justify-content: center; margin-top: 4px; }
 .att-key > span { display: inline-flex; align-items: center; gap: 6px; }
 .att-key .att-dot { width: 12px; height: 12px; }
@@ -813,3 +819,4 @@ html.halloween body::before {
 :root[data-dark] .who-x, :root[data-dark] .person-sheet { background: rgba(0, 0, 0, 0.6); }
 :root[data-dark] .cycle .bar.now { outline-color: var(--gold-ink); }
 :root[data-dark] .goal-line { border-top-color: rgba(255, 255, 255, 0.1); }
+:root[data-dark] .digest-in { color: #1c2321; }

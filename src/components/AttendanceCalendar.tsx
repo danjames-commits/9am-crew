@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { addDays, shortDate } from '@/lib/dates';
 import type { DayMark } from '@/lib/attendance';
 import { Icon } from './Icon';
@@ -34,25 +35,36 @@ export function AttendanceCalendar({ pages }: { pages: Week[][] }) {
           </div>
         )}
       </div>
-      <div className="card att-cal" role="img" aria-label={`You made ${made} classes from ${day(first)} to ${day(last)}`}>
-        <div className="att-row att-head">
+      <div className="card att-cal">
+        <span className="sr-only">{`You made ${made} classes from ${day(first)} to ${day(last)}.`}</span>
+        <div className="att-row att-head" aria-hidden="true">
           {DAY_LETTERS.map((l, i) => (
             <span key={i}>{l}</span>
           ))}
         </div>
         {weeks.map((w) => (
           <div key={w.monday} className="att-row">
-            {w.days.map((d) => (
-              <span key={d.date} className={`att-dot ${d.mark}`} title={d.date} />
-            ))}
+            {w.days.map((d) =>
+              d.mark === 'in' || d.mark === 'missed' ? (
+                <Link
+                  key={d.date}
+                  href={`/workouts/${d.date}`}
+                  prefetch={false}
+                  className={`att-dot ${d.mark}`}
+                  aria-label={`${shortDate(d.date).replace(' · ', ' ')}, ${d.mark === 'in' ? 'you were in' : 'missed'}`}
+                />
+              ) : (
+                <span key={d.date} className={`att-dot ${d.mark}`} aria-hidden="true" />
+              ),
+            )}
           </div>
         ))}
         <div className="att-key muted small">
           <span>
-            <span className="att-dot in" /> You were in · {made}
+            <span className="att-dot in" aria-hidden="true" /> You were in · {made}
           </span>
           <span>
-            <span className="att-dot missed" /> Missed
+            <span className="att-dot missed" aria-hidden="true" /> Missed
           </span>
         </div>
       </div>
