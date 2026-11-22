@@ -122,9 +122,11 @@ All four lifts are on `list_movements`: Front squat, Power clean (hang work coun
 - **Tue:** steady threshold intervals at the paced effort. Few or no extra movements; the run or row is the work.
 - **Wed:** stations and compromised running. Write it as a plain list when it's done once through.
 - **Thu:** 25–35 min of steady work (~5–6/10) with a clock. It should leave members breathing hard and sweaty, just not wrecked: continuous work with little or no rest, machines plus moderate movements (light barbell, dumbbells, bodyweight). Change the format every week (ladders, EMOMs, pyramids, mixed-machine blocks) and don't reuse Cycle 1's Thursday formats. If a draft looks like a cool-down, it's too easy.
-- **Fri:** 8–12 min station-style and hard: wall balls, burpees, carries, lunges, row/bike.
+- **Fri:** 8–12 min and hard. Station-style some weeks (wall balls, burpees, carries, lunges, row/bike), classic couplets or triplets other weeks; vary the format.
   - Week 4 is **Karen**: 150 wall balls for time, 14/20 lb at Full, matching the official workout. Steady and Strong scale the reps or the ball.
   - Keep wall balls off Wed and Thu of Week 4 (2-day repeat rule).
+
+**Variety (Jake, Nov 22):** don't make every day station work. Rotate formats through the week and across weeks (EMOMs, round-based pieces, chippers, AMRAPs, intervals, ladders) and use the whole movement pool, not just wall balls, lunges, carries and burpee broad jumps. Station-heavy pieces mainly go on Wednesday and in the Challenge build-up. Mon, Tue, Thu and Fri lean on classic class movements (gymnastics, dumbbells, kettlebells, barbell, bodyweight, machines).
 
 ## Accessories
 
