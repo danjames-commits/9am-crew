@@ -11,7 +11,7 @@ The program runs in six 9-week cycles. Each cycle starts with a test, builds for
 | Cycle | Dates | Focus | Skill | Strength tests | Engine / run tests | Benchmarks |
 |---|---|---|---|---|---|---|
 | **1** (now) | Mon Oct 19 – Fri Dec 18, 2026 | **Strength + Aerobic Base**: bigger engine, stronger big lifts | Toes-to-bar | 3RM back squat · 3RM deadlift · 5RM strict press | 1 km run (or 1,000 m row) | Station test (Wk 1 and 8) · Cindy (Wk 4) · Helen + Court6 Mini Challenge (Wk 9) |
-| **2** | Mon Dec 21, 2026 – Sun Feb 21, 2027 | **Engine + Running**: running, carries, lunges and wall balls | Double-unders | Keep your Cycle 1 numbers strong (maintenance) | 1 km run retest · 5 km run | Court6 Challenge (half) |
+| **2** | Mon Dec 21, 2026 – Sun Feb 21, 2027 | **Engine + Running**: running, carries, lunges and wall balls | Double-unders | Keep your Cycle 1 numbers strong (maintenance) | 3 km run (or 3,000 m row) · 1 km run retest | Court6 Challenge (half) |
 | **3** | Mon Feb 22 – Sun Apr 25, 2027 | **Strength + Pulling**: heavier lifts, stronger pull-ups | Strict and chest-to-bar pull-ups | Front squat · deadlift · bench press | – | Fran |
 | **4** | Mon Apr 26 – Sun Jun 27, 2027 | **Engine + Upside-Down**: bigger engine, comfortable upside down | Handstands and handstand push-ups | – | 2,000 m row · 1 km run | Grace |
 | **5** | Mon Jun 28 – Sun Aug 29, 2027 | **Olympic Lifting**: fast, powerful barbell work | Bar muscle-up | Clean & jerk | – | Diane · Isabel |

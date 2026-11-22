@@ -6,7 +6,7 @@ Where this file and the app disagree, the app wins. [`src/lib/programming/rules.
 
 Newest ruling wins. Dates in brackets are when Jake set or last changed the rule.
 
-Last updated: Nov 22, 2026.
+Last updated: Nov 22, 2026 (conditioning variety added).
 
 ## Rule 1: evidence first
 
@@ -103,6 +103,7 @@ Every programming decision — every write, rewrite or change: structure, moveme
 
 - Buy-ins and cash-outs only where they fit, not as a daily template (Oct 26).
 - Keep variety in conditioning and accessory work, still tied to the cycle goal (Oct 26).
+- Vary conditioning formats across the week and cycle: EMOMs, round-based pieces, chippers, AMRAPs, intervals, ladders. Don't make every piece station work: use the full movement pool (gymnastics, dumbbells, kettlebells, barbell, bodyweight, machines), not only wall balls, lunges, carries and burpee broad jumps (Nov 22).
 - Coach notes stay under 2,000 characters. Longer notes are cut off.
 - Never touch past days.
 

@@ -23,7 +23,7 @@ Court6 is a CrossFit-style group-class program that also quietly builds HYROX-st
   - Percentages of estimated max with an RPE 8 cap.
   - e1RM = 3RM × 1.06 (press: 5RM × 1.13).
 - **Running:**
-  - Class running rises no more than about 10% a week.
+  - Class running rises about 10% a week and never more than 20–30% in any 2-week window (Nielsen 2014; Damsted 2019; the 10% figure is a conservative convention).
   - After a deload, go back to the pre-deload volume, not higher.
 - **Skill:** one per cycle, built strength → strict → kip, with a baseline and a retest.
 - Program for the majority and scale by load, reps, distance and time cap, not by writing a different workout.
@@ -93,7 +93,7 @@ These come from the Nov 22 review of the roadmap against the research and the ru
 - With no strength retest at the end, it's the safe cycle to rotate variants: front squat, push press, sumo or trap-bar deadlift.
 - The holidays fall in Weeks 1–2 (Dec 25 and Jan 1 are Fridays). Avoid putting tests in that window.
 - If the lifts stay the same, the Cycle 1 Week 8 numbers can be the baseline.
-- The 5 km run test needs an indoor equivalent for winter, the way the 1 km run pairs with a 1,000 m row.
+- The engine test is a 3 km run or 3,000 m row (decided Nov 22: fits the 60-min class; a 5 km may come later in the year). See CYCLE2_DESIGN.md.
 
 **Cycles 3–6:**
 - Keep back squat and strict press as weekly secondary lifts through Cycles 3–5. Otherwise the Cycle 6 "how far you've come" retest will under-read real progress.
