@@ -1106,7 +1106,7 @@ Update the dark override on line 819 so the menu backdrop matches the other shee
 
 - [ ] **Step 14: Check that nothing else uses the removed classes or names**
 
-Run: `git grep -n -e "react-chip" -e "react-pick" -e "\.reactions\b" -e "picking" -e "openPicker" -e "reactionsFor" -- src`
+Run: `git grep -n -e 'react-chip' -e 'react-pick' -e '"reactions ' -e '^\.reactions ' -e 'picking' -e 'openPicker' -e 'reactionsFor' -- src`
 Expected: no matches.
 
 - [ ] **Step 15: Type-check and run all tests**
