@@ -12,6 +12,8 @@ import { classWeather } from '@/lib/weather';
 import { Icon } from '@/components/Icon';
 import { aiEnabled } from '@/lib/ai';
 import { splitCoachNotes } from '@/lib/coach-notes';
+import { YourDay } from '@/components/YourDay';
+import { benchOn, liftsOn } from '@/lib/past-workouts';
 
 export const maxDuration = 120;
 
@@ -21,7 +23,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
   const { supabase, userId } = await signedIn();
   const weatherP = classWeather(date); // cached, so fetching it when nothing's outdoors costs little
 
-  const [{ me }, { data: w }, { names, animals }, { bests, movements }, { data: attendance }, coachNote, { benchmarks }] = await Promise.all([
+  const [{ me }, { data: w }, { names, animals }, { bests, movements }, { data: attendance }, coachNote, { benchmarks, results }, { data: dayLifts }] = await Promise.all([
     requireMember(),
     supabase.from('workouts').select('id, class_date, title, focus, why, parts, status, equipment_add, equipment_remove, clock_plan').eq('class_date', date).maybeSingle(),
     getPeople(supabase),
@@ -31,6 +33,9 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
       me.is_admin || me.is_coach ? (await supabase.from('workout_coach_notes').select('body').eq('class_date', date).maybeSingle<{ body: string }>()).data : null,
     ),
     getBenchmarks(supabase, userId),
+    date < todayLocal()
+      ? supabase.from('lift_logs').select('movement_id, weight, reps, is_pr, logged_on').eq('user_id', userId).eq('logged_on', date).order('id')
+      : Promise.resolve({ data: [] as { movement_id: number; weight: number; reps: number; is_pr: boolean; logged_on: string | null }[] }),
   ]);
   if (!w) notFound();
   const weather = (w.parts as Part[]).some((p) => p.outdoor) ? await weatherP : null;
@@ -38,11 +43,20 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
   const going = (attendance ?? []).some((a) => a.user_id === me.id);
   const others = (attendance ?? []).filter((a) => a.user_id !== me.id).map((a) => ({ id: a.user_id, name: names[a.user_id] ?? 'Member', animal: animals[a.user_id] }));
   const maxes = Object.fromEntries(bests.map((b) => [b.movement, b.estMax]));
+  const movementName = new Map(movements.map((m) => [m.id, m.name]));
+  const yourDay = upcoming ? null : (
+    <YourDay
+      wasIn={going}
+      lifts={liftsOn(dayLifts ?? [], date).map((l) => ({ movement: movementName.get(l.movement_id) ?? 'Lift', weight: Number(l.weight), reps: l.reps, is_pr: l.is_pr }))}
+      results={benchOn(results, date)}
+      benchmarks={benchmarks}
+    />
+  );
 
   return (
     <main className="screen">
       <div className="row">
-        <Link href="/workouts" className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label="Back to workouts">
+        <Link href={upcoming ? '/workouts' : '/workouts/past'} className="avatar" style={{ background: 'var(--card)', color: 'var(--ink)' }} aria-label={upcoming ? 'Back to workouts' : 'Back to past workouts'}>
           <Icon name="back" />
         </Link>
         <div className="grow">
@@ -66,7 +80,7 @@ export default async function WorkoutPage({ params }: { params: Promise<{ date: 
         canScale={upcoming && aiEnabled()}
         kitChanges={{ add: (w.equipment_add as string[] | null) ?? [], remove: (w.equipment_remove as string[] | null) ?? [] }}
         kitEditDate={me.is_admin ? w.class_date : undefined}
-        meta={upcoming ? <WhosComing classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} /> : null}
+        meta={upcoming ? <WhosComing classDate={w.class_date} me={{ id: me.id, name: me.display_name, animal: me.animal }} others={others} going={going} /> : yourDay}
         log={{ movements, benchmarks, today: todayLocal() }}
         coach={
           me.is_admin || me.is_coach
