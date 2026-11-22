@@ -8,6 +8,10 @@ Newest ruling wins. Dates in brackets are when Jake set or last changed the rule
 
 Last updated: Nov 22, 2026.
 
+## Rule 1: evidence first
+
+Every programming decision — every write, rewrite or change: structure, movements, loads, reps, formats, rest, warm-ups, cool-downs, coach notes, cycle plans — must be supported by exercise science. Check the research before proposing a change, tell Jake what the evidence says and how strong it is, and say when something is only convention or expert opinion. Never fill gaps from memory (Nov 22). The connector repeats this rule in its instructions, tool descriptions and every preview.
+
 ## Process
 
 - Change only what Jake asked for. His examples illustrate the idea; they are not a fixed list or a second program.

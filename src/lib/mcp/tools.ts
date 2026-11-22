@@ -8,6 +8,7 @@ import { MAX_CHANGES, validateChanges, type Change } from './changes';
 import { loadContext } from './context';
 import { previewText } from './diff';
 import { checkRange, dayView, MAX_RANGE_DAYS, weekdaysBetween, type CycleSpan, type WorkoutRow } from './read';
+import { EVIDENCE_RULE, STANDING_RULES } from './standing-rules';
 
 export function callerOf(ctx: ServerContext): McpCaller {
   const caller = ctx.http?.authInfo?.extra as McpCaller | undefined;
@@ -91,7 +92,7 @@ export function registerTools(server: McpServer): void {
     'get_cycle',
     {
       title: 'Get cycle',
-      description: 'Get one programming cycle in full, including its per-weekday plan (days).',
+      description: `Get one programming cycle in full, including its per-weekday plan (days). ${EVIDENCE_RULE}`,
       inputSchema: z.object({ id: z.number().int().describe('Cycle id from list_cycles') }),
     },
     async ({ id }, ctx) => {
@@ -107,7 +108,7 @@ export function registerTools(server: McpServer): void {
     'get_days',
     {
       title: 'Get days',
-      description: `Get the workout for each class day (Mon-Fri) from..to inclusive, including empty days. At most ${MAX_RANGE_DAYS} days. "editable" is true for today and later. Today can only change until a member enters something for it, and can't be deleted.`,
+      description: `Get the workout for each class day (Mon-Fri) from..to inclusive, including empty days. At most ${MAX_RANGE_DAYS} days. "editable" is true for today and later. Today can only change until a member enters something for it, and can't be deleted. ${EVIDENCE_RULE}`,
       inputSchema: z.object({
         from: z.string().describe('Start date, YYYY-MM-DD'),
         to: z.string().describe('End date, YYYY-MM-DD'),
@@ -151,8 +152,7 @@ export function registerTools(server: McpServer): void {
     'preview_changes',
     {
       title: 'Preview changes',
-      description:
-        'Check a batch of changes to workout days from today on, coach notes or cycles and save it as a preview. Nothing changes in the app. Always show the returned preview text to the coach and wait for them to say push before calling push_changes. Send whole days and whole cycle plans: read them first with get_days or get_cycle, edit, and send back. Leave coach_notes out to keep a day\'s notes as they are.',
+      description: `Check a batch of changes to workout days from today on, coach notes or cycles and save it as a preview. Nothing changes in the app. Always show the returned preview text to the coach and wait for them to say push before calling push_changes. Send whole days and whole cycle plans: read them first with get_days or get_cycle, edit, and send back. Leave coach_notes out to keep a day\'s notes as they are. ${EVIDENCE_RULE}`,
       inputSchema: z.object({ changes: z.array(change).max(MAX_CHANGES) }),
     },
     async ({ changes }, ctx) => {
@@ -160,7 +160,9 @@ export function registerTools(server: McpServer): void {
       const list = changes as Change[];
       const result = validateChanges(list, await loadContext(caller, list));
       const ops = result.items.flatMap((i) => i.ops);
-      const preview = previewText(result.items);
+      const preview = `${STANDING_RULES}
+
+${previewText(result.items)}`;
       if (result.ok && ops.length === 0) {
         return text({ change_set_id: null, ok: true, text: `${preview}\n\nNothing to push — every item is unchanged.` });
       }
