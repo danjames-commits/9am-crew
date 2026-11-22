@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { requireMember, signedIn } from '@/lib/supabase/server';
 import { addDays, classDays, nextClassDate, shortDate, todayLocal, SHOW_TODAY_UNTIL_HOUR } from '@/lib/dates';
 import { CycleStrip } from '@/components/CycleStrip';
@@ -50,6 +51,9 @@ export default async function WorkoutsPage() {
           <WeekDigest days={week} today={today} isAdmin={me.is_admin} heading="" />
         </details>
       ))}
+      <Link href="/workouts/past" className="past-link">
+        Past workouts →
+      </Link>
     </main>
   );
 }
