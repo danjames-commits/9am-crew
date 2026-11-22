@@ -20,7 +20,7 @@ export function YourDay({
   });
   return (
     <div className="your-day">
-      <div className={wasIn ? 'your-day-in' : 'muted'}>{wasIn ? '✓ You were in' : 'You weren’t in this one'}</div>
+      <div className={wasIn ? 'your-day-in' : 'muted'}>{wasIn ? <><span aria-hidden="true">✓ </span>You were in</> : 'You weren’t in this one'}</div>
       {lifts.map((l, i) => (
         <div key={`l${i}`} className="small">
           {l.movement} · {lb(l.weight)}

@@ -43,7 +43,8 @@ export default async function PastWorkoutsPage({ searchParams }: { searchParams:
         </Link>
         <h1 className="grow">Past workouts</h1>
       </div>
-      {weeks.length === 0 && <p className="muted">No past workouts yet.</p>}
+      {weeks.length === 0 && !win.earlier && <p className="muted">No past workouts yet.</p>}
+      {weeks.length === 0 && win.earlier && <p className="muted">Nothing in these weeks.</p>}
       {weeks.map((w) => (
         <WeekDigest
           key={w.monday}

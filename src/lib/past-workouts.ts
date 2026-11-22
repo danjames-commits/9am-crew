@@ -23,7 +23,7 @@ export function pastWindow({
   const top = mondayOf(lastDone);
   const floor = mondayOf(earliest);
   let newest = top;
-  if (before && DATE.test(before) && mondayOf(before) === before) {
+  if (before && DATE.test(before) && !Number.isNaN(Date.parse(before + 'T12:00:00Z')) && mondayOf(before) === before) {
     const wanted = addDays(before, -7);
     if (wanted <= top && wanted >= floor) newest = wanted;
   }

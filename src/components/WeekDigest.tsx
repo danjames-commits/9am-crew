@@ -85,7 +85,7 @@ export function WeekDigest({
               {rsvp && <RsvpChip date={date} going={rsvp.mine.includes(date)} others={rsvp.others[date] ?? 0} />}
               {attended?.includes(date) && (
                 <span className="digest-in">
-                  ✓<span className="sr-only"> you were in</span>
+                  <span aria-hidden="true">✓</span><span className="sr-only"> you were in</span>
                 </span>
               )}
             </>

@@ -49,6 +49,7 @@ export function AttendanceCalendar({ pages }: { pages: Week[][] }) {
                 <Link
                   key={d.date}
                   href={`/workouts/${d.date}`}
+                  prefetch={false}
                   className={`att-dot ${d.mark}`}
                   aria-label={`${shortDate(d.date).replace(' · ', ' ')}, ${d.mark === 'in' ? 'you were in' : 'missed'}`}
                 />

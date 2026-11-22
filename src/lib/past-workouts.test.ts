@@ -37,7 +37,7 @@ describe('pastWindow', () => {
 
   it('falls back to the newest page for a bad before', () => {
     const newest = pastWindow({ lastDone: '2026-11-20', earliest: '2026-09-01' });
-    for (const before of ['nope', '2026-13-40x', '', null, undefined, '2030-01-06', '2020-01-06']) {
+    for (const before of ['nope', '2026-13-40x', '', null, undefined, '2030-01-06', '2020-01-06', '2026-99-99']) {
       expect(pastWindow({ before, lastDone: '2026-11-20', earliest: '2026-09-01' })).toEqual(newest);
     }
   });
