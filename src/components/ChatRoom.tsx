@@ -1,6 +1,6 @@
 'use client';
 import { Linkify } from './Linkify';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase/client';
 import { firstName } from '@/lib/ui';
 import { Avatar } from './Avatar';
@@ -9,6 +9,10 @@ import { timeAgo } from '@/lib/dates';
 import { Icon } from './Icon';
 import { PrCard } from './PrCard';
 import { CheerPop } from './CheerPop';
+import { ReactionMenu } from './ReactionMenu';
+import { pillLabel, same, summarize, type Reaction } from '@/lib/reactions';
+import { haptic } from '@/lib/haptics';
+import { useMessagePress } from '@/lib/useMessagePress';
 
 export interface ChatMessage {
   id: number;
@@ -22,12 +26,7 @@ interface Cheer {
   lift_log_id: number;
   user_id: string;
 }
-export interface Reaction {
-  message_id: number;
-  user_id: string;
-  emoji: string;
-}
-export const REACTIONS = ['👍', '❤️', '😂', '🔥', '💪', '🎉'] as const;
+export { REACTIONS, type Reaction } from '@/lib/reactions';
 
 export function ChatRoom({
   initial,
@@ -56,14 +55,13 @@ export function ChatRoom({
   const [messages, setMessages] = useState(initial);
   const [cheers, setCheers] = useState(initialCheers);
   const [reactions, setReactions] = useState(initialReactions);
-  // The message whose emoji picker is open (tap a message to react).
-  const [picking, setPicking] = useState<number | null>(null);
-  useEffect(() => {
-    if (picking == null) return;
-    const close = (e: PointerEvent) => !(e.target as HTMLElement).closest('.react-pick, .reactable') && setPicking(null);
-    document.addEventListener('pointerdown', close);
-    return () => document.removeEventListener('pointerdown', close);
-  }, [picking]);
+  // The message whose reaction menu is open (hold a message, or tap its reactions).
+  const [menuFor, setMenuFor] = useState<number | null>(null);
+  const openMenu = useCallback((id: number) => setMenuFor(id), []);
+  const closeMenu = useCallback(() => setMenuFor(null), []);
+  // The pill that just got a new reaction pops once; n restarts the animation.
+  const [pop, setPop] = useState<{ id: number; n: number } | null>(null);
+  const bump = (id: number) => setPop({ id, n: Date.now() });
   const [names, setNames] = useState(initialNames);
   const [animals, setAnimals] = useState(initialAnimals);
   const [text, setText] = useState('');
@@ -115,6 +113,7 @@ export function ChatRoom({
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'message_reactions' }, (p) => {
         const r = p.new as Reaction;
         setReactions((list) => (list.some((x) => same(x, r)) ? list : [...list, r]));
+        if (r.user_id !== meId) setPop({ id: r.message_id, n: Date.now() });
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'message_reactions' }, (p) => {
         const r = p.old as Reaction;
@@ -124,11 +123,17 @@ export function ChatRoom({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase]);
+  }, [supabase, meId]);
 
-  // Look up names of anyone new.
+  // If the message is deleted while its menu is open, close the menu.
   useEffect(() => {
-    const missing = [...new Set(messages.map((m) => m.user_id))].filter((id): id is string => !!id && !(id in names));
+    if (menuFor != null && !messages.some((m) => m.id === menuFor)) setMenuFor(null);
+  }, [messages, menuFor]);
+
+  // Look up names of anyone new, including people who reacted but never posted.
+  useEffect(() => {
+    const ids = [...messages.map((m) => m.user_id), ...reactions.map((r) => r.user_id)];
+    const missing = [...new Set(ids)].filter((id): id is string => !!id && !(id in names));
     if (!missing.length) return;
     supabase
       .from('profiles')
@@ -140,7 +145,11 @@ export function ChatRoom({
           setAnimals((a) => ({ ...a, ...Object.fromEntries(data.map((p) => [p.id, p.animal ?? null])) }));
         }
       });
-  }, [messages, names, supabase]);
+  }, [messages, reactions, names, supabase]);
+  const people = useMemo(
+    () => Object.fromEntries(Object.keys(names).map((id) => [id, { name: names[id], animal: animals[id] }])),
+    [names, animals],
+  );
 
   const firstScroll = useRef(true);
   useEffect(() => {
@@ -176,60 +185,85 @@ export function ChatRoom({
   }
 
   async function toggleReaction(messageId: number, emoji: string) {
-    setPicking(null);
+    haptic();
     const r = { message_id: messageId, user_id: meId, emoji };
     if (reactions.some((x) => same(x, r))) {
       setReactions((l) => l.filter((x) => !same(x, r)));
-      await supabase.from('message_reactions').delete().eq('message_id', messageId).eq('user_id', meId).eq('emoji', emoji);
+      const { error } = await supabase.from('message_reactions').delete().eq('message_id', messageId).eq('user_id', meId).eq('emoji', emoji);
+      if (error) setReactions((l) => (l.some((x) => same(x, r)) ? l : [...l, r]));
     } else {
       setReactions((l) => [...l, r]);
+      bump(messageId);
       const { error } = await supabase.from('message_reactions').insert({ message_id: messageId, emoji });
       if (error) setReactions((l) => l.filter((x) => !same(x, r)));
     }
   }
 
-  /** The emoji chips under a message, and the picker when it's open. */
-  function reactionsFor(m: ChatMessage, align: 'left' | 'right') {
-    const these = reactions.filter((r) => r.message_id === m.id);
-    const counts = REACTIONS.map((e) => ({ e, who: these.filter((r) => r.emoji === e) })).filter((c) => c.who.length);
-    if (!counts.length && picking !== m.id) return null;
+  /** Double-tap: add a ❤️ (never removes it, like Instagram). */
+  function doubleTapHeart(messageId: number) {
+    if (reactions.some((r) => r.message_id === messageId && r.user_id === meId && r.emoji === '❤️')) return;
+    toggleReaction(messageId, '❤️');
+  }
+
+  const press = useMessagePress({ onHold: openMenu, onDoubleTap: doubleTapHeart });
+  /**
+   * Gesture props for a message you can react to. No button role, aria-label or tab stop on the
+   * message itself: that would hide its text from screen readers and nest links inside a button.
+   * Keyboard and screen-reader users get the explicit "React to ..." button instead (reactBtn).
+   */
+  const pressProps = (m: ChatMessage) => ({ ...press, 'data-id': m.id });
+
+  /** A visually hidden button (visible on keyboard focus) that opens the reaction menu. */
+  function reactBtn(m: ChatMessage, label: string) {
     return (
-      <div className={`reactions ${align}`}>
-        {picking === m.id && (
-          <div className="react-pick" role="group" aria-label="React">
-            {REACTIONS.map((e) => (
-              <button key={e} type="button" aria-pressed={these.some((r) => r.emoji === e && r.user_id === meId)} onClick={() => toggleReaction(m.id, e)}>
-                {e}
-              </button>
-            ))}
-          </div>
-        )}
-        {counts.map(({ e, who }) => (
-          <button
-            key={e}
-            type="button"
-            className={`react-chip ${who.some((r) => r.user_id === meId) ? 'mine' : ''}`}
-            title={who.map((r) => (r.user_id === meId ? 'You' : firstName(names[r.user_id] ?? 'Member'))).join(', ')}
-            aria-label={`${e} ${who.length}, ${who.some((r) => r.user_id === meId) ? 'including you. Tap to remove yours.' : 'tap to add yours.'}`}
-            onClick={() => toggleReaction(m.id, e)}
-          >
-            {e} {who.length > 1 && <span>{who.length}</span>}
-          </button>
-        ))}
+      <button type="button" className="react-sr" data-react-for={m.id} onClick={() => openMenu(m.id)}>
+        React to {label}
+      </button>
+    );
+  }
+
+  /** The reactions pill on a message's bottom corner. */
+  function pillFor(m: ChatMessage, align: 'left' | 'right') {
+    const these = reactions.filter((r) => r.message_id === m.id);
+    if (!these.length) return null;
+    const s = summarize(these, meId);
+    const popN = pop?.id === m.id ? pop.n : null;
+    return (
+      <button
+        key={popN ?? 'pill'}
+        type="button"
+        className={`react-pill ${align} ${s.mine ? 'mine' : ''} ${popN ? 'pop' : ''}`}
+        aria-label={pillLabel(s)}
+        onClick={() => openMenu(m.id)}
+      >
+        {s.top.join('')}
+        {s.total > 1 && <span>{s.total}</span>}
+      </button>
+    );
+  }
+  const hostClass = (m: ChatMessage) => (reactions.some((r) => r.message_id === m.id) ? 'react-host has-pill' : 'react-host');
+
+  /** What the menu shows of the message. */
+  function previewOf(m: ChatMessage) {
+    const text = m.kind === 'milestone' ? `🎉 ${parseInt(m.body, 10) || 0} classes` : m.body;
+    const mine = m.kind === 'text' && m.user_id === meId;
+    return (
+      <div className={`bubble react-menu-msg ${mine ? 'mine' : ''}`}>
+        <p className="pre">{text}</p>
       </div>
     );
   }
-  const openPicker = (id: number) => setPicking((p) => (p === id ? null : id));
 
   function row(m: ChatMessage, i: number) {
     if (m.kind === 'recap') {
       return (
-        <div key={m.id} className="stack tight">
-          <div className="card teal stack tight reactable" onClick={() => openPicker(m.id)}>
+        <div key={m.id} className={`stack tight ${hostClass(m)}`}>
+          <div className="card teal stack tight reactable" {...pressProps(m)}>
             <div className="eyebrow teal">Friday recap</div>
             <p className="pre">{m.body}</p>
           </div>
-          {reactionsFor(m, 'left')}
+          {pillFor(m, 'left')}
+          {reactBtn(m, 'this recap')}
         </div>
       );
     }
@@ -238,19 +272,18 @@ export function ChatRoom({
     if (m.kind === 'milestone') {
       const n = parseInt(m.body, 10) || 0;
       return (
-        <div key={m.id} className="stack tight">
-        <div className="milestone-card reactable" title={timeAgo(m.created_at)} onClick={() => openPicker(m.id)}>
-          {m.user_id && <PersonAvatar id={m.user_id} name={name} animal={animals[m.user_id]} />}
-          <div className="grow">
-            <div className="milestone-n">
-              🎉 {n} classes
-            </div>
-            <div className="small">
-              {mine ? 'You’ve' : `${firstName(name)} has`} shown up for {n} classes. {n >= 100 ? 'Legend.' : n >= 50 ? 'That’s a habit.' : 'Keep it rolling!'}
+        <div key={m.id} className={`stack tight ${hostClass(m)}`}>
+          <div className="milestone-card reactable" title={timeAgo(m.created_at)} {...pressProps(m)}>
+            {m.user_id && <PersonAvatar id={m.user_id} name={name} animal={animals[m.user_id]} />}
+            <div className="grow">
+              <div className="milestone-n">🎉 {n} classes</div>
+              <div className="small">
+                {mine ? 'You’ve' : `${firstName(name)} has`} shown up for {n} classes. {n >= 100 ? 'Legend.' : n >= 50 ? 'That’s a habit.' : 'Keep it rolling!'}
+              </div>
             </div>
           </div>
-        </div>
-        {reactionsFor(m, 'left')}
+          {pillFor(m, 'left')}
+          {reactBtn(m, mine ? 'your milestone' : `${firstName(name)}’s milestone`)}
         </div>
       );
     }
@@ -280,12 +313,13 @@ export function ChatRoom({
             <Avatar id={m.user_id ?? ''} name={name} animal={animals[m.user_id ?? '']} size="sm" hidden />
           )
         )}
-        <div className={`bubble-wrap ${mine ? 'mine' : ''}`}>
-          <div className={`bubble reactable ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)} onClick={() => openPicker(m.id)}>
+        <div className={`bubble-wrap ${mine ? 'mine' : ''} ${hostClass(m)}`}>
+          <div className={`bubble reactable ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)} {...pressProps(m)}>
             {showName && <div className="who">{firstName(name)}</div>}
             <Linkify text={m.body} />
           </div>
-          {reactionsFor(m, mine ? 'right' : 'left')}
+          {pillFor(m, mine ? 'right' : 'left')}
+          {reactBtn(m, mine ? 'your message' : `${firstName(name)}’s message`)}
         </div>
       </div>
     );
@@ -345,8 +379,21 @@ export function ChatRoom({
         </button>
       </form>
       {error && <p className="small" role="alert">{error}</p>}
+      {menuFor != null &&
+        (() => {
+          const m = messages.find((x) => x.id === menuFor);
+          return m ? (
+            <ReactionMenu
+              messageId={m.id}
+              preview={previewOf(m)}
+              reactions={reactions.filter((r) => r.message_id === m.id)}
+              meId={meId}
+              people={people}
+              onToggle={(e) => toggleReaction(m.id, e)}
+              onClose={closeMenu}
+            />
+          ) : null;
+        })()}
     </>
   );
 }
-
-const same = (a: Reaction, b: Reaction) => a.message_id === b.message_id && a.user_id === b.user_id && a.emoji === b.emoji;

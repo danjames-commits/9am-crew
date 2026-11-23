@@ -718,19 +718,33 @@ html.halloween body::before {
 .plate-chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 13px; font-weight: 800; border: 1px solid rgba(0, 0, 0, 0.15); white-space: nowrap; }
 .plate-grab-bar { font-size: 12px; opacity: 0.75; }
 
-/* Emoji reactions in the chat */
-.reactable { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+/* Emoji reactions in the chat: hold a message for the menu, double-tap for ❤️. */
+.reactable { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+.react-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; padding: 0; margin: 0; }
+.react-sr:focus-visible { position: static; width: auto; height: auto; overflow: visible; clip: auto; margin-top: 18px; padding: 2px 10px; border-radius: 13px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 13px; font-weight: 700; outline: 3px solid var(--gold); outline-offset: 2px; cursor: pointer; }
 .bubble-wrap { display: flex; flex-direction: column; align-items: flex-start; max-width: 80%; }
 .bubble-wrap.mine { align-items: flex-end; margin-left: auto; }
 .bubble-wrap .bubble { max-width: 100%; }
-.reactions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: -4px; position: relative; z-index: 1; }
-.reactions.right { justify-content: flex-end; }
-.react-chip { display: inline-flex; align-items: center; gap: 3px; padding: 1px 7px; min-height: 26px; border-radius: 13px; border: 1px solid var(--line); background: var(--card); font: inherit; font-size: 14px; cursor: pointer; }
-.react-chip span { font-size: 12px; font-weight: 800; color: var(--ink-2); }
-.react-chip.mine { border-color: var(--teal); background: var(--teal-soft); }
-.react-pick { display: flex; gap: 2px; padding: 4px; border-radius: 22px; background: var(--card); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); }
-.react-pick button { width: 38px; height: 38px; border: 0; border-radius: 50%; background: transparent; font-size: 22px; cursor: pointer; }
-.react-pick button[aria-pressed='true'] { background: var(--teal-soft); }
+.react-host { position: relative; }
+.react-host.has-pill { margin-bottom: 14px; }
+.react-pill { position: absolute; bottom: -14px; left: 10px; z-index: 1; display: inline-flex; align-items: center; min-height: 26px; padding: 1px 8px; border-radius: 13px; border: 1px solid var(--line); background: var(--card); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12); font: inherit; font-size: 14px; letter-spacing: 1px; cursor: pointer; }
+.react-pill.right { left: auto; right: 10px; }
+.react-pill span { margin-left: 4px; letter-spacing: 0; font-size: 12px; font-weight: 800; color: var(--ink-2); }
+.react-pill.mine { border-color: var(--teal); background: var(--teal-soft); }
+.react-pill.pop { animation: pill-pop 0.2s ease-out; }
+@keyframes pill-pop { 50% { transform: scale(1.25); } }
+.react-menu { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 24px; background: rgba(28, 35, 33, 0.45); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: sheet-in 0.15s ease-out; }
+.react-menu-col { display: grid; justify-items: center; gap: 10px; width: min(360px, 100%); animation: card-in 0.18s ease-out; }
+.react-menu-bar { display: flex; gap: 2px; padding: 4px; border-radius: 26px; background: var(--card); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); }
+.react-menu-bar button { width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; font-size: 24px; cursor: pointer; }
+.react-menu-bar button[aria-pressed='true'] { background: var(--teal-soft); }
+.react-menu-preview { width: 100%; display: flex; justify-content: center; pointer-events: none; }
+.react-menu-msg { max-width: 100%; max-height: 30vh; overflow: hidden; }
+.react-menu-list { width: 100%; max-height: 40vh; overflow-y: auto; display: grid; gap: 6px; padding: 10px 12px; border-radius: 18px; background: var(--card); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); }
+.react-menu-row { display: flex; align-items: center; gap: 10px; min-height: 40px; font-weight: 700; }
+.react-menu-emojis { display: flex; gap: 2px; font-size: 20px; }
+.react-menu-emojis button { min-width: 36px; height: 36px; border: 0; border-radius: 18px; background: var(--teal-soft); font-size: 20px; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) { .react-menu, .react-menu-col, .react-pill.pop { animation: none; } }
 .plate-add { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-left: 8px; vertical-align: middle; font-size: 12px; font-weight: 600; opacity: 0.9; }
 .plate-add .plate-chip { font-size: 11px; padding: 0 6px; }
 .plate-off { opacity: 0.8; }
@@ -816,7 +830,7 @@ html.halloween body::before {
 :root[data-dark] .cheer-count { background: rgba(0, 0, 0, 0.3); }
 :root[data-dark] .follow-notes dl > div, :root[data-dark] .clock-edit input { border-color: rgba(255, 255, 255, 0.1); }
 :root[data-dark] .plate-bars button, :root[data-dark] .set-boxes button { border-color: rgba(191, 230, 223, 0.3); }
-:root[data-dark] .who-x, :root[data-dark] .person-sheet { background: rgba(0, 0, 0, 0.6); }
+:root[data-dark] .who-x, :root[data-dark] .person-sheet, :root[data-dark] .react-menu { background: rgba(0, 0, 0, 0.6); }
 :root[data-dark] .cycle .bar.now { outline-color: var(--gold-ink); }
 :root[data-dark] .goal-line { border-top-color: rgba(255, 255, 255, 0.1); }
 :root[data-dark] .digest-in { color: #1c2321; }

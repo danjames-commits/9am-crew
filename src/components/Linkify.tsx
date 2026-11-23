@@ -17,7 +17,7 @@ export function Linkify({ text }: { text: string }) {
         target="_blank"
         rel="noopener noreferrer"
         className="chat-link"
-        // A tap on a link opens it, not the reactions picker.
+        // A tap on a link opens it; it never reaches the message's gesture handling.
         onClick={(e) => e.stopPropagation()}
       >
         {raw}
