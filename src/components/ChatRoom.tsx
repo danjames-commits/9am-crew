@@ -67,7 +67,6 @@ export function ChatRoom({
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
-  const bottom = useRef<HTMLDivElement>(null);
   const box = useRef<HTMLTextAreaElement>(null);
   // The message box grows with what you type (up to about six lines), then scrolls.
   useEffect(() => {
@@ -154,7 +153,10 @@ export function ChatRoom({
   const firstScroll = useRef(true);
   useEffect(() => {
     if (firstScroll.current && newLine.current) newLine.current.scrollIntoView({ block: 'center' });
-    else bottom.current?.scrollIntoView({ block: 'end' });
+    // Scroll the page itself to its end. Scrolling the end marker into view would leave the last
+    // message hidden behind the sticky composer and the fixed tab bar, which both sit over the
+    // bottom of the screen.
+    else window.scrollTo({ top: document.documentElement.scrollHeight });
     firstScroll.current = false;
   }, [messages.length]);
 
@@ -339,7 +341,6 @@ export function ChatRoom({
             {row(m, i)}
           </Fragment>
         ))}
-        <div ref={bottom} />
       </div>
       <form onSubmit={send} className="row chat-form">
         <label htmlFor="msg" className="sr-only">
