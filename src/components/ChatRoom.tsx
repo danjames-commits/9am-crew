@@ -206,14 +206,16 @@ export function ChatRoom({
   }
 
   const press = useMessagePress({ onHold: openMenu, onDoubleTap: doubleTapHeart });
-  /** Gesture and keyboard props for a message you can react to. */
-  const pressProps = (m: ChatMessage, label: string) => ({
+  /**
+   * Gesture and keyboard props for a message you can react to. No button role or aria-label:
+   * that would hide the message text from screen readers and nest links inside a button.
+   * The hint below is read as a description instead.
+   */
+  const pressProps = (m: ChatMessage) => ({
     ...press,
     'data-id': m.id,
     tabIndex: 0,
-    role: 'button',
-    'aria-haspopup': 'dialog' as const,
-    'aria-label': `${label} Press Enter for reactions.`,
+    'aria-describedby': 'react-hint',
   });
 
   /** The reactions pill on a message's bottom corner. */
@@ -252,7 +254,7 @@ export function ChatRoom({
     if (m.kind === 'recap') {
       return (
         <div key={m.id} className={`stack tight ${hostClass(m)}`}>
-          <div className="card teal stack tight reactable" {...pressProps(m, 'Friday recap.')}>
+          <div className="card teal stack tight reactable" {...pressProps(m)}>
             <div className="eyebrow teal">Friday recap</div>
             <p className="pre">{m.body}</p>
           </div>
@@ -266,7 +268,7 @@ export function ChatRoom({
       const n = parseInt(m.body, 10) || 0;
       return (
         <div key={m.id} className={`stack tight ${hostClass(m)}`}>
-          <div className="milestone-card reactable" title={timeAgo(m.created_at)} {...pressProps(m, `${mine ? 'Your' : `${firstName(name)}’s`} ${n} classes.`)}>
+          <div className="milestone-card reactable" title={timeAgo(m.created_at)} {...pressProps(m)}>
             {m.user_id && <PersonAvatar id={m.user_id} name={name} animal={animals[m.user_id]} />}
             <div className="grow">
               <div className="milestone-n">🎉 {n} classes</div>
@@ -306,7 +308,7 @@ export function ChatRoom({
           )
         )}
         <div className={`bubble-wrap ${mine ? 'mine' : ''} ${hostClass(m)}`}>
-          <div className={`bubble reactable ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)} {...pressProps(m, `Message from ${mine ? 'you' : firstName(name)}.`)}>
+          <div className={`bubble reactable ${mine ? 'mine' : ''}`} title={timeAgo(m.created_at)} {...pressProps(m)}>
             {showName && <div className="who">{firstName(name)}</div>}
             <Linkify text={m.body} />
           </div>
@@ -332,6 +334,7 @@ export function ChatRoom({
         ))}
         <div ref={bottom} />
       </div>
+      <span id="react-hint" className="sr-only">Press Enter for reactions.</span>
       <form onSubmit={send} className="row chat-form">
         <label htmlFor="msg" className="sr-only">
           Message
