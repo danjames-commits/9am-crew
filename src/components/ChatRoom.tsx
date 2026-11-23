@@ -207,16 +207,20 @@ export function ChatRoom({
 
   const press = useMessagePress({ onHold: openMenu, onDoubleTap: doubleTapHeart });
   /**
-   * Gesture and keyboard props for a message you can react to. No button role or aria-label:
-   * that would hide the message text from screen readers and nest links inside a button.
-   * The hint below is read as a description instead.
+   * Gesture props for a message you can react to. No button role, aria-label or tab stop on the
+   * message itself: that would hide its text from screen readers and nest links inside a button.
+   * Keyboard and screen-reader users get the explicit "React to ..." button instead (reactBtn).
    */
-  const pressProps = (m: ChatMessage) => ({
-    ...press,
-    'data-id': m.id,
-    tabIndex: 0,
-    'aria-describedby': 'react-hint',
-  });
+  const pressProps = (m: ChatMessage) => ({ ...press, 'data-id': m.id });
+
+  /** A visually hidden button (visible on keyboard focus) that opens the reaction menu. */
+  function reactBtn(m: ChatMessage, label: string) {
+    return (
+      <button type="button" className="react-sr" data-react-for={m.id} onClick={() => openMenu(m.id)}>
+        React to {label}
+      </button>
+    );
+  }
 
   /** The reactions pill on a message's bottom corner. */
   function pillFor(m: ChatMessage, align: 'left' | 'right') {
@@ -259,6 +263,7 @@ export function ChatRoom({
             <p className="pre">{m.body}</p>
           </div>
           {pillFor(m, 'left')}
+          {reactBtn(m, 'this recap')}
         </div>
       );
     }
@@ -278,6 +283,7 @@ export function ChatRoom({
             </div>
           </div>
           {pillFor(m, 'left')}
+          {reactBtn(m, mine ? 'your milestone' : `${firstName(name)}’s milestone`)}
         </div>
       );
     }
@@ -313,6 +319,7 @@ export function ChatRoom({
             <Linkify text={m.body} />
           </div>
           {pillFor(m, mine ? 'right' : 'left')}
+          {reactBtn(m, mine ? 'your message' : `${firstName(name)}’s message`)}
         </div>
       </div>
     );
@@ -334,7 +341,6 @@ export function ChatRoom({
         ))}
         <div ref={bottom} />
       </div>
-      <span id="react-hint" className="sr-only">Press Enter for reactions.</span>
       <form onSubmit={send} className="row chat-form">
         <label htmlFor="msg" className="sr-only">
           Message
@@ -378,6 +384,7 @@ export function ChatRoom({
           const m = messages.find((x) => x.id === menuFor);
           return m ? (
             <ReactionMenu
+              messageId={m.id}
               preview={previewOf(m)}
               reactions={reactions.filter((r) => r.message_id === m.id)}
               meId={meId}

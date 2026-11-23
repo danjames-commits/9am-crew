@@ -5,6 +5,8 @@ export const HOLD_MS = 450;
 export const MOVE_PX = 10;
 export const DOUBLE_MS = 300;
 export const DOUBLE_PX = 30;
+/** How long after a hold fires the machine still treats the hold as live (for wasHold and the swallowed click). */
+export const HOLD_GRACE_MS = 1000;
 
 /**
  * Hold and double-tap on chat messages, without the DOM, so it can be tested with fake timers.
@@ -16,6 +18,7 @@ export function pressMachine(cb: { onHold(id: string): void; onDoubleTap(id: str
   let start: { id: string; x: number; y: number } | null = null;
   let held = false;
   let swallow = false;
+  let heldAt = 0;
   let last: { id: string; x: number; y: number; t: number } | null = null;
   const clear = () => {
     if (timer !== undefined) clearTimeout(timer);
@@ -31,6 +34,7 @@ export function pressMachine(cb: { onHold(id: string): void; onDoubleTap(id: str
         timer = undefined;
         held = true;
         swallow = true;
+        heldAt = Date.now();
         last = null;
         cb.onHold(id);
       }, HOLD_MS);
@@ -64,13 +68,17 @@ export function pressMachine(cb: { onHold(id: string): void; onDoubleTap(id: str
     },
     /** True if this click follows a hold and should be swallowed (so a held link doesn't open). */
     click() {
-      if (!swallow) return false;
+      const was = swallow && Date.now() - heldAt <= HOLD_GRACE_MS;
       swallow = false;
-      return true;
+      return was;
     },
-    /** True from the moment the hold fires until the next down(), or until the swallowed click is consumed. */
+    /**
+     * True from the moment the hold fires until the next down(), or until the swallowed click is consumed,
+     * but never longer than HOLD_GRACE_MS (a mouse hold's pointerup lands on the overlay, so up() may never run).
+     * cancel() deliberately doesn't clear this: on touch, pointerleave fires between pointerup and click.
+     */
     wasHold() {
-      return held || swallow;
+      return (held || swallow) && Date.now() - heldAt <= HOLD_GRACE_MS;
     },
     dispose() {
       clear();
@@ -124,6 +132,7 @@ export function useMessagePress(cb: { onHold(id: number): void; onDoubleTap(id: 
         latest.current.onHold(idOf(e));
       },
       onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
+        if (e.repeat) return; // a held Enter shouldn't fire onHold again
         if (e.target !== e.currentTarget) return; // a focused link inside handles its own keys
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();

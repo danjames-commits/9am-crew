@@ -9,6 +9,7 @@ import { byPerson, REACTIONS, type Reaction } from '@/lib/reactions';
  * Uses plain Avatar, not PersonAvatar: PersonAvatar's own sheet would open underneath this one.
  */
 export function ReactionMenu({
+  messageId,
   preview,
   reactions,
   meId,
@@ -16,6 +17,8 @@ export function ReactionMenu({
   onToggle,
   onClose,
 }: {
+  /** The message this menu is for; focus returns to its React button if the opener is gone. */
+  messageId: number;
   /** A non-interactive copy of the message. */
   preview: ReactNode;
   /** This message's reactions. */
@@ -27,6 +30,8 @@ export function ReactionMenu({
   onClose: () => void;
 }) {
   const bar = useRef<HTMLDivElement>(null);
+  const armed = useRef(false);
+  const downOnBackdrop = useRef(false);
   useEffect(() => {
     const back = document.activeElement as HTMLElement | null;
     bar.current?.querySelector('button')?.focus();
@@ -34,16 +39,27 @@ export function ReactionMenu({
     document.addEventListener('keydown', key);
     return () => {
       document.removeEventListener('keydown', key);
-      back?.focus?.();
+      if (back?.isConnected) back.focus();
+      else (document.querySelector('[data-react-for="' + messageId + '"]') as HTMLElement | null)?.focus();
     };
-  }, [onClose]);
+  }, [onClose, messageId]);
 
   const rows = byPerson(reactions, meId);
   return (
     <div
       className="react-menu"
-      // pointerdown, not click: the hold that opened this menu ends with a pointerup over it.
-      onPointerDown={(e) => e.target === e.currentTarget && onClose()}
+      // After a touch hold, the browser sends a compatibility click at the lift point, which lands on
+      // this menu once it is open. So: buttons ignore a click that had no pointerdown inside the menu
+      // (armed), and the backdrop closes on click, not pointerdown, only if the press also began on it,
+      // so that click is consumed here instead of reaching a link or pill underneath.
+      onPointerDown={(e) => {
+        armed.current = true;
+        downOnBackdrop.current = e.target === e.currentTarget;
+      }}
+      onClick={(e) => {
+        if (downOnBackdrop.current && e.target === e.currentTarget) onClose();
+        downOnBackdrop.current = false;
+      }}
     >
       <div className="react-menu-col" role="dialog" aria-modal="true" aria-label="Reactions">
         <div className="react-menu-bar" ref={bar} role="group" aria-label="React">
@@ -55,7 +71,8 @@ export function ReactionMenu({
                 type="button"
                 aria-pressed={on}
                 aria-label={on ? `Remove your ${e}` : `React ${e}`}
-                onClick={() => {
+                onClick={(ev) => {
+                  if (!armed.current && ev.detail !== 0) return;
                   onToggle(e);
                   onClose();
                 }}
@@ -82,7 +99,13 @@ export function ReactionMenu({
                   <span className="react-menu-emojis">
                     {emojis.map((e) =>
                       me ? (
-                        <button key={e} type="button" aria-label={`Remove your ${e}`} onClick={() => onToggle(e)}>
+                        <button key={e} type="button" aria-label={`Remove your ${e}`} onClick={(ev) => {
+                            if (!armed.current && ev.detail !== 0) return;
+                            onToggle(e);
+                            // the removed button may unmount; keep focus inside the dialog
+                            bar.current?.querySelector('button')?.focus();
+                          }}
+                        >
                           {e}
                         </button>
                       ) : (

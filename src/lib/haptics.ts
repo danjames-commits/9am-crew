@@ -15,7 +15,7 @@ export function haptic(ms = 10): void {
     return;
   }
   if (typeof document === 'undefined') return;
-  if (!label) {
+  if (!label || !label.isConnected) {
     label = document.createElement('label');
     label.setAttribute('aria-hidden', 'true');
     label.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;';

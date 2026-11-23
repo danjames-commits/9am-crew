@@ -720,7 +720,8 @@ html.halloween body::before {
 
 /* Emoji reactions in the chat: hold a message for the menu, double-tap for ❤️. */
 .reactable { cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
-.reactable:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.react-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; padding: 0; margin: 0; }
+.react-sr:focus-visible { position: static; width: auto; height: auto; overflow: visible; clip: auto; margin-top: 18px; padding: 2px 10px; border-radius: 13px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 13px; font-weight: 700; outline: 3px solid var(--gold); outline-offset: 2px; cursor: pointer; }
 .bubble-wrap { display: flex; flex-direction: column; align-items: flex-start; max-width: 80%; }
 .bubble-wrap.mine { align-items: flex-end; margin-left: auto; }
 .bubble-wrap .bubble { max-width: 100%; }

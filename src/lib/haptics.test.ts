@@ -20,6 +20,7 @@ function fakeDocument() {
         appendChild(c: unknown) {
           (this.children as unknown[]).push(c);
         },
+        isConnected: true,
         click: vi.fn(),
       };
       made.push({ tag, el });
@@ -74,5 +75,17 @@ describe('haptic', () => {
     expect(label.children).toContain(input);
     expect(doc.body.appendChild).toHaveBeenCalledTimes(1);
     expect(label.click).toHaveBeenCalledTimes(2);
+  });
+
+  it('on iPhone, makes a new switch when the old one was detached', async () => {
+    const { doc, made } = fakeDocument();
+    vi.stubGlobal('window', {});
+    vi.stubGlobal('navigator', {});
+    vi.stubGlobal('document', doc);
+    const haptic = await load();
+    haptic();
+    made.find((m) => m.tag === 'label')!.el.isConnected = false;
+    haptic();
+    expect(made.filter((m) => m.tag === 'label')).toHaveLength(2);
   });
 });

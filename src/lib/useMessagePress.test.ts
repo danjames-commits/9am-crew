@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { DOUBLE_MS, HOLD_MS, pressMachine } from './useMessagePress';
+import { DOUBLE_MS, HOLD_GRACE_MS, HOLD_MS, pressMachine } from './useMessagePress';
 
 beforeEach(() => {
   vi.useFakeTimers();
@@ -109,6 +109,46 @@ describe('hold', () => {
     expect(m.wasHold()).toBe(false);
     m.down('1', 0, 0);
     vi.advanceTimersByTime(HOLD_MS - 1);
+    expect(m.wasHold()).toBe(false);
+  });
+});
+
+describe('hold grace window', () => {
+  it('wasHold goes false once the grace window passes when up and click never came', () => {
+    const { m } = setup();
+    m.down('1', 0, 0);
+    vi.advanceTimersByTime(HOLD_MS);
+    vi.advanceTimersByTime(HOLD_GRACE_MS);
+    expect(m.wasHold()).toBe(true);
+    vi.advanceTimersByTime(1);
+    expect(m.wasHold()).toBe(false);
+  });
+
+  it('does not swallow a click that comes after the grace window', () => {
+    const { m } = setup();
+    m.down('1', 0, 0);
+    vi.advanceTimersByTime(HOLD_MS);
+    m.up(0, 0);
+    vi.advanceTimersByTime(HOLD_GRACE_MS + 1);
+    expect(m.click()).toBe(false);
+  });
+
+  it('swallows a click inside the grace window', () => {
+    const { m } = setup();
+    m.down('1', 0, 0);
+    vi.advanceTimersByTime(HOLD_MS);
+    m.up(0, 0);
+    vi.advanceTimersByTime(HOLD_GRACE_MS);
+    expect(m.click()).toBe(true);
+  });
+
+  it('a late click also clears swallow', () => {
+    const { m } = setup();
+    m.down('1', 0, 0);
+    vi.advanceTimersByTime(HOLD_MS);
+    m.up(0, 0);
+    vi.advanceTimersByTime(HOLD_GRACE_MS + 1);
+    m.click();
     expect(m.wasHold()).toBe(false);
   });
 });

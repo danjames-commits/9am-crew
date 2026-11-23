@@ -1158,6 +1158,12 @@ Then run `preview_start` with name `dev`, emulate the `mobile` viewport, and ope
 - Dark mode (`colorScheme: dark`): the pill, menu and list are readable.
 - A reaction from a second browser or account appears live and pops.
 - Tapping the backdrop closes the menu. Releasing a hold does not immediately close it.
+- Touch: hold a message near mid-screen and lift. No reaction is added.
+- Tap the backdrop over a link or pill. Nothing underneath activates.
+- Mouse: hold, close, then right-click a message. The menu opens.
+- Keyboard: Tab to a message's React button, press Enter, toggle. Focus lands back on the React button.
+- VoiceOver/TalkBack: the React button opens the menu.
+- iPhone: after a haptic, `document.activeElement` is not the hidden switch.
 
 - [ ] **Step 3: Haptics on real phones (ask Jake)**
 
