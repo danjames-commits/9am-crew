@@ -68,6 +68,10 @@ export function pressMachine(cb: { onHold(id: string): void; onDoubleTap(id: str
       swallow = false;
       return true;
     },
+    /** True from the moment the hold fires until the next down(), or until the swallowed click is consumed. */
+    wasHold() {
+      return held || swallow;
+    },
     dispose() {
       clear();
     },
@@ -112,8 +116,10 @@ export function useMessagePress(cb: { onHold(id: number): void; onDoubleTap(id: 
         }
       },
       onContextMenu: (e: React.MouseEvent<HTMLElement>) => {
-        // Right-click on a computer; on Android this also fires after a long press (same menu, no-op).
+        // Always suppress the native menu. Android Chrome fires contextmenu at about 500 ms, after
+        // our own 450 ms hold has already fired, so skip onHold when the hold already handled it.
         e.preventDefault();
+        if (m.wasHold()) return;
         m.cancel();
         latest.current.onHold(idOf(e));
       },

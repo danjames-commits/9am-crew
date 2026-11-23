@@ -85,6 +85,32 @@ describe('hold', () => {
     tap(m);
     expect(m.click()).toBe(false);
   });
+
+  it('reports wasHold after a hold fires, while still pressed', () => {
+    const { m } = setup();
+    m.down('1', 0, 0);
+    vi.advanceTimersByTime(HOLD_MS);
+    expect(m.wasHold()).toBe(true);
+  });
+
+  it('wasHold stays true after release until the click is swallowed', () => {
+    const { m } = setup();
+    m.down('1', 0, 0);
+    vi.advanceTimersByTime(HOLD_MS);
+    m.up(0, 0);
+    expect(m.wasHold()).toBe(true);
+    m.click();
+    expect(m.wasHold()).toBe(false);
+  });
+
+  it('wasHold is false for a plain tap and before the hold fires', () => {
+    const { m } = setup();
+    tap(m);
+    expect(m.wasHold()).toBe(false);
+    m.down('1', 0, 0);
+    vi.advanceTimersByTime(HOLD_MS - 1);
+    expect(m.wasHold()).toBe(false);
+  });
 });
 
 describe('double-tap', () => {
